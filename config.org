@@ -1,0 +1,59 @@
+#+TITLE: Vanilla Emacs --> Cade's Emacs
+
+* Packages
+** connect package.el with MELPA
+
+  #+begin_src emacs-lisp
+    (require 'package)
+    (add-to-list 'package-archives
+		 '("melpa" . "https://melpa.org/packages/"))
+    (package-refresh-contents)
+    (package-initialize)
+  #+end_src
+
+** installing use-package
+
+  #+begin_src emacs-lisp 
+    (unless (package-installed-p 'use-package)
+      (package-install 'use-package))
+  #+end_src
+
+** Extensible VI Layer
+
+  #+begin_src emacs-lisp
+    (use-package evil
+	:ensure t ;; install evil if not installed
+	:init     ;; tweak evil's configuration before loading
+	(setq evil-want-integration t)
+	(setq evil-want-keybinding nil)
+	(setq evil-vsplit-window-right t)
+	(setq evil-split-window-below t)
+	(evil-mode))
+    (use-package evil-collection
+      :after evil
+      :ensure t
+      :config
+      (evil-collection-init))
+  #+end_src
+
+** Org-packages
+
+  #+begin_src emacs-lisp
+    (use-package org-bullets
+	:ensure t
+	    :init
+	    (add-hook 'org-mode-hook (lambda ()
+				(org-bullets-mode 1))))
+  #+end_src
+
+* Org-configuration
+** Org Beautification
+  
+  #+begin_src emacs-lisp
+    (setq org-directory "~/org/"
+	  org-hide-emphasis-markers t
+	  org-bullets-bullet-list '("●" "○" "◆" "◇")
+	  )
+  #+end_src
+ 
+
