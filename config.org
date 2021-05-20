@@ -1,6 +1,36 @@
 #+TITLE: Vanilla Emacs --> Cade's Emacs
 
+* Themes
+
+- getting rid of some junk
+
+#+begin_src emacs-lisp
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+(setq inhibit-splash-screen t)
+#+end_src
+
+- adding line numbers
+  #+begin_src emacs-lisp
+(global-display-line-numbers-mode 1)
+(global-visual-line-mode t)
+  #+end_src 
+
+- adding generic theme
+
+  #+begin_src emacs-lisp
+(load-theme 'wombat t)
+  #+end_src
+
+- Font
+
+#+begin_src emacs-lisp
+(set-face-attribute 'default nil :font "Fira Code 16")
+#+end_src
+
 * Packages
+
 ** connect package.el with MELPA
 
   #+begin_src emacs-lisp
@@ -36,6 +66,15 @@
       (evil-collection-init))
   #+end_src
 
+** General for Key-remaps
+
+  #+begin_src emacs-lisp
+  (use-package general
+     :ensure t
+     :config
+     (general-evil-setup t))
+  #+end_src
+
 ** Org-packages
 
   #+begin_src emacs-lisp
@@ -45,15 +84,112 @@
 	    (add-hook 'org-mode-hook (lambda ()
 				(org-bullets-mode 1))))
   #+end_src
+  
+** basic tab block-tag completion
+
+  #+begin_src emacs-lisp
+  (use-package org-tempo
+         :ensure nil)
+  #+end_src
+
+** Which Key
+
+  #+begin_src emacs-lisp
+  (use-package which-key
+  :ensure t
+  :init
+          (setq which-key-side-window-location 'bottom
+                  which-key-sort-order #'which-key-key-order-alpha
+                  which-key-sort-uppercase-first nil
+                  which-key-add-column-padding 1
+                  which-key-max-display-columns nil
+                  which-key-min-display-lines 6
+                  which-key-side-window-slot -10
+                  which-key-side-window-max-height 0.25
+                  which-key-idle-delay 0.8
+                  which-key-max-description-length 25
+                  which-key-allow-imprecise-window-fit t
+                  which-key-separator " --> " ))
+  (which-key-mode)
+  #+end_src
+
+** V Terminal
+
+  #+begin_src emacs-lisp
+  (use-package vterm
+      :ensure t)
+  (setq shell-file-name "/bin/bash"
+      vterm-max-scrollback 5000)
+  #+end_src
+** Git integration
+
+#+begin_src emacs-lisp
+(use-package magit :ensure t)
+#+end_src
+
+** Language support
+
+*** Haskell
+
+#+begin_src emacs-lisp
+(use-package haskell-mode :ensure t)
+#+end_src
+
+*** Scheme(s)
+
+#+begin_src emacs-lisp
+(use-package geiser-guile :ensure t)
+#+end_src
 
 * Org-configuration
-** Org Beautification
+
+** Org Beautification, basics
   
   #+begin_src emacs-lisp
+    (add-hook 'org-mode-hook 'org-indent-mode)
     (setq org-directory "~/org/"
 	  org-hide-emphasis-markers t
-	  org-bullets-bullet-list '("●" "○" "◆" "◇")
-	  )
+	  org-bullets-bullet-list '("●" "○" "◆" "◇"))
+    (setq org-src-preserve-indentation nil
+          org-src-tab-acts-natively t
+          org-edit-src-content-indentation 0)
   #+end_src
+
+** Code-Block highlighting
+    #+begin_src emacs-lisp
+    (setq org-src-fontify-natively t
+        org-src-tab-acts-natively t
+        org-confirm-babel-evaluate nil
+        org-edit-src-content-indentation 0)
+    #+end_src
+
+* Key Re-mapping 
+
+- *keymaps using General plugin*
+   
+#+begin_src emacs-lisp
+(nvmap :keymaps 'override :prefix "SPC"
+       "SPC"   '(counsel-M-x :which-key "M-x")
+       "c c"   '(compile :which-key "Compile")
+       "c C"   '(recompile :which-key "Recompile")
+       "h r r" '((lambda () (interactive) (load-file "~/.emacs.d/init.el")) :which-key "Reload emacs config")
+       "t t"   '(toggle-truncate-lines :which-key "Toggle truncate lines"))
+(nvmap :states '(normal visual) :keymaps 'override :prefix "SPC"
+       "."     '(find-file :which-key "Find file")
+       "f f"   '(find-file :which-key "Find file")
+       "f s"   '(save-buffer :which-key "Save file")
+       "f C"   '(copy-file :which-key "Copy file")
+       "f D"   '(delete-file :which-key "Delete file")
+       "f R"   '(rename-file :which-key "Rename file")
+       "f S"   '(write-file :which-key "Save file as...")
+#+end_src
+
+- zooming
+
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-=") 'text-scale-increase)
+(global-set-key (kbd "C--") 'text-scale-decrease)
+#+end_src
+
  
 
