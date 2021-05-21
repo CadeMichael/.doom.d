@@ -4,36 +4,39 @@
 
 - getting rid of some junk
 
-  #+begin_src emacs-lisp
-(menu-bar-mode -1)
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
-(setq inhibit-splash-screen t)
+  #+begin_src elisp
+  (menu-bar-mode -1)
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1)
+  (setq inhibit-splash-screen t)
+  (setq make-backup-files nil) 
   #+end_src
 
 - adding line numbers
-  #+begin_src emacs-lisp
-(global-display-line-numbers-mode 1)
-(global-visual-line-mode t)
+
+  #+begin_src elisp
+  (global-display-line-numbers-mode 1)
+  (global-visual-line-mode t)
+  (setq display-line-numbers-type 'relative)
   #+end_src 
 
 - adding generic theme
 
-  #+begin_src emacs-lisp
-(load-theme 'wombat t)
+  #+begin_src elisp
+  (load-theme 'wombat t)
   #+end_src
 
 - Font
 
-#+begin_src emacs-lisp
-(set-face-attribute 'default nil :font "Fira Code 16")
-#+end_src
+  #+begin_src elisp
+  (set-face-attribute 'default nil :font "Fira Code 14")
+  #+end_src
 
 * Packages
 
 ** connect package.el with MELPA
 
-  #+begin_src emacs-lisp
+  #+begin_src elisp
     (require 'package)
     (add-to-list 'package-archives
 		 '("melpa" . "https://melpa.org/packages/"))
@@ -43,14 +46,22 @@
 
 ** installing use-package
 
-  #+begin_src emacs-lisp 
+  #+begin_src elisp 
     (unless (package-installed-p 'use-package)
       (package-install 'use-package))
   #+end_src
 
+** Making sure the shell doesn't get messed up
+
+#+begin_src elisp
+(use-package exec-path-from-shell :ensure t)
+(when (memq window-system '(mac ns x))
+  (exec-path-from-shell-initialize))
+#+end_src
+
 ** Extensible VI Layer
 
-  #+begin_src emacs-lisp
+  #+begin_src elisp
   ;; package used for undoing
   (use-package undo-fu :ensure t)
   (use-package evil
@@ -71,7 +82,7 @@
 
 ** General for Key-remaps
 
-  #+begin_src emacs-lisp
+  #+begin_src elisp
   (use-package general
      :ensure t
      :config
@@ -80,7 +91,7 @@
 
 ** Org-packages
 
-  #+begin_src emacs-lisp
+  #+begin_src elisp
     (use-package org-bullets
 	:ensure t
 	    :init
@@ -90,14 +101,14 @@
   
 ** basic tab block-tag completion
 
-  #+begin_src emacs-lisp
+  #+begin_src elisp
   (use-package org-tempo
          :ensure nil)
   #+end_src
 
 ** Which Key
 
-  #+begin_src emacs-lisp
+  #+begin_src elisp
   (use-package which-key
   :ensure t
   :init
@@ -118,15 +129,16 @@
 
 ** V Terminal
 
-  #+begin_src emacs-lisp
+  #+begin_src elisp
   (use-package vterm
       :ensure t)
-  (setq shell-file-name "/bin/bash"
+  (setq shell-file-name "/bin/zsh" ;; this will be different for linux and mac machines
       vterm-max-scrollback 5000)
   #+end_src
+
 ** Git integration
 
-#+begin_src emacs-lisp
+#+begin_src elisp
 (use-package magit :ensure t)
 #+end_src
 
@@ -134,21 +146,27 @@
 
 *** Haskell
 
-#+begin_src emacs-lisp
+#+begin_src elisp
 (use-package haskell-mode :ensure t)
 #+end_src
 
 *** Scheme(s)
 
-#+begin_src emacs-lisp
+#+begin_src elisp
 (use-package geiser-guile :ensure t)
+#+end_src
+
+*** Markdown
+
+#+begin_src elisp
+(use-package markdown-mode :ensure t)
 #+end_src
 
 * Org-configuration
 
 ** Org Beautification, basics
   
-  #+begin_src emacs-lisp
+  #+begin_src elisp
     (add-hook 'org-mode-hook 'org-indent-mode)
     (setq org-directory "~/org/"
 	  org-hide-emphasis-markers t
@@ -159,18 +177,26 @@
   #+end_src
 
 ** Code-Block highlighting
-    #+begin_src emacs-lisp
+    #+begin_src elisp
     (setq org-src-fontify-natively t
         org-src-tab-acts-natively t
         org-confirm-babel-evaluate nil
         org-edit-src-content-indentation 0)
     #+end_src
 
+** Babel Code-Block Configuration
+
+#+begin_src elisp
+(org-babel-do-load-languages
+  'org-babel-load-languages
+  '((scheme . r)))
+#+end_src
+
 * Key Re-mapping 
 
 - *keymaps using General plugin*
 
-  #+begin_src emacs-lisp
+  #+begin_src elisp
   (nvmap :keymaps 'override :prefix "SPC"
          "SPC"   '(counsel-M-x :which-key "M-x")
          "c c"   '(compile :which-key "Compile")
@@ -182,12 +208,17 @@
          "f s"   '(save-buffer :which-key "Save file")
          "f C"   '(copy-file :which-key "Copy file")
          "f D"   '(delete-file :which-key "Delete file")
-         "f R"   '(rename-file :which-key "Rename file"))
+         "f R"   '(rename-file :which-key "Rename file")
+         ;; Vterm
+         "v v"   '(vterm-other-window :which-key "Open Vterm"))
   #+end_src
 
-- zooming
+** org mode
 
-#+begin_src emacs-lisp
+
+**  zooming
+
+#+begin_src elisp
 (global-set-key (kbd "C-=") 'text-scale-increase)
 (global-set-key (kbd "C--") 'text-scale-decrease)
 #+end_src
