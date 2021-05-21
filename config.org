@@ -4,12 +4,12 @@
 
 - getting rid of some junk
 
-#+begin_src emacs-lisp
+  #+begin_src emacs-lisp
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 (setq inhibit-splash-screen t)
-#+end_src
+  #+end_src
 
 - adding line numbers
   #+begin_src emacs-lisp
@@ -51,19 +51,22 @@
 ** Extensible VI Layer
 
   #+begin_src emacs-lisp
-    (use-package evil
-	:ensure t ;; install evil if not installed
-	:init     ;; tweak evil's configuration before loading
-	(setq evil-want-integration t)
-	(setq evil-want-keybinding nil)
-	(setq evil-vsplit-window-right t)
-	(setq evil-split-window-below t)
-	(evil-mode))
-    (use-package evil-collection
-      :after evil
-      :ensure t
-      :config
-      (evil-collection-init))
+  ;; package used for undoing
+  (use-package undo-fu :ensure t)
+  (use-package evil
+      :ensure t ;; install evil if not installed
+      :init     ;; tweak evil's configuration before loading
+      (setq evil-want-integration t)
+      (setq evil-want-keybinding nil)
+      (setq evil-vsplit-window-right t)
+      (setq evil-split-window-below t)
+      (setq evil-undo-system 'undo-fu)
+      (evil-mode))
+  (use-package evil-collection
+    :after evil
+    :ensure t
+    :config
+    (evil-collection-init))
   #+end_src
 
 ** General for Key-remaps
@@ -166,23 +169,21 @@
 * Key Re-mapping 
 
 - *keymaps using General plugin*
-   
-#+begin_src emacs-lisp
-(nvmap :keymaps 'override :prefix "SPC"
-       "SPC"   '(counsel-M-x :which-key "M-x")
-       "c c"   '(compile :which-key "Compile")
-       "c C"   '(recompile :which-key "Recompile")
-       "h r r" '((lambda () (interactive) (load-file "~/.emacs.d/init.el")) :which-key "Reload emacs config")
-       "t t"   '(toggle-truncate-lines :which-key "Toggle truncate lines"))
-(nvmap :states '(normal visual) :keymaps 'override :prefix "SPC"
-       "."     '(find-file :which-key "Find file")
-       "f f"   '(find-file :which-key "Find file")
-       "f s"   '(save-buffer :which-key "Save file")
-       "f C"   '(copy-file :which-key "Copy file")
-       "f D"   '(delete-file :which-key "Delete file")
-       "f R"   '(rename-file :which-key "Rename file")
-       "f S"   '(write-file :which-key "Save file as...")
-#+end_src
+
+  #+begin_src emacs-lisp
+  (nvmap :keymaps 'override :prefix "SPC"
+         "SPC"   '(counsel-M-x :which-key "M-x")
+         "c c"   '(compile :which-key "Compile")
+         "c C"   '(recompile :which-key "Recompile")
+         "h r r" '((lambda () (interactive) (load-file "~/.emacs.d/init.el")) :which-key "Reload emacs config")
+         "t t"   '(toggle-truncate-lines :which-key "Toggle truncate lines")
+         ;; File manipulation
+         "."     '(find-file :which-key "Find file")
+         "f s"   '(save-buffer :which-key "Save file")
+         "f C"   '(copy-file :which-key "Copy file")
+         "f D"   '(delete-file :which-key "Delete file")
+         "f R"   '(rename-file :which-key "Rename file"))
+  #+end_src
 
 - zooming
 
