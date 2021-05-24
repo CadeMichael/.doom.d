@@ -127,6 +127,19 @@
   (which-key-mode)
   #+end_src
 
+** Vertico
+
+#+begin_src elisp
+(use-package vertico
+  :ensure t
+  :init
+  (vertico-mode)
+
+  ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
+  ;; (setq vertico-cycle t)
+)
+#+end_src
+
 ** V Terminal
 
   #+begin_src elisp
@@ -146,9 +159,47 @@
 
 *** Haskell
 
+- getting the base language support
+  
 #+begin_src elisp
 (use-package haskell-mode :ensure t)
 #+end_src
+
+- interactive haskell support, as detailed [[http://haskell.github.io/haskell-mode/manual/latest/Interactive-Haskell.html#Interactive-Haskell][here]] 
+  - C-c C-l will open an interactive buffer /REPL like environment
+
+    #+begin_src elisp
+    (require 'haskell-interactive-mode)
+    (require 'haskell-process)
+    (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
+    #+end_src 
+
+  - some "helpful and benign" customizations
+
+    #+begin_src elisp
+    (custom-set-variables
+      '(haskell-process-suggest-remove-import-lines t)
+      '(haskell-process-auto-import-loaded-modules t)
+      '(haskell-process-log t))
+    #+end_src
+
+  - some "special" keybindings that rely heavily on the space bar 
+
+    #+begin_src elisp
+    (general-define-key
+     :states '(normal)
+     :keymaps 'haskell-mode-map
+     :prefix "SPC"
+     "c l" '(haskell-process-load-or-reload :which-key "load current file")
+     "'" '(haskell-interactive-bring :which-key "interactive bring")
+     "c t" '(haskell-process-do-type :which-key "process do type")
+     "c i" '(haskell-process-do-info :which-key "process do info")
+     "c SPC c" '(haskell-process-cabal-build :which-key "cabal build")
+     "c k" '(haskell-interactive-mode-clear :which-key "interactive mode clear")
+     "c c" '(haskell-process-cabal :which-key "process cabal"))
+    ;; managing imports
+    (define-key haskell-mode-map (kbd "<f8>") 'haskell-navigate-imports)
+    #+end_src 
 
 *** Scheme(s)
 
@@ -197,7 +248,7 @@
 - *keymaps using General plugin*
 
   #+begin_src elisp
-  (nvmap :keymaps 'override :prefix "SPC"
+  (nvmap :states 'normal :keymaps 'override :prefix "SPC"
          "SPC"   '(counsel-M-x :which-key "M-x")
          "c c"   '(compile :which-key "Compile")
          "c C"   '(recompile :which-key "Recompile")
@@ -212,9 +263,6 @@
          ;; Vterm
          "v v"   '(vterm-other-window :which-key "Open Vterm"))
   #+end_src
-
-** org mode
-
 
 **  zooming
 
