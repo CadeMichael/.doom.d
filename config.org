@@ -23,7 +23,11 @@
 - adding generic theme
 
   #+begin_src elisp
-  (load-theme 'wombat t)
+  ;; basic theme that is on every installation
+  ;; (load-theme 'wombat t)
+  ;; using a nice imported theme
+  (use-package gruvbox-theme :ensure t)
+  (load-theme 'gruvbox-dark-soft)
   #+end_src
 
 - Font
@@ -157,6 +161,36 @@
 
 ** Language support
 
+*** LSP-mode
+- using lsp-deferred so that only when a buffer is open, this should make startup faster and emacs a bit more performant (i hope)
+- I will only be using the LSP with certain languages, for most languages I will try to refrain from using a language server purely to force myself to be a bit more precise while programming
+  #+begin_src elisp
+  (use-package lsp-mode
+    :ensure t
+    :hook (go-mode . lsp-deferred)
+    :commands (lsp lsp-deferred))
+  #+end_src
+- also using lsp-ui to give more of an IDE feel to emacs
+  #+begin_src elisp
+  (use-package lsp-ui :ensure t)
+  #+end_src
+- the documentation of what I am using can be found [[https://emacs-lsp.github.io/lsp-mode/page/main-features/][here]]
+
+*** Company-mode
+- this mode allows for an autocomplete window to popup as you code
+- it is enabled for all buffers which is something I might change later
+  #+begin_src elisp
+  (use-package company
+    :ensure t)
+  (add-hook 'after-init-hook 'global-company-mode)
+  #+end_src
+
+- the "recommended settings"
+  #+begin_src elisp
+  (setq company-minimum-prefix-length 1
+        company-idle-delay 0.0) ;; default is 0.2
+  #+end_src
+
 *** Haskell
 
 - getting the base language support
@@ -199,7 +233,21 @@
      "c c" '(haskell-process-cabal :which-key "process cabal"))
     ;; managing imports
     (define-key haskell-mode-map (kbd "<f8>") 'haskell-navigate-imports)
-    #+end_src 
+    #+end_src
+*** GoLang
+
+- Getting go-mode installed
+  #+begin_src elisp
+  (use-package go-mode :ensure t)
+  #+end_src
+
+- some settings promoted by go, allows for auto-formatting on save
+  #+begin_src elisp
+  (defun lsp-go-install-save-hooks ()
+    (add-hook 'before-save-hook #'lsp-format-buffer t t)
+    (add-hook 'before-save-hook #'lsp-organize-imports t t))
+  (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+  #+end_src
 
 *** Scheme(s)
 

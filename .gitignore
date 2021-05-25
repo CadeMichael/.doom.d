@@ -2,3 +2,5 @@
 *.el~
 *.org~
 elpa/
+auto-save-list/
+transient/
