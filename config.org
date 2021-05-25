@@ -252,7 +252,7 @@
   ;; (load-theme 'wombat t)
   ;; using a nice imported theme
   (use-package gruvbox-theme :ensure t)
-  (load-theme 'gruvbox-dark-soft)
+  (load-theme 'gruvbox-dark-soft t)
   #+end_src
 
 - Font
