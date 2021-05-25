@@ -251,8 +251,20 @@
   ;; basic theme that is on every installation
   ;; (load-theme 'wombat t)
   ;; using a nice imported theme
-  (use-package gruvbox-theme :ensure t)
-  (load-theme 'gruvbox-dark-soft t)
+  #+end_src
+
+- theme for use with mac os (I theme mac os with Gruvbox)
+  
+  #+begin_src elisp
+  ;;(use-package gruvbox-theme :ensure t)
+  ;;(load-theme 'gruvbox-dark-soft t)
+  #+end_src
+
+- theme for use with linux (currently using a nord theme)
+  
+  #+begin_src elisp
+  (use-package nord-theme :ensure t)
+  (load-theme 'nord t)
   #+end_src
 
 - Font
