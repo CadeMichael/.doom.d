@@ -5,11 +5,12 @@
 ** connect package.el with MELPA
 
   #+begin_src elisp
-    (require 'package)
-    (add-to-list 'package-archives
-		 '("melpa" . "https://melpa.org/packages/"))
-    (package-refresh-contents)
-    (package-initialize)
+  (require 'package)
+  (add-to-list 'package-archives
+    '("melpa" . "https://melpa.org/packages/"))
+  (package-initialize)
+  (unless package-archive-contents
+    (package-refresh-contents))
   #+end_src
 
 ** installing use-package
