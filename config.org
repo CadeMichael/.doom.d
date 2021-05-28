@@ -143,17 +143,19 @@
 
 *** Company-mode
 - this mode allows for an autocomplete window to popup as you code
-- it is enabled for all buffers which is something I might change later
+- i had it enabled in all buffers but was not a huge fan of this so I bound it to the vim COC control space keybinding to initialize it 
   #+begin_src elisp
   (use-package company
-    :ensure t)
-  (add-hook 'after-init-hook 'global-company-mode)
+    :ensure t
+    :bind ("C-SPC" . company-mode))
+  ;;(add-hook 'after-init-hook 'global-company-mode) not a fan of it in every mode 
   #+end_src
 
 - the "recommended settings"
   #+begin_src elisp
   (setq company-minimum-prefix-length 1
         company-idle-delay 0.0) ;; default is 0.2
+  (setq company-selection-wrap-around t)
   #+end_src
 
 *** Haskell
@@ -273,7 +275,17 @@
   #+begin_src elisp
   (set-face-attribute 'default nil :font "Fira Code 14")
   #+end_src
+  
+- getting the error bell sound to go away and just having the mode-line flash
 
+  #+begin_src elisp
+  (setq visible-bell nil
+        ring-bell-function 'flash-mode-line)
+  (defun flash-mode-line ()
+    (invert-face 'mode-line)
+    (run-with-timer 0.1 nil #'invert-face 'mode-line))
+  #+end_src
+  
 * Org-configuration
 
 ** Org Beautification, basics
