@@ -124,6 +124,35 @@
 (use-package magit :ensure t)
 #+end_src
 
+** File Browser
+
+- for the file browser I want something very minimal much like nerdtree in vim. Icons would be nice but are not necessary. Ranger seems to be the best fit for what I want. It is minimal (no icons and seems very fast) and it uses the vim keybindings so it plays very nicely with evil mode.
+- rebinding the keys will make it a bit easier on the hands 
+
+  | key-binding | function                                        |
+  |-------------+-------------------------------------------------|
+  | SPC-d       | from any mode this will summon ranger           |
+  | q           | from a ranger buffer this will close the buffer |
+  | //          | search                                          |
+  | RET         | open file                                       |
+  | l           | go left / open file                             |
+  | h           | go right / back in directory tree               |
+  | j           | go down                                         |
+  | k           | go up                                           |
+  | C-h         | show hidden directories / files                 |
+
+  #+begin_src elisp
+  (use-package ranger
+    :ensure t)
+  (setq ranger-cleanup-eagerly t)
+  ;; set up a default binding 
+  (general-define-key
+   :states '(normal)
+   :keymaps 'override
+   :prefix "SPC"
+   "d" '(ranger :which-key "open ranger"))
+  #+end_src
+  
 ** Language support
 
 *** LSP-mode
@@ -259,15 +288,15 @@
 - theme for use with mac os (I theme mac os with Gruvbox)
   
   #+begin_src elisp
-  ;;(use-package gruvbox-theme :ensure t)
-  ;;(load-theme 'gruvbox-dark-soft t)
+  (use-package gruvbox-theme :ensure t)
+  (load-theme 'gruvbox-dark-soft t)
   #+end_src
 
 - theme for use with linux (currently using a nord theme)
   
   #+begin_src elisp
-  (use-package nord-theme :ensure t)
-  (load-theme 'nord t)
+  ;;(use-package nord-theme :ensure t)
+  ;;(load-theme 'nord t)
   #+end_src
 
 - Font
@@ -319,7 +348,7 @@
 * Key Re-mapping 
 
 - *keymaps using General plugin*
-
+- these are non-package related key maps 
   #+begin_src elisp
   (nvmap :states 'normal :keymaps 'override :prefix "SPC"
          "SPC"   '(counsel-M-x :which-key "M-x")
