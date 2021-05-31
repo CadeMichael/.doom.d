@@ -140,28 +140,66 @@
   | j           | go down                                         |
   | k           | go up                                           |
   | C-h         | show hidden directories / files                 |
+  | ws          | exit and open selected file in horizontal split |
+  | wv          | exit and open selected file in vertical split   |
 
-  #+begin_src elisp
+  ,#+begin_src elisp
   (use-package ranger
     :ensure t)
   (setq ranger-cleanup-eagerly t)
+  (setq ranger-excluded-extensions '("mkv" "iso" "mp4"))
   ;; set up a default binding 
   (general-define-key
    :states '(normal)
    :keymaps 'override
    :prefix "SPC"
    "d" '(ranger :which-key "open ranger"))
+  ,#+end_src
+
+- testing ztree with some "vimified" keybindings to help with file navigation. The main draw of ztree is its simplicity and that it is 100% elisp.
+  #+begin_src elisp
+  (use-package ztree :ensure t)
+  (general-define-key
+   :states '(normal)
+   :keymaps 'override
+   :prefix "SPC"
+   "z" '(ztree-dir :which-key "open ztree directory view"))
+  (setq ztree-dir-move-focus t)
   #+end_src
+
+- adding some vim like keymappings
+
+  | H     | goes back in dir tree                           |
+  | L     | goes forward in dir tree                        |
+  | o     | expands dir / opens a file in horizontal buffer |
+  | q     | closes ztree                                    |
+  | x     | fully expands all subdirs of current dir        |
+  | C-h   | show/ hide hidden files                         |
+  | c-z d | open dired at current point in tree             |
   
+  #+begin_src elisp
+  (general-define-key
+   :states '(normal)
+   :keymaps 'ztree-mode-map
+   "H" 'ztree-dir-widen-to-parent
+   "L" 'ztree-dir-narrow-to-dir
+   "o" 'ztree-perform-action)
+  (define-key ztree-mode-map (kbd "C-h") 'ztree-dir-toggle-show-filtered-files)
+  (define-key ztree-mode-map (kbd "C-z d") 'ztree-dir-open-dired-at-point)
+  #+end_src
+
 ** Language support
 
 *** LSP-mode
+
 - using lsp-deferred so that only when a buffer is open, this should make startup faster and emacs a bit more performant (i hope)
 - I will only be using the LSP with certain languages, for most languages I will try to refrain from using a language server purely to force myself to be a bit more precise while programming
   #+begin_src elisp
   (use-package lsp-mode
     :ensure t
-    :hook (go-mode . lsp-deferred)
+    :hook
+    (go-mode . lsp-deferred)
+    (js-mode . lsp-deferred)
     :commands (lsp lsp-deferred))
   #+end_src
 - also using lsp-ui to give more of an IDE feel to emacs
@@ -171,6 +209,7 @@
 - the documentation of what I am using can be found [[https://emacs-lsp.github.io/lsp-mode/page/main-features/][here]]
 
 *** Company-mode
+
 - this mode allows for an autocomplete window to popup as you code
 - i had it enabled in all buffers but was not a huge fan of this so I bound it to the vim COC control space keybinding to initialize it 
   #+begin_src elisp
@@ -245,6 +284,17 @@
   (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
   #+end_src
 
+*** JS
+
+- everything is installed / initially configured in the lsp-mode note. I will need to add some keybindings as I go. 
+
+  ,#+begin_src elisp
+  (general-define-key
+     :states '(normal)
+     :keymaps 'js-mode-map
+     :prefix "SPC")
+  ,#+end_src
+  
 *** Scheme(s)
 
 #+begin_src elisp
@@ -339,31 +389,42 @@
 
 ** Babel Code-Block Configuration
 
+- Scheme configuration
+  
 #+begin_src elisp
 (org-babel-do-load-languages
   'org-babel-load-languages
   '((scheme . r)))
 #+end_src
 
-* Key Re-mapping 
+- JS configuration
+
+#+begin_src elisp
+(require 'ob-js)
+(add-to-list 'org-babel-load-languages '(js . t))
+(org-babel-do-load-languages 'org-babel-load-languages org-babel-load-languages)
+(add-to-list 'org-babel-tangle-lang-exts '("js" . "js"))
+#+end_src
+
+* Key Re-mapping
 
 - *keymaps using General plugin*
 - these are non-package related key maps 
   #+begin_src elisp
   (nvmap :states 'normal :keymaps 'override :prefix "SPC"
-         "SPC"   '(counsel-M-x :which-key "M-x")
-         "c c"   '(compile :which-key "Compile")
-         "c C"   '(recompile :which-key "Recompile")
-         "h r r" '((lambda () (interactive) (load-file "~/.emacs.d/init.el")) :which-key "Reload emacs config")
-         "t t"   '(toggle-truncate-lines :which-key "Toggle truncate lines")
-         ;; File manipulation
-         "."     '(find-file :which-key "Find file")
-         "f s"   '(save-buffer :which-key "Save file")
-         "f C"   '(copy-file :which-key "Copy file")
-         "f D"   '(delete-file :which-key "Delete file")
-         "f R"   '(rename-file :which-key "Rename file")
-         ;; Vterm
-         "v v"   '(vterm-other-window :which-key "Open Vterm"))
+    "SPC"   '(counsel-M-x :which-key "M-x")
+    "c c"   '(compile :which-key "Compile")
+    "c C"   '(recompile :which-key "Recompile")
+    "h r r" '((lambda () (interactive) (load-file "~/.emacs.d/init.el")) :which-key "Reload emacs config")
+    "t t"   '(toggle-truncate-lines :which-key "Toggle truncate lines")
+    ;; File manipulation
+    "."     '(find-file :which-key "Find file")
+    "f s"   '(save-buffer :which-key "Save file")
+    "f C"   '(copy-file :which-key "Copy file")
+    "f D"   '(delete-file :which-key "Delete file")
+    "f R"   '(rename-file :which-key "Rename file")
+    ;; Vterm
+    "v v"   '(vterm-other-window :which-key "Open Vterm"))
   #+end_src
 
 **  zooming
