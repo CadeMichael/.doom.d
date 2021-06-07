@@ -195,11 +195,13 @@
 - using lsp-deferred so that only when a buffer is open, this should make startup faster and emacs a bit more performant (i hope)
 - I will only be using the LSP with certain languages, for most languages I will try to refrain from using a language server purely to force myself to be a bit more precise while programming
   #+begin_src elisp
+  (use-package lsp-haskell :ensure t)
   (use-package lsp-mode
     :ensure t
     :hook
     (go-mode . lsp-deferred)
     (js-mode . lsp-deferred)
+    (haskell-mode . lsp-deferred)
     :commands (lsp lsp-deferred))
   #+end_src
 - also using lsp-ui to give more of an IDE feel to emacs
