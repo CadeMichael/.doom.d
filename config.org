@@ -314,8 +314,8 @@
 - getting rid of some junk
 
   #+begin_src elisp
-  (menu-bar-mode -1)
-  (tool-bar-mode -1)
+  (menu-bar-mode 0)
+  (tool-bar-mode 0)
   (scroll-bar-mode -1)
   (setq inhibit-splash-screen t)
   (setq make-backup-files nil) 
@@ -340,8 +340,8 @@
 - theme for use with mac os (I theme mac os with Gruvbox)
   
   #+begin_src elisp
-  (use-package gruvbox-theme :ensure t)
-  (load-theme 'gruvbox-dark-soft t)
+  ;;(use-package gruvbox-theme :ensure t)
+  ;;(load-theme 'gruvbox-dark-soft t)
   #+end_src
 
 - theme for use with linux (currently using a nord theme)
@@ -349,6 +349,13 @@
   #+begin_src elisp
   ;;(use-package nord-theme :ensure t)
   ;;(load-theme 'nord t)
+  #+end_src
+
+- a nice dracula theme 
+  
+  #+begin_src elisp
+  (use-package dracula-theme :ensure t)
+  (load-theme 'dracula t)
   #+end_src
 
 - Font
