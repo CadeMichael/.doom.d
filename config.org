@@ -16,8 +16,8 @@
 ** installing use-package
 
   #+begin_src elisp 
-    (unless (package-installed-p 'use-package)
-      (package-install 'use-package))
+  (unless (package-installed-p 'use-package)
+    (package-install 'use-package))
   #+end_src
 
 ** Making sure the shell doesn't get messed up
@@ -328,8 +328,10 @@
   (global-visual-line-mode t)
   (setq display-line-numbers-type 'relative)
   #+end_src 
+  
+*** Color theme(s)
 
-- adding generic theme
+- adding generic color theme
 
   #+begin_src elisp
   ;; basic theme that is on every installation
@@ -351,18 +353,24 @@
   ;;(load-theme 'nord t)
   #+end_src
 
-- a nice dracula theme 
+- a nice dracula theme for tiling window manager setup
   
   #+begin_src elisp
   (use-package dracula-theme :ensure t)
   (load-theme 'dracula t)
   #+end_src
 
-- Font
+*** Font's
+
+- *Font* setup, I am a fan of firacode. It is the best because of how it renders 0's and && symbols (it's not opinion but fact :) )
+  - using the all the icons package to make sure that unicode glyphs don't get messed up
 
   #+begin_src elisp
+  (use-package all-the-icons :ensure t)
   (set-face-attribute 'default nil :font "Fira Code 14")
   #+end_src
+
+*** Errors & warnings 
   
 - getting the error bell sound to go away and just having the mode-line flash
 
@@ -389,6 +397,7 @@
   #+end_src
 
 ** Code-Block highlighting
+
     #+begin_src elisp
     (setq org-src-fontify-natively t
         org-src-tab-acts-natively t
