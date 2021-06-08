@@ -5,3 +5,4 @@ elpa/
 auto-save-list/
 transient/
 .cache/
+.lsp-session-v1
