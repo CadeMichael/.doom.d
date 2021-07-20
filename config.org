@@ -202,7 +202,9 @@
     (go-mode . lsp-deferred)
     (js-mode . lsp-deferred)
     (haskell-mode . lsp-deferred)
-    :commands (lsp lsp-deferred))
+    :commands (lsp lsp-deferred)
+    :config
+    (define-key lsp-mode-map (kbd "C-l C-l") lsp-command-map))
   #+end_src
 - also using lsp-ui to give more of an IDE feel to emacs
   #+begin_src elisp
@@ -342,8 +344,8 @@
 - theme for use with mac os (I theme mac os with Gruvbox)
   
   #+begin_src elisp
-  ;;(use-package gruvbox-theme :ensure t)
-  ;;(load-theme 'gruvbox-dark-soft t)
+  (use-package gruvbox-theme :ensure t)
+  (load-theme 'gruvbox-dark-soft t)
   #+end_src
 
 - theme for use with linux (currently using a nord theme)
@@ -356,8 +358,8 @@
 - a nice dracula theme for tiling window manager setup
   
   #+begin_src elisp
-  (use-package dracula-theme :ensure t)
-  (load-theme 'dracula t)
+  ;;(use-package dracula-theme :ensure t)
+  ;;(load-theme 'dracula t)
   #+end_src
 
 *** Font's
@@ -451,6 +453,3 @@
 (global-set-key (kbd "C-=") 'text-scale-increase)
 (global-set-key (kbd "C--") 'text-scale-decrease)
 #+end_src
-
- 
-
