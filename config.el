@@ -71,7 +71,7 @@
 
 (use-package vterm
     :ensure t)
-(setq shell-file-name "/bin/zsh" ;; this will be different for linux and mac machines
+(setq shell-file-name "/bin/bash" ;; this will be different for linux and mac machines
     vterm-max-scrollback 5000)
 
 (use-package magit :ensure t)
@@ -147,6 +147,12 @@
   (add-hook 'before-save-hook #'lsp-organize-imports t t))
 (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
 
+(use-package lsp-pyright
+  :ensure t
+  :hook (python-mode . (lambda ()
+                          (require 'lsp-pyright)
+                          (lsp-deferred))))
+
 (use-package geiser-guile :ensure t)
 
 (use-package markdown-mode :ensure t)
@@ -165,17 +171,17 @@
 ;; (load-theme 'wombat t)
 ;; using a nice imported theme
 
-(use-package gruvbox-theme :ensure t)
-(load-theme 'gruvbox-dark-soft t)
+;; (use-package gruvbox-theme :ensure t)
+;; (load-theme 'gruvbox-dark-soft t)
 
-;;(use-package nord-theme :ensure t)
-;;(load-theme 'nord t)
+;; (use-package nord-theme :ensure t)
+;; (load-theme 'nord t)
 
-;;(use-package dracula-theme :ensure t)
-;;(load-theme 'dracula t)
+;; (use-package dracula-theme :ensure t)
+;; (load-theme 'dracula t)
 
 (use-package all-the-icons :ensure t)
-(set-face-attribute 'default nil :font "Fira Code 14")
+(set-face-attribute 'default nil :font "Fira Code 12")
 
 (setq visible-bell nil
       ring-bell-function 'flash-mode-line)
