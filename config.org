@@ -203,6 +203,7 @@
     (go-mode . lsp-deferred)
     (js-mode . lsp-deferred)
     (haskell-mode . lsp-deferred)
+    (lua-mode . lsp-deferred)
     :commands (lsp lsp-deferred)
     :config
     (define-key lsp-mode-map (kbd "C-l C-l") lsp-command-map))
@@ -274,6 +275,12 @@
     ;; managing imports
     (define-key haskell-mode-map (kbd "<f8>") 'haskell-navigate-imports)
     #+end_src
+*** Lua
+- using lua mode with the lsp server that was compiled and installed to .emacs.d/.cache/lsp
+- some of the helpful commands and more involved instructions can be found on the [[https://emacs-lsp.github.io/lsp-mode/page/lsp-lua-language-server/][emacs-lsp]] website
+#+begin_src elisp
+(use-package lua-mode :ensure t)
+#+end_src
 *** GoLang
 
 - Getting go-mode installed
@@ -338,7 +345,7 @@
   #+begin_src elisp
   (menu-bar-mode 0)
   (tool-bar-mode 0)
-  (scroll-bar-mode -1)
+  ;(scroll-bar-mode -1)
   (setq inhibit-splash-screen t)
   (setq make-backup-files nil) 
   #+end_src
@@ -356,16 +363,15 @@
 - adding generic color theme
 
   #+begin_src elisp
-;; basic theme that is on every installation
-;; (load-theme 'wombat t)
-;; using a nice imported theme
+  ;;basic theme that is on every installation
+  (load-theme 'wombat t)
   #+end_src
 
 - theme for use with mac os (I theme mac os with Gruvbox)
   
   #+begin_src elisp
-;; (use-package gruvbox-theme :ensure t)
-;; (load-theme 'gruvbox-dark-soft t)
+  ;;(use-package gruvbox-theme :ensure t)
+  ;;(load-theme 'gruvbox-dark-soft t)
   #+end_src
 
 - theme for use with linux (currently using a nord theme)
@@ -389,7 +395,7 @@
 
   #+begin_src elisp
   (use-package all-the-icons :ensure t)
-  (set-face-attribute 'default nil :font "Fira Code 12")
+  (set-face-attribute 'default nil :font "SauceCode Pro Nerd Font 24")
   #+end_src
 
 *** Errors & warnings 

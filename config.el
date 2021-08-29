@@ -100,6 +100,7 @@
   (go-mode . lsp-deferred)
   (js-mode . lsp-deferred)
   (haskell-mode . lsp-deferred)
+  (lua-mode . lsp-deferred)
   :commands (lsp lsp-deferred)
   :config
   (define-key lsp-mode-map (kbd "C-l C-l") lsp-command-map))
@@ -140,6 +141,8 @@
 ;; managing imports
 (define-key haskell-mode-map (kbd "<f8>") 'haskell-navigate-imports)
 
+(use-package lua-mode :ensure t)
+
 (use-package go-mode :ensure t)
 
 (defun lsp-go-install-save-hooks ()
@@ -159,7 +162,7 @@
 
 (menu-bar-mode 0)
 (tool-bar-mode 0)
-(scroll-bar-mode -1)
+;(scroll-bar-mode -1)
 (setq inhibit-splash-screen t)
 (setq make-backup-files nil)
 
@@ -167,12 +170,11 @@
 (global-visual-line-mode t)
 (setq display-line-numbers-type 'relative)
 
-;; basic theme that is on every installation
-;; (load-theme 'wombat t)
-;; using a nice imported theme
+;;basic theme that is on every installation
+(load-theme 'wombat t)
 
-;; (use-package gruvbox-theme :ensure t)
-;; (load-theme 'gruvbox-dark-soft t)
+;;(use-package gruvbox-theme :ensure t)
+;;(load-theme 'gruvbox-dark-soft t)
 
 ;; (use-package nord-theme :ensure t)
 ;; (load-theme 'nord t)
@@ -181,7 +183,7 @@
 ;; (load-theme 'dracula t)
 
 (use-package all-the-icons :ensure t)
-(set-face-attribute 'default nil :font "Fira Code 12")
+(set-face-attribute 'default nil :font "SauceCode Pro Nerd Font 24")
 
 (setq visible-bell nil
       ring-bell-function 'flash-mode-line)
