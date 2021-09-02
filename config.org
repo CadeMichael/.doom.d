@@ -403,6 +403,7 @@
 
 - *Font* setup, I am a fan of firacode. It is the best because of how it renders 0's and && symbols (it's not opinion but fact :) )
   - using the all the icons package to make sure that unicode glyphs don't get messed up
+  - you have to remember to run ~m-x all-the-icons-install-fonts~ 
 
   #+begin_src elisp
   (use-package all-the-icons :ensure t)

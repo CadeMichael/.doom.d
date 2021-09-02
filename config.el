@@ -172,7 +172,8 @@
 (tool-bar-mode 0)
 ;(scroll-bar-mode -1)
 (setq inhibit-splash-screen t)
-(setq make-backup-files nil)
+(setq make-backup-files nil) 
+(setq auto-save-default nil)
 
 (global-display-line-numbers-mode 1)
 (global-visual-line-mode t)
