@@ -103,6 +103,7 @@
   (lua-mode . lsp-deferred)
   :commands (lsp lsp-deferred)
   :config
+  (setq lsp-semantic-tokens-honor-refresh-requests nil)
   (define-key lsp-mode-map (kbd "C-l C-l") lsp-command-map))
 
 (use-package lsp-ui :ensure t)
@@ -170,7 +171,7 @@
 
 (menu-bar-mode 0)
 (tool-bar-mode 0)
-;(scroll-bar-mode -1)
+(scroll-bar-mode -1)
 (setq inhibit-splash-screen t)
 (setq make-backup-files nil) 
 (setq auto-save-default nil)
