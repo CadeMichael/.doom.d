@@ -114,7 +114,7 @@
   #+begin_src elisp
   (use-package vterm
       :ensure t)
-  (setq shell-file-name "/bin/bash" ;; this will be different for linux and mac machines
+  (setq shell-file-name "/bin/zsh" ;; this will be different for linux and mac machines
       vterm-max-scrollback 5000)
   #+end_src
 
@@ -221,7 +221,12 @@
   #+begin_src elisp
   (use-package company
     :ensure t
-    :bind ("C-SPC" . company-mode))
+    :bind ("C-SPC" . company-mode)
+    :config (setq lsp-completion-provider :capf))
+  (use-package yasnippet :ensure t)
+  (add-hook 'prog-mode-hook
+          '(lambda ()
+             (yas-minor-mode)))
   ;;(add-hook 'after-init-hook 'global-company-mode) not a fan of it in every mode 
   #+end_src
 
@@ -338,6 +343,11 @@
 (use-package markdown-mode :ensure t)
 #+end_src
 
+*** R
+#+begin_src elisp
+(use-package ess :ensure t)
+(require 'ess-site)
+#+end_src
 * Themes
 
 - getting rid of some junk
@@ -348,6 +358,7 @@
   ;(scroll-bar-mode -1)
   (setq inhibit-splash-screen t)
   (setq make-backup-files nil) 
+  (setq auto-save-default nil)
   #+end_src
 
 - adding line numbers
@@ -395,7 +406,7 @@
 
   #+begin_src elisp
   (use-package all-the-icons :ensure t)
-  (set-face-attribute 'default nil :font "SauceCode Pro Nerd Font 24")
+  (set-face-attribute 'default nil :font "Fira Code 14")
   #+end_src
 
 *** Errors & warnings 
@@ -440,7 +451,10 @@
 #+begin_src elisp
 (org-babel-do-load-languages
   'org-babel-load-languages
-  '((scheme . r)))
+  '((scheme . t)
+   (lua . t)
+   (R . t)
+   ))
 #+end_src
 
 - JS configuration

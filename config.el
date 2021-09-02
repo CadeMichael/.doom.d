@@ -71,7 +71,7 @@
 
 (use-package vterm
     :ensure t)
-(setq shell-file-name "/bin/bash" ;; this will be different for linux and mac machines
+(setq shell-file-name "/bin/zsh" ;; this will be different for linux and mac machines
     vterm-max-scrollback 5000)
 
 (use-package magit :ensure t)
@@ -109,7 +109,12 @@
 
 (use-package company
   :ensure t
-  :bind ("C-SPC" . company-mode))
+  :bind ("C-SPC" . company-mode)
+  :config (setq lsp-completion-provider :capf))
+(use-package yasnippet :ensure t)
+(add-hook 'prog-mode-hook
+        '(lambda ()
+           (yas-minor-mode)))
 ;;(add-hook 'after-init-hook 'global-company-mode) not a fan of it in every mode
 
 (setq company-minimum-prefix-length 1
@@ -160,6 +165,9 @@
 
 (use-package markdown-mode :ensure t)
 
+(use-package ess :ensure t)
+(require 'ess-site)
+
 (menu-bar-mode 0)
 (tool-bar-mode 0)
 ;(scroll-bar-mode -1)
@@ -183,7 +191,7 @@
 ;; (load-theme 'dracula t)
 
 (use-package all-the-icons :ensure t)
-(set-face-attribute 'default nil :font "SauceCode Pro Nerd Font 24")
+(set-face-attribute 'default nil :font "Fira Code 14")
 
 (setq visible-bell nil
       ring-bell-function 'flash-mode-line)
@@ -206,7 +214,10 @@
 
 (org-babel-do-load-languages
   'org-babel-load-languages
-  '((scheme . r)))
+  '((scheme . t)
+   (lua . t)
+   (R . t)
+   ))
 
 (require 'ob-js)
 (add-to-list 'org-babel-load-languages '(js . t))
