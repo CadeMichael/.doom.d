@@ -176,7 +176,6 @@
     (lua-mode . lsp-deferred)
     :commands (lsp lsp-deferred)
     :config
-    (setq lsp-semantic-tokens-honor-refresh-requests nil)
     (define-key lsp-mode-map (kbd "C-l C-l") lsp-command-map))
   #+end_src
 - also using lsp-ui to give more of an IDE feel to emacs
@@ -315,10 +314,20 @@
 #+end_src
 
 *** R
+- to open an R repl use mx-R, to use lintr you need to install and have a folder ~~/.R/lintr_cache~ otherwise it won't work
 #+begin_src elisp
 (use-package ess :ensure t)
 (require 'ess-site)
+(setq ess-use-flymake nil)
 #+end_src
+*** Flycheck 
+- it seems to be a better flymake, if it is too much I will disable 
+#+begin_src elisp
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode))
+#+end_src
+
 * Themes
 
 - getting rid of some junk

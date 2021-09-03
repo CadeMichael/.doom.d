@@ -103,7 +103,6 @@
   (lua-mode . lsp-deferred)
   :commands (lsp lsp-deferred)
   :config
-  (setq lsp-semantic-tokens-honor-refresh-requests nil)
   (define-key lsp-mode-map (kbd "C-l C-l") lsp-command-map))
 
 (use-package lsp-ui :ensure t)
@@ -168,6 +167,11 @@
 
 (use-package ess :ensure t)
 (require 'ess-site)
+(setq ess-use-flymake nil)
+
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode))
 
 (menu-bar-mode 0)
 (tool-bar-mode 0)
