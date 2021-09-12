@@ -84,6 +84,9 @@
  :prefix "SPC"
  "z" '(ztree-dir :which-key "open ztree directory view"))
 (setq ztree-dir-move-focus t)
+(add-hook 'ztree-mode-hook
+          '(lambda ()
+             (local-set-key (kbd "C-c z") #'kill-buffer-and-window)))
 
 (general-define-key
  :states '(normal)
@@ -126,6 +129,7 @@
 (setq company-minimum-prefix-length 1
       company-idle-delay 0.0) ;; default is 0.2
 (setq company-selection-wrap-around t)
+(setq lsp-ui-doc-show-with-cursor nil)
 
 (use-package projectile :ensure t :bind
   (("C-c p f" . projectile-find-file)))
@@ -170,6 +174,10 @@
   (add-hook 'before-save-hook #'lsp-format-buffer t t)
   (add-hook 'before-save-hook #'lsp-organize-imports t t))
 (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+
+(use-package lsp-java :ensure t :config (add-hook 'java-mode-hook 'lsp-deferred))
+(use-package dap-mode :ensure t :after lsp-mode :config (dap-auto-configure-mode))
+(use-package dap-java :ensure nil)
 
 (use-package lsp-pyright
   :ensure t
@@ -232,6 +240,9 @@
 
 ;; (use-package dracula-theme :ensure t)
 ;; (load-theme 'dracula t)
+
+(use-package telephone-line :ensure t)
+(telephone-line-mode 1)
 
 (use-package all-the-icons :ensure t)
 (set-face-attribute 'default nil :font "Fira Code 14")

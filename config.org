@@ -136,6 +136,9 @@
    :prefix "SPC"
    "z" '(ztree-dir :which-key "open ztree directory view"))
   (setq ztree-dir-move-focus t)
+  (add-hook 'ztree-mode-hook
+            '(lambda ()
+               (local-set-key (kbd "C-c z") #'kill-buffer-and-window)))
   #+end_src
 
 - adding some vim like keymappings
@@ -187,7 +190,7 @@
     :commands (lsp lsp-deferred)
     :config
     (define-key lsp-mode-map (kbd "C-l C-l") lsp-command-map))
-  #+end_src
+  #+End_src
 - also using lsp-ui to give more of an IDE feel to emacs
   #+begin_src elisp
   (use-package lsp-ui :ensure t)
@@ -215,6 +218,7 @@
   (setq company-minimum-prefix-length 1
         company-idle-delay 0.0) ;; default is 0.2
   (setq company-selection-wrap-around t)
+  (setq lsp-ui-doc-show-with-cursor nil)
   #+end_src
 
 *** Projectile
@@ -300,7 +304,12 @@
 *** JS
 
 - everything is installed / initially configured in the lsp-mode note. I will need to add some keybindings as I go. 
-  
+*** Java
+#+begin_src elisp
+(use-package lsp-java :ensure t :config (add-hook 'java-mode-hook 'lsp-deferred))
+(use-package dap-mode :ensure t :after lsp-mode :config (dap-auto-configure-mode))
+(use-package dap-java :ensure nil)
+#+end_src
 *** Python
 - uses lsp-pyright with the open source pyright server. Using this because it can be used with nvim /emacs.
 - the settings of which can be found [[https://emacs-lsp.github.io/lsp-pyright/][here]]. 
@@ -427,6 +436,11 @@
 ;; (load-theme 'dracula t)
   #+end_src
 
+*** modeline
+#+begin_src elisp
+(use-package telephone-line :ensure t)
+(telephone-line-mode 1)
+#+end_src
 *** Font's
 
 - *Font* setup, I am a fan of firacode. It is the best because of how it renders 0's and && symbols (it's not opinion but fact :) )
