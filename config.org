@@ -100,12 +100,12 @@
 
 #+begin_src elisp
 (use-package vertico
-  :ensure t
-  :init
-  (vertico-mode)
+ :ensure t
+ :init
+ (vertico-mode)
 
-  ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
-  ;; (setq vertico-cycle t)
+  ; Optionally enable cycling for `vertico-next' and `vertico-previous'.
+  (setq vertico-cycle t)
 )
 #+end_src
 
@@ -122,6 +122,7 @@
 
 #+begin_src elisp
 (use-package magit :ensure t)
+(use-package git-gutter :ensure t :config (global-git-gutter-mode +1))
 #+end_src
 
 ** File Browser
@@ -160,6 +161,14 @@
 
 ** Language support
 
+*** Flycheck 
+- it seems to be a better flymake, if it is too much I will disable 
+#+begin_src elisp
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode))
+#+end_src
+
 *** LSP-mode
 
 - using lsp-deferred so that only when a buffer is open, this should make startup faster and emacs a bit more performant (i hope)
@@ -170,6 +179,7 @@
   (use-package lsp-mode
     :ensure t
     :hook
+    (lsp-mode . lsp-enable-which-key-integration)
     (go-mode . lsp-deferred)
     (js-mode . lsp-deferred)
     (haskell-mode . lsp-deferred)
@@ -207,6 +217,22 @@
   (setq company-selection-wrap-around t)
   #+end_src
 
+*** Projectile
+- projectile helps with project management and navigating the project folders.
+  #+begin_src elisp
+  (use-package projectile :ensure t :bind
+    (("C-c p f" . projectile-find-file)))
+  (projectile-mode +1)
+  ;; Recommended keymap prefix on Windows/Linux
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+  #+end_src
+*** Helm
+- helm is a fuzzy finder for emacs
+  #+begin_src elisp
+  (use-package helm-lsp :ensure t)
+  (use-package helm :ensure t
+    :config (helm-mode)(require 'helm-config))
+  #+end_src
 *** Haskell
 
 - getting the base language support
@@ -274,13 +300,6 @@
 *** JS
 
 - everything is installed / initially configured in the lsp-mode note. I will need to add some keybindings as I go. 
-
-  ,#+begin_src elisp
-  (general-define-key
-     :states '(normal)
-     :keymaps 'js-mode-map
-     :prefix "SPC")
-  ,#+end_src
   
 *** Python
 - uses lsp-pyright with the open source pyright server. Using this because it can be used with nvim /emacs.
@@ -310,24 +329,53 @@
 *** Markdown
 
 #+begin_src elisp
-(use-package markdown-mode :ensure t)
+(use-package markdown-mode :ensure t :config (add-hook 'markdown-mode-hook 'flyspell-mode))
 #+end_src
 
 *** R
-- to open an R repl use mx-R, to use lintr you need to install and have a folder ~~/.R/lintr_cache~ otherwise it won't work
+- to open an R repl use mx-R, to use lintr you need to install and have a folder ~~/.R/lintr_cache~ otherwise it won't work, if you enable company mode you will get completions aswell.
 #+begin_src elisp
 (use-package ess :ensure t)
 (require 'ess-site)
 (setq ess-use-flymake nil)
 #+end_src
-*** Flycheck 
-- it seems to be a better flymake, if it is too much I will disable 
+- for the Rdired buffer I will make a command that should toggle it. p for preview, d for delete, v for view...
 #+begin_src elisp
-(use-package flycheck
-  :ensure t
-  :init (global-flycheck-mode))
+(add-hook 'ess-r-mode-hook
+	  '(lambda ()
+	     (local-set-key (kbd "C-c C-r d") #'ess-rdired)))
+
+(add-hook 'ess-rdired-mode-hook
+	  '(lambda ()
+	     (local-set-key (kbd "C-c C-r d") #'kill-buffer-and-window)))
+;; so I don't have to remap the standard bindings
+(evil-set-initial-state 'ess-rdired-mode 'emacs)
+#+end_src
+- to properly configure r markdown you need the following plugins.
+#+begin_src elisp
+(use-package poly-markdown :ensure t)
+(use-package poly-R :ensure t)
+(require 'poly-markdown)
+(require 'poly-R)
+
+;; MARKDOWN
+
+(add-to-list 'auto-mode-alist '("\\.md" . poly-markdown-mode))
+
+;; R modes
+
+(add-to-list 'auto-mode-alist '("\\.Snw" . poly-noweb+r-mode))
+(add-to-list 'auto-mode-alist '("\\.Rnw" . poly-noweb+r-mode))
+(add-to-list 'auto-mode-alist '("\\.Rmd" . poly-markdown+r-mode))
+
 #+end_src
 
+- some usefull commands
+  | command | function            |
+  |---------+---------------------|
+  | C-RET   | eval line           |
+  | C-M-x   | eval paragraph      |
+  | M-n e   | knit document       |
 * Themes
 
 - getting rid of some junk

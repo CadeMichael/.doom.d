@@ -61,12 +61,12 @@
 (which-key-mode)
 
 (use-package vertico
-  :ensure t
-  :init
-  (vertico-mode)
+ :ensure t
+ :init
+ (vertico-mode)
 
-  ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
-  ;; (setq vertico-cycle t)
+  ; Optionally enable cycling for `vertico-next' and `vertico-previous'.
+  (setq vertico-cycle t)
 )
 
 (use-package vterm
@@ -75,6 +75,7 @@
     vterm-max-scrollback 5000)
 
 (use-package magit :ensure t)
+(use-package git-gutter :ensure t :config (global-git-gutter-mode +1))
 
 (use-package ztree :ensure t)
 (general-define-key
@@ -93,10 +94,15 @@
 (define-key ztree-mode-map (kbd "C-h") 'ztree-dir-toggle-show-filtered-files)
 (define-key ztree-mode-map (kbd "C-z d") 'ztree-dir-open-dired-at-point)
 
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode))
+
 (use-package lsp-haskell :ensure t)
 (use-package lsp-mode
   :ensure t
   :hook
+  (lsp-mode . lsp-enable-which-key-integration)
   (go-mode . lsp-deferred)
   (js-mode . lsp-deferred)
   (haskell-mode . lsp-deferred)
@@ -120,6 +126,16 @@
 (setq company-minimum-prefix-length 1
       company-idle-delay 0.0) ;; default is 0.2
 (setq company-selection-wrap-around t)
+
+(use-package projectile :ensure t :bind
+  (("C-c p f" . projectile-find-file)))
+(projectile-mode +1)
+;; Recommended keymap prefix on Windows/Linux
+(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+
+(use-package helm-lsp :ensure t)
+(use-package helm :ensure t
+  :config (helm-mode)(require 'helm-config))
 
 (use-package haskell-mode :ensure t)
 
@@ -163,15 +179,36 @@
 
 (use-package geiser-guile :ensure t)
 
-(use-package markdown-mode :ensure t)
+(use-package markdown-mode :ensure t :config (add-hook 'markdown-mode-hook 'flyspell-mode))
 
 (use-package ess :ensure t)
 (require 'ess-site)
 (setq ess-use-flymake nil)
 
-(use-package flycheck
-  :ensure t
-  :init (global-flycheck-mode))
+(add-hook 'ess-r-mode-hook
+	  '(lambda ()
+	     (local-set-key (kbd "C-c C-r d") #'ess-rdired)))
+
+(add-hook 'ess-rdired-mode-hook
+	  '(lambda ()
+	     (local-set-key (kbd "C-c C-r d") #'kill-buffer-and-window)))
+;; so I don't have to remap the standard bindings
+(evil-set-initial-state 'ess-rdired-mode 'emacs)
+
+(use-package poly-markdown :ensure t)
+(use-package poly-R :ensure t)
+(require 'poly-markdown)
+(require 'poly-R)
+
+;; MARKDOWN
+
+(add-to-list 'auto-mode-alist '("\\.md" . poly-markdown-mode))
+
+;; R modes
+
+(add-to-list 'auto-mode-alist '("\\.Snw" . poly-noweb+r-mode))
+(add-to-list 'auto-mode-alist '("\\.Rnw" . poly-noweb+r-mode))
+(add-to-list 'auto-mode-alist '("\\.Rmd" . poly-markdown+r-mode))
 
 (menu-bar-mode 0)
 (tool-bar-mode 0)
