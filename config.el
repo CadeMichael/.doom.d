@@ -71,7 +71,7 @@
 
 (use-package vterm
     :ensure t)
-(setq shell-file-name "/bin/zsh" ;; this will be different for linux and mac machines
+(setq shell-file-name "/bin/basbash" ;; this will be different for linux and mac machines
     vterm-max-scrollback 5000)
 
 (use-package magit :ensure t)
@@ -230,13 +230,15 @@
 (setq display-line-numbers-type 'relative)
 
 ;;basic theme that is on every installation
-(load-theme 'wombat t)
+;;(load-theme 'wombat t)
 
 ;;(use-package gruvbox-theme :ensure t)
 ;;(load-theme 'gruvbox-dark-soft t)
 
-;; (use-package nord-theme :ensure t)
-;; (load-theme 'nord t)
+(use-package leuven-theme :ensure t :config (load-theme 'leuven t))
+
+;;(use-package nord-theme :ensure t)
+;;(load-theme 'nord t)
 
 ;; (use-package dracula-theme :ensure t)
 ;; (load-theme 'dracula t)
@@ -245,7 +247,7 @@
 (telephone-line-mode 1)
 
 (use-package all-the-icons :ensure t)
-(set-face-attribute 'default nil :font "Fira Code 14")
+(set-face-attribute 'default nil :font "SauceCodePro Nerd Font 24")
 
 (setq visible-bell nil
       ring-bell-function 'flash-mode-line)

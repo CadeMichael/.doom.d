@@ -114,7 +114,7 @@
   #+begin_src elisp
   (use-package vterm
       :ensure t)
-  (setq shell-file-name "/bin/zsh" ;; this will be different for linux and mac machines
+  (setq shell-file-name "/bin/bash" ;; this will be different for linux and mac machines
       vterm-max-scrollback 5000)
   #+end_src
 
@@ -412,7 +412,7 @@
 
   #+begin_src elisp
   ;;basic theme that is on every installation
-  (load-theme 'wombat t)
+  ;;(load-theme 'wombat t)
   #+end_src
 
 - theme for use with mac os (I theme mac os with Gruvbox)
@@ -422,11 +422,16 @@
   ;;(load-theme 'gruvbox-dark-soft t)
   #+end_src
 
+- Retro light theme 
+  #+begin_src elisp
+  (use-package leuven-theme :ensure t :config (load-theme 'leuven t))
+  #+end_src
+
 - theme for use with linux (currently using a nord theme)
   
   #+begin_src elisp
-;; (use-package nord-theme :ensure t)
-;; (load-theme 'nord t)
+  ;;(use-package nord-theme :ensure t)
+  ;;(load-theme 'nord t)
   #+end_src
 
 - a nice dracula theme for tiling window manager setup
@@ -449,7 +454,7 @@
 
   #+begin_src elisp
   (use-package all-the-icons :ensure t)
-  (set-face-attribute 'default nil :font "Fira Code 14")
+  (set-face-attribute 'default nil :font "SauceCodePro Nerd Font 24")
   #+end_src
 
 *** Errors & warnings 
