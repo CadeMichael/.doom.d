@@ -1,9 +1,10 @@
 *.el
 *.el~
+*.eld
 *.org~
+!lisp/cheat-sh.el
 */
 elpa/
-!lisp/
 auto-save-list/
 transient/
 .cache/
