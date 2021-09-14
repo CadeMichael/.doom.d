@@ -1,6 +1,7 @@
 *.el
 *.el~
 *.eld
+projectile-bookmarks.eld
 *.org~
 !lisp/cheat-sh.el
 */

@@ -1,1 +1,0 @@
-("~/.emacs.d/" "~/Desktop/notes/" "~/Desktop/21f-dsci351-351m-451-e1451-e2451-cxl99/")
