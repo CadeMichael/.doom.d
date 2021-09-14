@@ -114,7 +114,7 @@
   #+begin_src elisp
   (use-package vterm
       :ensure t)
-  (setq shell-file-name "/bin/bash" ;; this will be different for linux and mac machines
+  (setq shell-file-name "/bin/zsh" ;; this will be different for linux and mac machines
       vterm-max-scrollback 5000)
   #+end_src
 
@@ -150,7 +150,12 @@
   | x     | fully expands all subdirs of current dir        |
   | C-h   | show/ hide hidden files                         |
   | c-z d | open dired at current point in tree             |
-  
+- mac os or "darwin" specific dired config
+  #+begin_src elisp
+(when (string= system-type "darwin")       
+  (setq dired-use-ls-dired nil))
+  #+end_src 
+
   #+begin_src elisp
   (general-define-key
    :states '(normal)
@@ -178,14 +183,12 @@
 - I will only be using the LSP with certain languages, for most languages I will try to refrain from using a language server purely to force myself to be a bit more precise while programming
 - to add and remove folders use 'C-l -> C-l -> F'
   #+begin_src elisp
-  (use-package lsp-haskell :ensure t)
   (use-package lsp-mode
     :ensure t
     :hook
     (lsp-mode . lsp-enable-which-key-integration)
     (go-mode . lsp-deferred)
     (js-mode . lsp-deferred)
-    (haskell-mode . lsp-deferred)
     (lua-mode . lsp-deferred)
     :commands (lsp lsp-deferred)
     :config
@@ -223,26 +226,37 @@
 
 *** Projectile
 - projectile helps with project management and navigating the project folders.
-  #+begin_src elisp
-  (use-package projectile :ensure t :bind
-    (("C-c p f" . projectile-find-file)))
-  (projectile-mode +1)
-  ;; Recommended keymap prefix on Windows/Linux
-  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-  #+end_src
+#+begin_src elisp
+(use-package projectile :ensure t)
+(projectile-mode +1)
+;; Recommended keymap prefix on Windows/Linux
+(general-define-key
+ :states '(normal)
+ :prefix "SPC"
+ "p" '(projectile-command-map :which-key "projectile command map")
+ "p f" '(projectile-find-file :which-key "projectile find file"))
+#+end_src
+- Some usefull tips
+- Projectile is good about guessing what is in a "project dir" but some of the most telltale are .git's and if you want to force it to see a project you can put a ~.projectile~ file in the main dir of your project.
+- 
 *** Helm
 - helm is a fuzzy finder for emacs
-  #+begin_src elisp
-  (use-package helm-lsp :ensure t)
-  (use-package helm :ensure t
-    :config (helm-mode)(require 'helm-config))
-  #+end_src
+#+begin_src elisp
+(use-package helm-lsp :ensure t)
+(use-package helm :ensure t
+  :config (helm-mode)(require 'helm-config))
+(use-package helm-projectile :ensure t :config (helm-projectile-on))
+#+end_src
 *** Haskell
 
 - getting the base language support
   
 #+begin_src elisp
 (use-package haskell-mode :ensure t)
+(use-package lsp-haskell :ensure t)
+(require 'lsp-haskell)
+(add-hook 'haskell-mode-hook #'lsp)
+(add-hook 'haskell-literate-mode-hook #'lsp)
 #+end_src
 
 - interactive haskell support, as detailed [[http://haskell.github.io/haskell-mode/manual/latest/Interactive-Haskell.html#Interactive-Haskell][here]] 
@@ -322,13 +336,6 @@
                           (lsp-deferred))))
 #+end_src 
 
-- considering using [[https://github.com/emacsmirror/python-mode][python-mode]] which would allow for the use of Ipython for python shells 
-- also thinking of [[https://github.com/jorgenschaefer/elpy][elpy]] for a complete ide feel.
-    - uses company mode
-    - can use ipython
-    - uses the following packages
-      | python3-jedi | black | python3-autopep8 | yapf3 | python3-yapf |
-
 *** Scheme(s)
 
 #+begin_src elisp
@@ -385,6 +392,12 @@
   | C-RET   | eval line           |
   | C-M-x   | eval paragraph      |
   | M-n e   | knit document       |
+*** cht.sh
+#+begin_src elisp
+(add-to-list 'load-path "~/.emacs.d/lisp/")
+(load "cheat-sh.el")
+#+end_src
+
 * Themes
 
 - getting rid of some junk
@@ -454,7 +467,7 @@
 
   #+begin_src elisp
   (use-package all-the-icons :ensure t)
-  (set-face-attribute 'default nil :font "SauceCodePro Nerd Font 24")
+  (set-face-attribute 'default nil :font "Monoid 12")
   #+end_src
 
 *** Errors & warnings 
@@ -502,6 +515,7 @@
   '((scheme . t)
    (lua . t)
    (R . t)
+   (haskell . t)
    ))
 #+end_src
 
@@ -532,7 +546,8 @@
     "f D"   '(delete-file :which-key "Delete file")
     "f R"   '(rename-file :which-key "Rename file")
     ;; Vterm
-    "v v"   '(vterm-other-window :which-key "Open Vterm"))
+    "v v"   '(vterm-other-window :which-key "Open Vterm")
+    "c h"   '(cheat-sh :which-key "open cheat sheet lookup"))
   #+end_src
 
 **  zooming

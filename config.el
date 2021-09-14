@@ -71,7 +71,7 @@
 
 (use-package vterm
     :ensure t)
-(setq shell-file-name "/bin/basbash" ;; this will be different for linux and mac machines
+(setq shell-file-name "/bin/zsh" ;; this will be different for linux and mac machines
     vterm-max-scrollback 5000)
 
 (use-package magit :ensure t)
@@ -88,6 +88,9 @@
           '(lambda ()
              (local-set-key (kbd "C-c z") #'kill-buffer-and-window)))
 
+(when (string= system-type "darwin")       
+  (setq dired-use-ls-dired nil))
+
 (general-define-key
  :states '(normal)
  :keymaps 'ztree-mode-map
@@ -101,14 +104,12 @@
   :ensure t
   :init (global-flycheck-mode))
 
-(use-package lsp-haskell :ensure t)
 (use-package lsp-mode
   :ensure t
   :hook
   (lsp-mode . lsp-enable-which-key-integration)
   (go-mode . lsp-deferred)
   (js-mode . lsp-deferred)
-  (haskell-mode . lsp-deferred)
   (lua-mode . lsp-deferred)
   :commands (lsp lsp-deferred)
   :config
@@ -131,17 +132,25 @@
 (setq company-selection-wrap-around t)
 (setq lsp-ui-doc-show-with-cursor nil)
 
-(use-package projectile :ensure t :bind
-  (("C-c p f" . projectile-find-file)))
+(use-package projectile :ensure t)
 (projectile-mode +1)
 ;; Recommended keymap prefix on Windows/Linux
-(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+(general-define-key
+ :states '(normal)
+ :prefix "SPC"
+ "p" '(projectile-command-map :which-key "projectile command map")
+ "p f" '(projectile-find-file :which-key "projectile find file"))
 
 (use-package helm-lsp :ensure t)
 (use-package helm :ensure t
   :config (helm-mode)(require 'helm-config))
+(use-package helm-projectile :ensure t :config (helm-projectile-on))
 
 (use-package haskell-mode :ensure t)
+(use-package lsp-haskell :ensure t)
+(require 'lsp-haskell)
+(add-hook 'haskell-mode-hook #'lsp)
+(add-hook 'haskell-literate-mode-hook #'lsp)
 
 (require 'haskell-interactive-mode)
 (require 'haskell-process)
@@ -218,6 +227,9 @@
 (add-to-list 'auto-mode-alist '("\\.Rnw" . poly-noweb+r-mode))
 (add-to-list 'auto-mode-alist '("\\.Rmd" . poly-markdown+r-mode))
 
+(add-to-list 'load-path "~/.emacs.d/lisp/")
+(load "cheat-sh.el")
+
 (menu-bar-mode 0)
 (tool-bar-mode 0)
 (scroll-bar-mode -1)
@@ -247,7 +259,7 @@
 (telephone-line-mode 1)
 
 (use-package all-the-icons :ensure t)
-(set-face-attribute 'default nil :font "SauceCodePro Nerd Font 24")
+(set-face-attribute 'default nil :font "Monoid 12")
 
 (setq visible-bell nil
       ring-bell-function 'flash-mode-line)
@@ -273,6 +285,7 @@
   '((scheme . t)
    (lua . t)
    (R . t)
+   (haskell . t)
    ))
 
 (require 'ob-js)
@@ -293,7 +306,8 @@
   "f D"   '(delete-file :which-key "Delete file")
   "f R"   '(rename-file :which-key "Rename file")
   ;; Vterm
-  "v v"   '(vterm-other-window :which-key "Open Vterm"))
+  "v v"   '(vterm-other-window :which-key "Open Vterm")
+  "c h"   '(cheat-sh :which-key "open cheat sheet lookup"))
 
 (global-set-key (kbd "C-=") 'text-scale-increase)
 (global-set-key (kbd "C--") 'text-scale-decrease)

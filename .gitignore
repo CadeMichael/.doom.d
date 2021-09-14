@@ -3,6 +3,7 @@
 *.org~
 */
 elpa/
+!lisp/
 auto-save-list/
 transient/
 .cache/
