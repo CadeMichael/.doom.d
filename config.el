@@ -184,7 +184,7 @@
   (add-hook 'before-save-hook #'lsp-organize-imports t t))
 (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
 
-(use-package lsp-java :ensure t :config (add-hook 'java-mode-hook 'lsp-deferred))
+(use-package lsp-java :ensure t :config (add-hook 'java-mode-hook #'lsp-deferred))
 (use-package dap-mode :ensure t :after lsp-mode :config (dap-auto-configure-mode))
 (use-package dap-java :ensure nil)
 
@@ -307,6 +307,7 @@
   "f R"   '(rename-file :which-key "Rename file")
   ;; Vterm
   "v v"   '(vterm-other-window :which-key "Open Vterm")
+  "k k"   '(kill-buffer-and-window :which-key "kill and klose")
   "c h"   '(cheat-sh :which-key "open cheat sheet lookup"))
 
 (global-set-key (kbd "C-=") 'text-scale-increase)

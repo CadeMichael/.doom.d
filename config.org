@@ -320,7 +320,7 @@
 - everything is installed / initially configured in the lsp-mode note. I will need to add some keybindings as I go. 
 *** Java
 #+begin_src elisp
-(use-package lsp-java :ensure t :config (add-hook 'java-mode-hook 'lsp-deferred))
+(use-package lsp-java :ensure t :config (add-hook 'java-mode-hook #'lsp-deferred))
 (use-package dap-mode :ensure t :after lsp-mode :config (dap-auto-configure-mode))
 (use-package dap-java :ensure nil)
 #+end_src
@@ -547,6 +547,7 @@
     "f R"   '(rename-file :which-key "Rename file")
     ;; Vterm
     "v v"   '(vterm-other-window :which-key "Open Vterm")
+    "k k"   '(kill-buffer-and-window :which-key "kill and klose")
     "c h"   '(cheat-sh :which-key "open cheat sheet lookup"))
   #+end_src
 
