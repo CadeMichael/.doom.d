@@ -321,7 +321,7 @@
 #+begin_src elisp
 (use-package rustic :ensure t)
 (setq rustic-lsp-server 'rust-analyzer)
-(setq rustic-lsp-client 'lsp-mode:
+(setq rustic-lsp-client 'lsp-mode)
 #+end_src
 *** JS
 
