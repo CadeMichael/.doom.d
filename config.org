@@ -137,7 +137,7 @@
    "z" '(ztree-dir :which-key "open ztree directory view"))
   (setq ztree-dir-move-focus t)
   (add-hook 'ztree-mode-hook
-            '(lambda ()
+            #'(lambda ()
                (local-set-key (kbd "C-c z") #'kill-buffer-and-window)))
   #+end_src
 
@@ -211,7 +211,7 @@
     :config (setq lsp-completion-provider :capf))
   (use-package yasnippet :ensure t)
   (add-hook 'prog-mode-hook
-          '(lambda ()
+          #'(lambda ()
              (yas-minor-mode)))
   ;;(add-hook 'after-init-hook 'global-company-mode) not a fan of it in every mode 
   #+end_src
@@ -314,7 +314,15 @@
     (add-hook 'before-save-hook #'lsp-organize-imports t t))
   (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
   #+end_src
-
+*** Rust
+- Rustic seems to be a very well thought out (and hopefully implemented package) it connects to lsp mode / flycheck and uses rust-analyzer by default.
+- I will set these just to be extra specific 
+- [[https://github.com/brotzeit/rustic][rustic github]]
+#+begin_src elisp
+(use-package rustic :ensure t)
+(setq rustic-lsp-server 'rust-analyzer)
+(setq rustic-lsp-client 'lsp-mode:
+#+end_src
 *** JS
 
 - everything is installed / initially configured in the lsp-mode note. I will need to add some keybindings as I go. 
@@ -358,11 +366,11 @@
 - for the Rdired buffer I will make a command that should toggle it. p for preview, d for delete, v for view...
 #+begin_src elisp
 (add-hook 'ess-r-mode-hook
-	  '(lambda ()
+	  #'(lambda ()
 	     (local-set-key (kbd "C-c C-r d") #'ess-rdired)))
 
 (add-hook 'ess-rdired-mode-hook
-	  '(lambda ()
+	  #'(lambda ()
 	     (local-set-key (kbd "C-c C-r d") #'kill-buffer-and-window)))
 ;; so I don't have to remap the standard bindings
 (evil-set-initial-state 'ess-rdired-mode 'emacs)
@@ -431,13 +439,13 @@
 - theme for use with mac os (I theme mac os with Gruvbox)
   
   #+begin_src elisp
-  ;;(use-package gruvbox-theme :ensure t)
-  ;;(load-theme 'gruvbox-dark-soft t)
+  (use-package gruvbox-theme :ensure t)
+  (load-theme 'gruvbox-dark-soft t)
   #+end_src
 
 - Retro light theme 
   #+begin_src elisp
-  (use-package leuven-theme :ensure t :config (load-theme 'leuven t))
+  ;;(use-package leuven-theme :ensure t :config (load-theme 'leuven t))
   #+end_src
 
 - theme for use with linux (currently using a nord theme)
@@ -556,4 +564,8 @@
 #+begin_src elisp
 (global-set-key (kbd "C-=") 'text-scale-increase)
 (global-set-key (kbd "C--") 'text-scale-decrease)
+#+end_src
+* Native Comp settings
+#+begin_src elisp
+(setq warning-minimum-level 'error)
 #+end_src

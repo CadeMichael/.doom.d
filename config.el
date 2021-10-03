@@ -85,7 +85,7 @@
  "z" '(ztree-dir :which-key "open ztree directory view"))
 (setq ztree-dir-move-focus t)
 (add-hook 'ztree-mode-hook
-          '(lambda ()
+          #'(lambda ()
              (local-set-key (kbd "C-c z") #'kill-buffer-and-window)))
 
 (when (string= system-type "darwin")       
@@ -123,7 +123,7 @@
   :config (setq lsp-completion-provider :capf))
 (use-package yasnippet :ensure t)
 (add-hook 'prog-mode-hook
-        '(lambda ()
+        #'(lambda ()
            (yas-minor-mode)))
 ;;(add-hook 'after-init-hook 'global-company-mode) not a fan of it in every mode
 
@@ -184,6 +184,10 @@
   (add-hook 'before-save-hook #'lsp-organize-imports t t))
 (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
 
+(use-package rustic :ensure t)
+(setq rustic-lsp-server 'rust-analyzer)
+(setq rustic-lsp-client 'lsp-mode)
+
 (use-package lsp-java :ensure t :config (add-hook 'java-mode-hook #'lsp-deferred))
 (use-package dap-mode :ensure t :after lsp-mode :config (dap-auto-configure-mode))
 (use-package dap-java :ensure nil)
@@ -203,11 +207,11 @@
 (setq ess-use-flymake nil)
 
 (add-hook 'ess-r-mode-hook
-	  '(lambda ()
+	  #'(lambda ()
 	     (local-set-key (kbd "C-c C-r d") #'ess-rdired)))
 
 (add-hook 'ess-rdired-mode-hook
-	  '(lambda ()
+	  #'(lambda ()
 	     (local-set-key (kbd "C-c C-r d") #'kill-buffer-and-window)))
 ;; so I don't have to remap the standard bindings
 (evil-set-initial-state 'ess-rdired-mode 'emacs)
@@ -244,10 +248,10 @@
 ;;basic theme that is on every installation
 ;;(load-theme 'wombat t)
 
-;;(use-package gruvbox-theme :ensure t)
-;;(load-theme 'gruvbox-dark-soft t)
+(use-package gruvbox-theme :ensure t)
+(load-theme 'gruvbox-dark-soft t)
 
-(use-package leuven-theme :ensure t :config (load-theme 'leuven t))
+;;(use-package leuven-theme :ensure t :config (load-theme 'leuven t))
 
 ;;(use-package nord-theme :ensure t)
 ;;(load-theme 'nord t)
@@ -312,3 +316,5 @@
 
 (global-set-key (kbd "C-=") 'text-scale-increase)
 (global-set-key (kbd "C--") 'text-scale-decrease)
+
+(setq warning-minimum-level 'error)
