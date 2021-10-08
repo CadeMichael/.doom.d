@@ -116,6 +116,8 @@
       :ensure t)
   (setq shell-file-name "/bin/zsh" ;; this will be different for linux and mac machines
       vterm-max-scrollback 5000)
+  ;;(setq shell-file-name "/bin/bash" ;; this will be different for linux and mac machines
+  ;;    vterm-max-scrollback 5000)
   #+end_src
 
 ** Git integration
@@ -209,12 +211,13 @@
     :ensure t
     :bind ("C-SPC" . company-mode)
     :config (setq lsp-completion-provider :capf))
-  (use-package yasnippet :ensure t)
-  (add-hook 'prog-mode-hook
-          #'(lambda ()
-             (yas-minor-mode)))
-  ;;(add-hook 'after-init-hook 'global-company-mode) not a fan of it in every mode 
+
+  (with-eval-after-load 'company
+    (define-key company-active-map (kbd "Tab") nil)
+    (define-key company-active-map (kbd "<tab>") nil))
   #+end_src
+
+- Remove the tab function as it conflicts with yas snippet
 
 - the "recommended settings"
   #+begin_src elisp
@@ -223,6 +226,20 @@
   (setq company-selection-wrap-around t)
   (setq lsp-ui-doc-show-with-cursor nil)
   #+end_src
+
+*** Yas Snippet
+- what would and IDE be without some snippets?
+- using yas snippet seems to be the best
+- enable the global minor mode
+
+  #+begin_src elisp
+    (use-package yasnippet :ensure t
+      :config
+      (setq yas-snippet-dirs '("~/.emacs.d/snips"))
+      (yas-global-mode 1))
+  #+end_src
+
+- Snippets are just files (no extension) 
 
 *** Projectile
 - projectile helps with project management and navigating the project folders.
@@ -476,6 +493,7 @@
   #+begin_src elisp
   (use-package all-the-icons :ensure t)
   (set-face-attribute 'default nil :font "Monoid 12")
+  ;;(set-face-attribute 'default nil :font "SauceCode Pro Nerd Fond 14")
   #+end_src
 
 *** Errors & warnings 
@@ -499,9 +517,8 @@
     (setq org-directory "~/org/"
 	  org-hide-emphasis-markers t
 	  org-bullets-bullet-list '("●" "○" "◆" "◇"))
-    (setq org-src-preserve-indentation nil
-          org-src-tab-acts-natively t
-          org-edit-src-content-indentation 0)
+    (setq org-src-preserve-indentation nil)
+    (use-package htmlize :ensure t) ;; allows for syntax highlighting on exports
   #+end_src
 
 ** Code-Block highlighting

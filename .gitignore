@@ -4,10 +4,13 @@
 projectile-bookmarks.eld
 *.org~
 !lisp/cheat-sh.el
-*/
+!snips/
 elpa/
 auto-save-list/
 transient/
+.dap-breakpoints
 .cache/
+eln-cache/
+snips/
 .lsp-session-v1
 request/
