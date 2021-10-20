@@ -232,6 +232,8 @@
 (add-hook 'clojure-mode-hook #'smartparens-mode)
 (add-hook 'scheme-mode-hook #'smartparens-mode)
 (add-hook 'rustic-mode-hook #'smartparens-mode)
+(add-hook 'lisp-interaction-mode-hook #'smartparens-mode)
+(add-hook 'emacs-lisp-mode-hook #'smartparens-mode)
 (general-define-key
    :states '(normal)
    :keymaps 'smartparens-mode-map
