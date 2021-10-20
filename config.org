@@ -362,9 +362,77 @@
 #+end_src 
 
 *** Scheme(s)
-
+**** Guile
 #+begin_src elisp
 (use-package geiser-guile :ensure t)
+#+end_src
+**** Racket
+- [[https://www.racket-mode.com/#Install-Racket-Mode][racket mode]] website
+#+begin_src elisp
+(use-package racket-mode :ensure t) 
+(general-define-key
+ :states '(normal)
+ :keymaps 'racket-mode-map
+ :prefix "SPC"
+ "\\" '(racket-insert-lambda :which-key "insert lambda"))
+#+end_src
+- key bindings
+  | binding | function              |
+  |---------+-----------------------|
+  | C-c C-c | run                   |
+  | M-.     | xref-find-definitions |
+  | M-?     | xref-find-references  |
+  | M-,     | xref-pop-marker-stack |
+**** Clojure
+#+begin_src elisp
+(use-package flycheck-clj-kondo :ensure t)
+(use-package clojure-mode
+  :ensure t
+  :config
+  (require 'flycheck-clj-kondo))
+(use-package cider :ensure t)
+(general-define-key
+ :states '(visual)
+ :keymaps 'cider-mode-map
+ :prefix "SPC"
+ "r" '(cider-eval-region :which-key "insert lambda"))
+;;(setq cider-lein-parameters "repl :headless :host localhost")
+#+end_src
+**** smart parens
+#+begin_src elisp
+(use-package smartparens :ensure t)
+(require 'smartparens-config)
+(add-hook 'racket-mode-hook #'smartparens-mode)
+(add-hook 'clojure-mode-hook #'smartparens-mode)
+(add-hook 'scheme-mode-hook #'smartparens-mode)
+(add-hook 'rustic-mode-hook #'smartparens-mode)
+(general-define-key
+   :states '(normal)
+   :keymaps 'smartparens-mode-map
+   :prefix "SPC"
+   ">" '(sp-up-sexp :which-key "up sexp")
+   "<" '(sp-down-sexp :which-key "down sexp")
+   "{" '(sp-backward-barf-sexp :whick-key "Barf backward")
+   "}" '(sp-forward-barf-sexp :which-key "Barf forward")
+   "(" '(sp-backward-slurp-sexp :whick-key "Slurp backward")
+   ")" '(sp-forward-slurp-sexp :which-key "Slurp forward")
+   "^" '(sp-join-sexp :which-key "join sexp")
+   "+" '(sp-absorb-sexp :which-key "join sexp")
+   "|" '(sp-split-sexp :which-key "split sexp"))
+#+end_src
+**** Geiser
+#+begin_src elisp
+(general-define-key
+ :states '(normal)
+ :keymaps 'geiser-mode-map
+ :prefix "SPC"
+ "l f" '(geiser-load-file :which-key "load file")
+ "\\" '(geiser-insert-lambda :which-key "insert lambda"))
+(general-define-key
+ :states '(visual)
+ :keymaps 'geiser-mode-map
+ :prefix "SPC"
+ "r" '(geiser-eval-region :which-key "insert lambda"))
 #+end_src
 
 *** Markdown
@@ -456,34 +524,33 @@
 - theme for use with mac os (I theme mac os with Gruvbox)
   
   #+begin_src elisp
-  (use-package gruvbox-theme :ensure t)
-  (load-theme 'gruvbox-dark-soft t)
-  #+end_src
-
-- Retro light theme 
-  #+begin_src elisp
-  ;;(use-package leuven-theme :ensure t :config (load-theme 'leuven t))
-  #+end_src
-
-- theme for use with linux (currently using a nord theme)
-  
-  #+begin_src elisp
-  ;;(use-package nord-theme :ensure t)
-  ;;(load-theme 'nord t)
+  ;;(use-package gruvbox-theme :ensure t)
+  ;;(load-theme 'gruvbox-dark-soft t)
   #+end_src
 
 - a nice dracula theme for tiling window manager setup
   
   #+begin_src elisp
-;; (use-package dracula-theme :ensure t)
-;; (load-theme 'dracula t)
+  (use-package dracula-theme :ensure t)
+  (load-theme 'dracula t)
   #+end_src
 
 *** modeline
+- telephone line (a bit maximalist) 
 #+begin_src elisp
-(use-package telephone-line :ensure t)
-(telephone-line-mode 1)
+;;(use-package telephone-line :ensure t)
+;;(telephone-line-mode 1)
 #+end_src
+
+- smart mode line, seems like a better vanilla mode line 
+#+begin_src elisp
+(use-package smart-mode-line :ensure t)
+(setq sml/theme 'respectful)
+(setq sml/no-confirm-load-theme t)
+(setq sml/shorten-modes t)
+(sml/setup)
+#+end_src
+
 *** Font's
 
 - *Font* setup, I am a fan of firacode. It is the best because of how it renders 0's and && symbols (it's not opinion but fact :) )
@@ -493,7 +560,7 @@
   #+begin_src elisp
   (use-package all-the-icons :ensure t)
   (set-face-attribute 'default nil :font "Monoid 12")
-  ;;(set-face-attribute 'default nil :font "SauceCode Pro Nerd Fond 14")
+  ;;(set-face-attribute 'default nil :font "SauceCode Pro Nerd Font 14")
   #+end_src
 
 *** Errors & warnings 
@@ -559,7 +626,6 @@
 - these are non-package related key maps 
   #+begin_src elisp
   (nvmap :states 'normal :keymaps 'override :prefix "SPC"
-    "SPC"   '(counsel-M-x :which-key "M-x")
     "c c"   '(compile :which-key "Compile")
     "c C"   '(recompile :which-key "Recompile")
     "h r r" '((lambda () (interactive) (load-file "~/.emacs.d/init.el")) :which-key "Reload emacs config")

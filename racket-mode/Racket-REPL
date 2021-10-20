@@ -1,0 +1,34 @@
+:q
+null?
+atom?
+(rember-f eq? '1 '(2 3 4 5 1))
+((insertL-f eq?) '3 '5 '(2 2 2 2 2 2 3 2 2 2 2))
+((insertL-f eq?) '5 '3 '(2 2 2 2 2 2 3 2 2 2 2))
+(list? '())
+(list? '1)
+(print (car '(1 2 3)))
+(print (car '(1 2 3)) " " " test")
+(string (car '(1 2 3)) " " " test")
+(string " " " test")
+(print " " " test")
+(return " " " test")
+( " " " test")
+(list " " " test")
+(make-board '("x" "x" "x")))
+(make-board '("x" "x" "x"))
+(car '("a" "a"))
+(make-board '("x" "x" "x"))
+
+(define make-board
+  (λ (lis)
+    (cond
+      ((null? lis) (quote ()))
+      ((list? lis)
+       (cons
+        (make-board (car lis))
+        (make-board (cdr lis))))
+      (else
+       (cons
+        (list " | " (car lis))
+        (make-board (cdr lis)))))))
+(make-board '())
