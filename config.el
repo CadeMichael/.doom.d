@@ -69,12 +69,8 @@
   (setq vertico-cycle t)
 )
 
-(use-package vterm
-    :ensure t)
-(setq shell-file-name "/bin/zsh" ;; this will be different for linux and mac machines
-    vterm-max-scrollback 5000)
-;;(setq shell-file-name "/bin/bash" ;; this will be different for linux and mac machines
-;;    vterm-max-scrollback 5000)
+(setq shell-file-name "/bin/zsh") ;; this will be different for linux and mac machines
+;;(setq shell-file-name "/bin/bash") ;; this will be different for linux and mac machines
 
 (use-package magit :ensure t)
 (use-package git-gutter :ensure t :config (global-git-gutter-mode +1))
@@ -112,7 +108,6 @@
   (lsp-mode . lsp-enable-which-key-integration)
   (go-mode . lsp-deferred)
   (js-mode . lsp-deferred)
-  (lua-mode . lsp-deferred)
   :commands (lsp lsp-deferred)
   :config
   (define-key lsp-mode-map (kbd "C-l C-l") lsp-command-map))
@@ -136,6 +131,8 @@
 (use-package yasnippet :ensure t
   :config
   (setq yas-snippet-dirs '("~/.emacs.d/snips"))
+  ;; preventing weird indenting 
+  (setq yas-indent-line 'fixed)
   (yas-global-mode 1))
 
 (use-package projectile :ensure t)
@@ -182,6 +179,11 @@
 (define-key haskell-mode-map (kbd "<f8>") 'haskell-navigate-imports)
 
 (use-package lua-mode :ensure t)
+(general-define-key
+ :states '(visual)
+ :keymaps 'lua-mode-map
+ :prefix "SPC"
+ "r" '(lua-send-region :which-key "send region"))
 
 (use-package go-mode :ensure t)
 
@@ -193,6 +195,26 @@
 (use-package rustic :ensure t)
 (setq rustic-lsp-server 'rust-analyzer)
 (setq rustic-lsp-client 'lsp-mode)
+
+(use-package nodejs-repl :ensure t)
+  (add-hook 'js-mode-hook
+          (lambda ()
+            (define-key js-mode-map (kbd "C-x C-e") 'nodejs-repl-send-last-expression)
+            (define-key js-mode-map (kbd "C-c C-j") 'nodejs-repl-send-line)
+            (define-key js-mode-map (kbd "C-c C-c") 'nodejs-repl-send-buffer)
+            (define-key js-mode-map (kbd "C-c C-l") 'nodejs-repl-load-file)
+            (define-key js-mode-map (kbd "C-c C-z") 'nodejs-repl-switch-to-repl)))
+(general-define-key
+ :states '(visual)
+ :keymaps 'js-mode-map
+ :prefix "SPC"
+ "r" '(nodejs-repl-send-region :which-key "send region"))
+
+(use-package svelte-mode
+  :ensure t
+  :config (add-hook 'svelte-mode-hook #'lsp-deferred))
+(use-package web-mode :ensure t)
+(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 
 (use-package lsp-java :ensure t :config (add-hook 'java-mode-hook #'lsp-deferred))
 (use-package dap-mode :ensure t :after lsp-mode :config (dap-auto-configure-mode))
@@ -212,6 +234,11 @@
  :keymaps 'racket-mode-map
  :prefix "SPC"
  "\\" '(racket-insert-lambda :which-key "insert lambda"))
+(general-define-key
+ :states '(visual)
+ :keymaps 'racket-mode-map
+ :prefix "SPC"
+ "r" '(racket-send-region :which-key "insert lambda"))
 
 (use-package flycheck-clj-kondo :ensure t)
 (use-package clojure-mode
@@ -223,17 +250,20 @@
  :states '(visual)
  :keymaps 'cider-mode-map
  :prefix "SPC"
- "r" '(cider-eval-region :which-key "insert lambda"))
+ "r" '(cider-eval-region :which-key "send region"))
 ;;(setq cider-lein-parameters "repl :headless :host localhost")
 
 (use-package smartparens :ensure t)
 (require 'smartparens-config)
+(sp-pair "\<" nil :actions :rem)
 (add-hook 'racket-mode-hook #'smartparens-mode)
 (add-hook 'clojure-mode-hook #'smartparens-mode)
 (add-hook 'scheme-mode-hook #'smartparens-mode)
 (add-hook 'rustic-mode-hook #'smartparens-mode)
+(add-hook 'lua-mode-hook #'smartparens-mode)
 (add-hook 'lisp-interaction-mode-hook #'smartparens-mode)
 (add-hook 'emacs-lisp-mode-hook #'smartparens-mode)
+;;(add-hook 'svelte-mode-hook #'smartparens-mode)
 (general-define-key
    :states '(normal)
    :keymaps 'smartparens-mode-map
@@ -323,6 +353,19 @@
 (setq sml/shorten-modes t)
 (sml/setup)
 
+(setq tab-line-new-button-show nil)  
+(setq tab-line-close-button-show nil)
+
+(use-package tree-sitter :ensure t)
+(use-package tree-sitter-langs :ensure t)
+(require 'tree-sitter)
+(require 'tree-sitter-hl)
+(require 'tree-sitter-langs)
+(require 'tree-sitter-debug)
+(require 'tree-sitter-query)
+(global-tree-sitter-mode)
+(add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
+
 (use-package all-the-icons :ensure t)
 (set-face-attribute 'default nil :font "Monoid 12")
 ;;(set-face-attribute 'default nil :font "SauceCode Pro Nerd Font 14")
@@ -363,14 +406,13 @@
   "c C"   '(recompile :which-key "Recompile")
   "h r r" '((lambda () (interactive) (load-file "~/.emacs.d/init.el")) :which-key "Reload emacs config")
   "t t"   '(toggle-truncate-lines :which-key "Toggle truncate lines")
+  "t l"   '(tab-line-mode :which-key "tab line mode")
   ;; File manipulation
   "."     '(find-file :which-key "Find file")
   "f s"   '(save-buffer :which-key "Save file")
   "f C"   '(copy-file :which-key "Copy file")
   "f D"   '(delete-file :which-key "Delete file")
   "f R"   '(rename-file :which-key "Rename file")
-  ;; Vterm
-  "v v"   '(vterm-other-window :which-key "Open Vterm")
   "k k"   '(kill-buffer-and-window :which-key "kill and klose")
   "c h"   '(cheat-sh :which-key "open cheat sheet lookup"))
 
