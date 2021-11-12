@@ -613,9 +613,11 @@
 
   #+begin_src elisp
   (use-package all-the-icons :ensure t)
-  (set-face-attribute 'default nil :font "Monoid 12")
+  ;;(set-face-attribute 'default nil :font "Monoid 12")
   ;;(set-face-attribute 'default nil :font "SauceCode Pro Nerd Font 14")
+  (add-to-list 'default-frame-alist '(font . "SauceCode Pro Nerd Font 14"))
   #+end_src
+  - for whatever reason you need the add to list for emacs server to work
 
 *** Errors & warnings 
   

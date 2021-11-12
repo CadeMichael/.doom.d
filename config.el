@@ -367,8 +367,9 @@
 (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
 
 (use-package all-the-icons :ensure t)
-(set-face-attribute 'default nil :font "Monoid 12")
+;;(set-face-attribute 'default nil :font "Monoid 12")
 ;;(set-face-attribute 'default nil :font "SauceCode Pro Nerd Font 14")
+(add-to-list 'default-frame-alist '(font . "SauceCode Pro Nerd Font 14"))
 
 (setq visible-bell nil
       ring-bell-function 'flash-mode-line)
