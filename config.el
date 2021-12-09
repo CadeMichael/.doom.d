@@ -71,6 +71,8 @@
 
 (setq shell-file-name "/bin/zsh") ;; this will be different for linux and mac machines
 ;;(setq shell-file-name "/bin/bash") ;; this will be different for linux and mac machines
+(use-package vterm
+  :ensure t)
 
 (use-package magit :ensure t)
 (use-package git-gutter :ensure t :config (global-git-gutter-mode +1))
@@ -333,7 +335,7 @@
 
 (global-display-line-numbers-mode 1)
 (global-visual-line-mode t)
-(setq display-line-numbers-type 'relative)
+;;(setq display-line-numbers-type 'relative)
 
 ;;basic theme that is on every installation
 ;;(load-theme 'wombat t)
@@ -344,9 +346,6 @@
 (use-package dracula-theme :ensure t)
 (load-theme 'dracula t)
 
-;;(use-package telephone-line :ensure t)
-;;(telephone-line-mode 1)
-
 (use-package smart-mode-line :ensure t)
 (setq sml/theme 'respectful)
 (setq sml/no-confirm-load-theme t)
@@ -356,20 +355,8 @@
 (setq tab-line-new-button-show nil)  
 (setq tab-line-close-button-show nil)
 
-(use-package tree-sitter :ensure t)
-(use-package tree-sitter-langs :ensure t)
-(require 'tree-sitter)
-(require 'tree-sitter-hl)
-(require 'tree-sitter-langs)
-(require 'tree-sitter-debug)
-(require 'tree-sitter-query)
-(global-tree-sitter-mode)
-(add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
-
 (use-package all-the-icons :ensure t)
-;;(set-face-attribute 'default nil :font "Monoid 12")
-;;(set-face-attribute 'default nil :font "SauceCode Pro Nerd Font 14")
-(add-to-list 'default-frame-alist '(font . "SauceCode Pro Nerd Font 14"))
+(add-to-list 'default-frame-alist '(font . "SauceCodePro Nerd Font 14"))
 
 (setq visible-bell nil
       ring-bell-function 'flash-mode-line)

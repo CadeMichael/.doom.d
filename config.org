@@ -114,6 +114,8 @@
   #+begin_src elisp
   (setq shell-file-name "/bin/zsh") ;; this will be different for linux and mac machines
   ;;(setq shell-file-name "/bin/bash") ;; this will be different for linux and mac machines
+  (use-package vterm
+    :ensure t)
   #+end_src
 
 ** Git integration
@@ -439,10 +441,10 @@
 (add-hook 'clojure-mode-hook #'smartparens-mode)
 (add-hook 'scheme-mode-hook #'smartparens-mode)
 (add-hook 'rustic-mode-hook #'smartparens-mode)
+(add-hook 'go-mode-hook #'smartparens-mode)
 (add-hook 'lua-mode-hook #'smartparens-mode)
 (add-hook 'lisp-interaction-mode-hook #'smartparens-mode)
 (add-hook 'emacs-lisp-mode-hook #'smartparens-mode)
-;;(add-hook 'svelte-mode-hook #'smartparens-mode)
 (general-define-key
    :states '(normal)
    :keymaps 'smartparens-mode-map
@@ -546,7 +548,7 @@
   #+begin_src elisp
   (global-display-line-numbers-mode 1)
   (global-visual-line-mode t)
-  (setq display-line-numbers-type 'relative)
+  ;;(setq display-line-numbers-type 'relative)
   #+end_src 
   
 *** Color theme(s)
@@ -573,11 +575,6 @@
   #+end_src
 
 *** modeline
-- telephone line (a bit maximalist) 
-#+begin_src elisp
-;;(use-package telephone-line :ensure t)
-;;(telephone-line-mode 1)
-#+end_src
 
 - smart mode line, seems like a better vanilla mode line 
 #+begin_src elisp
@@ -594,7 +591,8 @@
 (setq tab-line-close-button-show nil)  
 #+end_src
 *** TreeSitter
-#+begin_src elisp
+- doesn't work on apple silicon 
+,#+begin_src elisp
 (use-package tree-sitter :ensure t)
 (use-package tree-sitter-langs :ensure t)
 (require 'tree-sitter)
@@ -604,7 +602,7 @@
 (require 'tree-sitter-query)
 (global-tree-sitter-mode)
 (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
-#+end_src
+,#+end_src
 *** Font's
 
 - *Font* setup, I am a fan of firacode. It is the best because of how it renders 0's and && symbols (it's not opinion but fact :) )
@@ -613,9 +611,7 @@
 
   #+begin_src elisp
   (use-package all-the-icons :ensure t)
-  ;;(set-face-attribute 'default nil :font "Monoid 12")
-  ;;(set-face-attribute 'default nil :font "SauceCode Pro Nerd Font 14")
-  (add-to-list 'default-frame-alist '(font . "SauceCode Pro Nerd Font 14"))
+  (add-to-list 'default-frame-alist '(font . "SauceCodePro Nerd Font 14"))
   #+end_src
   - for whatever reason you need the add to list for emacs server to work
 
