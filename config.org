@@ -116,6 +116,15 @@
   ;;(setq shell-file-name "/bin/bash") ;; this will be different for linux and mac machines
   (use-package vterm
     :ensure t)
+  (setq vterm-kill-buffer-on-exit t)
+  (general-define-key
+   :states '(normal)
+   :keymaps 'override
+   :prefix "SPC"
+   "v" '(vterm-other-window :which-key "open vterm in other window"))
+  (add-hook 'vterm-mode-hook
+            #'(lambda ()
+               (local-set-key (kbd "C-c q") #'kill-buffer-and-window)))
   #+end_src
 
 ** Git integration
@@ -138,7 +147,7 @@
   (setq ztree-dir-move-focus t)
   (add-hook 'ztree-mode-hook
             #'(lambda ()
-               (local-set-key (kbd "C-c z") #'kill-buffer-and-window)))
+               (local-set-key (kbd "C-c q") #'kill-buffer-and-window)))
   #+end_src
 
 - adding some vim like keymappings

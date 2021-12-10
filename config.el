@@ -73,6 +73,15 @@
 ;;(setq shell-file-name "/bin/bash") ;; this will be different for linux and mac machines
 (use-package vterm
   :ensure t)
+(setq vterm-kill-buffer-on-exit t)
+(general-define-key
+ :states '(normal)
+ :keymaps 'override
+ :prefix "SPC"
+ "v" '(vterm-other-window :which-key "open vterm in other window"))
+(add-hook 'vterm-mode-hook
+          #'(lambda ()
+             (local-set-key (kbd "C-c q") #'kill-buffer-and-window)))
 
 (use-package magit :ensure t)
 (use-package git-gutter :ensure t :config (global-git-gutter-mode +1))
@@ -86,7 +95,7 @@
 (setq ztree-dir-move-focus t)
 (add-hook 'ztree-mode-hook
           #'(lambda ()
-             (local-set-key (kbd "C-c z") #'kill-buffer-and-window)))
+             (local-set-key (kbd "C-c q") #'kill-buffer-and-window)))
 
 (when (string= system-type "darwin")       
   (setq dired-use-ls-dired nil))
@@ -262,10 +271,10 @@
 (add-hook 'clojure-mode-hook #'smartparens-mode)
 (add-hook 'scheme-mode-hook #'smartparens-mode)
 (add-hook 'rustic-mode-hook #'smartparens-mode)
+(add-hook 'go-mode-hook #'smartparens-mode)
 (add-hook 'lua-mode-hook #'smartparens-mode)
 (add-hook 'lisp-interaction-mode-hook #'smartparens-mode)
 (add-hook 'emacs-lisp-mode-hook #'smartparens-mode)
-;;(add-hook 'svelte-mode-hook #'smartparens-mode)
 (general-define-key
    :states '(normal)
    :keymaps 'smartparens-mode-map
