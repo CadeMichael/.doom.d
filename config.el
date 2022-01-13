@@ -119,6 +119,7 @@
   (lsp-mode . lsp-enable-which-key-integration)
   (go-mode . lsp-deferred)
   (js-mode . lsp-deferred)
+  ;;(C\*l-mode . lsp-deferred)
   :commands (lsp lsp-deferred)
   :config
   (define-key lsp-mode-map (kbd "C-l C-l") lsp-command-map))
@@ -404,6 +405,8 @@
   "h r r" '((lambda () (interactive) (load-file "~/.emacs.d/init.el")) :which-key "Reload emacs config")
   "t t"   '(toggle-truncate-lines :which-key "Toggle truncate lines")
   "t l"   '(tab-line-mode :which-key "tab line mode")
+  ;; buffers
+  "b"     '(switch-to-buffer :which-key "switch to buffer")
   ;; File manipulation
   "."     '(find-file :which-key "Find file")
   "f s"   '(save-buffer :which-key "Save file")
@@ -411,7 +414,13 @@
   "f D"   '(delete-file :which-key "Delete file")
   "f R"   '(rename-file :which-key "Rename file")
   "k k"   '(kill-buffer-and-window :which-key "kill and klose")
+  ;; cht sheet
   "c h"   '(cheat-sh :which-key "open cheat sheet lookup"))
+
+;; better yanking 
+(define-key evil-normal-state-map
+            (kbd "Y")
+            (kbd "y$"))
 
 (global-set-key (kbd "C-=") 'text-scale-increase)
 (global-set-key (kbd "C--") 'text-scale-decrease)

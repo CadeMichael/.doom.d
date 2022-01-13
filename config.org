@@ -692,6 +692,8 @@
     "h r r" '((lambda () (interactive) (load-file "~/.emacs.d/init.el")) :which-key "Reload emacs config")
     "t t"   '(toggle-truncate-lines :which-key "Toggle truncate lines")
     "t l"   '(tab-line-mode :which-key "tab line mode")
+    ;; buffers
+    "b"     '(switch-to-buffer :which-key "switch to buffer")
     ;; File manipulation
     "."     '(find-file :which-key "Find file")
     "f s"   '(save-buffer :which-key "Save file")
@@ -699,11 +701,20 @@
     "f D"   '(delete-file :which-key "Delete file")
     "f R"   '(rename-file :which-key "Rename file")
     "k k"   '(kill-buffer-and-window :which-key "kill and klose")
+    ;; cht sheet
     "c h"   '(cheat-sh :which-key "open cheat sheet lookup"))
+
+  #+end_src
+  - making vim like remaps 
+  #+begin_src elisp
+  ;; better yanking 
+  (define-key evil-normal-state-map
+              (kbd "Y")
+              (kbd "y$"))
   #+end_src
 
 **  zooming
-
+- change text size 
 #+begin_src elisp
 (global-set-key (kbd "C-=") 'text-scale-increase)
 (global-set-key (kbd "C--") 'text-scale-decrease)
