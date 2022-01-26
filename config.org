@@ -24,8 +24,7 @@
 
 #+begin_src elisp
 (use-package exec-path-from-shell :ensure t)
-(when (memq window-system '(mac ns x))
-  (exec-path-from-shell-initialize))
+(exec-path-from-shell-initialize)
 #+end_src
 
 ** Extensible VI Layer
@@ -60,6 +59,7 @@
 
 ** Org-packages
 
+- styling
   #+begin_src elisp
     (use-package org-bullets
 	:ensure t
@@ -68,11 +68,36 @@
 				(org-bullets-mode 1))))
   #+end_src
   
-** basic tab block-tag completion
-
+- shortcuts
   #+begin_src elisp
-  (use-package org-tempo
-         :ensure nil)
+  (require 'org-tempo)
+  ;; src block short cuts
+  (add-to-list
+   'org-structure-template-alist '("el" . "src elisp"))
+  #+end_src
+
+- Org Roam [[orgroam.com][link]]
+  #+begin_src elisp
+  (use-package org-roam
+    :ensure t
+    :bind (:map org-mode-map
+                ("C-M-i" . completion-at-point)))
+  (setq org-roam-directory (file-truename "~/org"))
+  (org-roam-db-autosync-mode)
+
+  ;; kemappings
+  (general-define-key
+   :states '(normal)
+   :keymaps 'org-mode-map
+   :prefix "SPC"
+   "r i" '(org-roam-node-insert :which-key "node insert")
+   "r b" '(org-roam-buffer-toggle :which-key "buffer toggle"))
+  #+end_src
+
+- Org Agenda
+  #+begin_src elisp
+  (setq org-log-done t)
+  (setq org-agenda-files '("~/.schedule"))
   #+end_src
 
 ** Which Key
@@ -105,8 +130,7 @@
  (vertico-mode)
 
   ; Optionally enable cycling for `vertico-next' and `vertico-previous'.
-  (setq vertico-cycle t)
-)
+  (setq vertico-cycle t))
 #+end_src
 
 ** V Terminal
@@ -270,7 +294,8 @@
 (use-package helm-lsp :ensure t)
 (use-package helm :ensure t
   :config (helm-mode)(require 'helm-config))
-(use-package helm-projectile :ensure t :config (helm-projectile-on))
+(use-package helm-projectile :ensure t
+  :config (helm-projectile-on))
 #+end_src
 *** Haskell
 
@@ -379,7 +404,10 @@
     :ensure t
     :config (add-hook 'svelte-mode-hook #'lsp-deferred))
   (use-package web-mode :ensure t)
+  (setq web-mode-enable-auto-pairing t)
   (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+  (eval-after-load "web-mode"
+    '(setq web-mode-enable-auto-expanding t))
   #+end_src
 *** Java
 #+begin_src elisp
@@ -397,6 +425,11 @@
   :hook (python-mode . (lambda ()
                           (require 'lsp-pyright)
                           (lsp-deferred))))
+;;; support for hy
+(use-package hy-mode
+  :ensure t)
+(use-package ob-hy
+  :ensure t)
 #+end_src 
 
 *** Scheme(s)
@@ -417,7 +450,7 @@
  :states '(visual)
  :keymaps 'racket-mode-map
  :prefix "SPC"
- "r" '(racket-send-region :which-key "insert lambda"))
+ "r" '(racket-send-region :which-key "send region"))
 #+end_src
 - key bindings
   | binding | function              |
@@ -426,6 +459,13 @@
   | M-.     | xref-find-definitions |
   | M-?     | xref-find-references  |
   | M-,     | xref-pop-marker-stack |
+**** Lisp 
+- using the sbcl version of common lisp with slime mode
+- org babel enabled 
+#+begin_src elisp
+(use-package slime :ensure t)
+(setq inferior-lisp-program "sbcl")
+#+end_src
 **** Clojure
 #+begin_src elisp
 (use-package flycheck-clj-kondo :ensure t)
@@ -480,7 +520,7 @@
  :states '(visual)
  :keymaps 'geiser-mode-map
  :prefix "SPC"
- "r" '(geiser-eval-region :which-key "insert lambda"))
+ "r" '(geiser-eval-region :which-key "eval region"))
 #+end_src
 
 *** Markdown
@@ -544,8 +584,8 @@
 - getting rid of some junk
 
   #+begin_src elisp
-  (menu-bar-mode 0)
-  (tool-bar-mode 0)
+  ;;(menu-bar-mode 0)
+  ;;(tool-bar-mode 0)
   (scroll-bar-mode -1)
   (setq inhibit-splash-screen t)
   (setq make-backup-files nil) 
@@ -562,26 +602,12 @@
   
 *** Color theme(s)
 
-- adding generic color theme
-
-  #+begin_src elisp
-  ;;basic theme that is on every installation
-  ;;(load-theme 'wombat t)
-  #+end_src
-
-- theme for use with mac os (I theme mac os with Gruvbox)
-  
-  #+begin_src elisp
-  ;;(use-package gruvbox-theme :ensure t)
-  ;;(load-theme 'gruvbox-dark-soft t)
-  #+end_src
-
 - a nice dracula theme for tiling window manager setup
   
-  #+begin_src elisp
-  (use-package dracula-theme :ensure t)
-  (load-theme 'dracula t)
-  #+end_src
+#+begin_src elisp
+(use-package dracula-theme :ensure t)
+(load-theme 'dracula t)
+#+end_src
 
 *** modeline
 
@@ -601,6 +627,7 @@
 #+end_src
 *** TreeSitter
 - doesn't work on apple silicon 
+
 ,#+begin_src elisp
 (use-package tree-sitter :ensure t)
 (use-package tree-sitter-langs :ensure t)
@@ -612,6 +639,7 @@
 (global-tree-sitter-mode)
 (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
 ,#+end_src
+
 *** Font's
 
 - *Font* setup, I am a fan of firacode. It is the best because of how it renders 0's and && symbols (it's not opinion but fact :) )
@@ -620,7 +648,7 @@
 
   #+begin_src elisp
   (use-package all-the-icons :ensure t)
-  (add-to-list 'default-frame-alist '(font . "SauceCodePro Nerd Font 14"))
+  (add-to-list 'default-frame-alist '(font . "Monoid Nerd Font 18"))
   #+end_src
   - for whatever reason you need the add to list for emacs server to work
 
@@ -640,14 +668,14 @@
 
 ** Org Beautification, basics
   
-  #+begin_src elisp
-    (add-hook 'org-mode-hook 'org-indent-mode)
-    (setq org-directory "~/org/"
-	  org-hide-emphasis-markers t
-	  org-bullets-bullet-list '("●" "○" "◆" "◇"))
-    (setq org-src-preserve-indentation nil)
-    (use-package htmlize :ensure t) ;; allows for syntax highlighting on exports
-  #+end_src
+#+begin_src elisp
+(add-hook 'org-mode-hook 'org-indent-mode)
+(setq org-directory "~/org/"
+        org-hide-emphasis-markers t
+        org-bullets-bullet-list '("●" "○" "◆" "◇"))
+(setq org-src-preserve-indentation nil)
+(use-package htmlize :ensure t) ;; allows for syntax highlighting on exports
+#+end_src
 
 ** Code-Block highlighting
 
@@ -660,7 +688,8 @@
 
 ** Babel Code-Block Configuration
 
-- Scheme configuration
+- language configuration
+  - adding conf file type for configuring other programs
   
 #+begin_src elisp
 (org-babel-do-load-languages
@@ -668,16 +697,25 @@
   '((scheme . t)
    (lua . t)
    (R . t)
-   (haskell . t)
-   ))
+   (hy . t)
+   (js . t)
+   (python . t)
+   (haskell . t)))
+;; basic conf
+(push '("conf-unix" . conf-unix) org-src-lang-modes)
 #+end_src
 
-- JS configuration
+- making sure that the colors are the right shade etc... using the fixed pitch variable
+  #+begin_src elisp
+  (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-code nil
+    :inherit '(shadow fixed-pitch))
+  #+end_src
+
+- JS configuration for babel source blocks
 
 #+begin_src elisp
 (require 'ob-js)
-(add-to-list 'org-babel-load-languages '(js . t))
-(org-babel-do-load-languages 'org-babel-load-languages org-babel-load-languages)
 (add-to-list 'org-babel-tangle-lang-exts '("js" . "js"))
 #+end_src
 
@@ -687,6 +725,7 @@
 - these are non-package related key maps 
   #+begin_src elisp
   (nvmap :states 'normal :keymaps 'override :prefix "SPC"
+    "a"     '(org-agenda :which-key "org-agenda")
     "c c"   '(compile :which-key "Compile")
     "c C"   '(recompile :which-key "Recompile")
     "h r r" '((lambda () (interactive) (load-file "~/.emacs.d/init.el")) :which-key "Reload emacs config")
@@ -699,6 +738,7 @@
     "f s"   '(save-buffer :which-key "Save file")
     "f C"   '(copy-file :which-key "Copy file")
     "f D"   '(delete-file :which-key "Delete file")
+    "r f" '(org-roam-node-find :which-key "find node")
     "f R"   '(rename-file :which-key "Rename file")
     "k k"   '(kill-buffer-and-window :which-key "kill and klose")
     ;; cht sheet

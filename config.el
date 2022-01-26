@@ -9,8 +9,7 @@
   (package-install 'use-package))
 
 (use-package exec-path-from-shell :ensure t)
-(when (memq window-system '(mac ns x))
-  (exec-path-from-shell-initialize))
+(exec-path-from-shell-initialize)
 
 ;; package used for undoing
 (use-package undo-fu :ensure t)
@@ -40,8 +39,28 @@
 	(add-hook 'org-mode-hook (lambda ()
 			    (org-bullets-mode 1))))
 
-(use-package org-tempo
-       :ensure nil)
+(require 'org-tempo)
+;; src block short cuts
+(add-to-list
+ 'org-structure-template-alist '("el" . "src elisp"))
+
+(use-package org-roam
+  :ensure t
+  :bind (:map org-mode-map
+              ("C-M-i" . completion-at-point)))
+(setq org-roam-directory (file-truename "~/org"))
+(org-roam-db-autosync-mode)
+
+;; kemappings
+(general-define-key
+ :states '(normal)
+ :keymaps 'org-mode-map
+ :prefix "SPC"
+ "r i" '(org-roam-node-insert :which-key "node insert")
+ "r b" '(org-roam-buffer-toggle :which-key "buffer toggle"))
+
+(setq org-log-done t)
+(setq org-agenda-files '("~/.schedule"))
 
 (use-package which-key
 :ensure t
@@ -66,8 +85,7 @@
  (vertico-mode)
 
   ; Optionally enable cycling for `vertico-next' and `vertico-previous'.
-  (setq vertico-cycle t)
-)
+  (setq vertico-cycle t))
 
 (setq shell-file-name "/bin/zsh") ;; this will be different for linux and mac machines
 ;;(setq shell-file-name "/bin/bash") ;; this will be different for linux and mac machines
@@ -119,7 +137,6 @@
   (lsp-mode . lsp-enable-which-key-integration)
   (go-mode . lsp-deferred)
   (js-mode . lsp-deferred)
-  ;;(C\*l-mode . lsp-deferred)
   :commands (lsp lsp-deferred)
   :config
   (define-key lsp-mode-map (kbd "C-l C-l") lsp-command-map))
@@ -159,7 +176,8 @@
 (use-package helm-lsp :ensure t)
 (use-package helm :ensure t
   :config (helm-mode)(require 'helm-config))
-(use-package helm-projectile :ensure t :config (helm-projectile-on))
+(use-package helm-projectile :ensure t
+  :config (helm-projectile-on))
 
 (use-package haskell-mode :ensure t)
 (use-package lsp-haskell :ensure t)
@@ -226,7 +244,10 @@
   :ensure t
   :config (add-hook 'svelte-mode-hook #'lsp-deferred))
 (use-package web-mode :ensure t)
+(setq web-mode-enable-auto-pairing t)
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+(eval-after-load "web-mode"
+  '(setq web-mode-enable-auto-expanding t))
 
 (use-package lsp-java :ensure t :config (add-hook 'java-mode-hook #'lsp-deferred))
 (use-package dap-mode :ensure t :after lsp-mode :config (dap-auto-configure-mode))
@@ -237,6 +258,11 @@
   :hook (python-mode . (lambda ()
                           (require 'lsp-pyright)
                           (lsp-deferred))))
+;;; support for hy
+(use-package hy-mode
+  :ensure t)
+(use-package ob-hy
+  :ensure t)
 
 (use-package geiser-guile :ensure t)
 
@@ -250,7 +276,10 @@
  :states '(visual)
  :keymaps 'racket-mode-map
  :prefix "SPC"
- "r" '(racket-send-region :which-key "insert lambda"))
+ "r" '(racket-send-region :which-key "send region"))
+
+(use-package slime :ensure t)
+(setq inferior-lisp-program "sbcl")
 
 (use-package flycheck-clj-kondo :ensure t)
 (use-package clojure-mode
@@ -300,7 +329,7 @@
  :states '(visual)
  :keymaps 'geiser-mode-map
  :prefix "SPC"
- "r" '(geiser-eval-region :which-key "insert lambda"))
+ "r" '(geiser-eval-region :which-key "eval region"))
 
 (use-package markdown-mode :ensure t :config (add-hook 'markdown-mode-hook 'flyspell-mode))
 
@@ -336,8 +365,8 @@
 (add-to-list 'load-path "~/.emacs.d/lisp/")
 (load "cheat-sh.el")
 
-(menu-bar-mode 0)
-(tool-bar-mode 0)
+;;(menu-bar-mode 0)
+;;(tool-bar-mode 0)
 (scroll-bar-mode -1)
 (setq inhibit-splash-screen t)
 (setq make-backup-files nil) 
@@ -346,12 +375,6 @@
 (global-display-line-numbers-mode 1)
 (global-visual-line-mode t)
 ;;(setq display-line-numbers-type 'relative)
-
-;;basic theme that is on every installation
-;;(load-theme 'wombat t)
-
-;;(use-package gruvbox-theme :ensure t)
-;;(load-theme 'gruvbox-dark-soft t)
 
 (use-package dracula-theme :ensure t)
 (load-theme 'dracula t)
@@ -366,7 +389,7 @@
 (setq tab-line-close-button-show nil)
 
 (use-package all-the-icons :ensure t)
-(add-to-list 'default-frame-alist '(font . "SauceCodePro Nerd Font 14"))
+(add-to-list 'default-frame-alist '(font . "Monoid Nerd Font 18"))
 
 (setq visible-bell nil
       ring-bell-function 'flash-mode-line)
@@ -376,8 +399,8 @@
 
 (add-hook 'org-mode-hook 'org-indent-mode)
 (setq org-directory "~/org/"
-      org-hide-emphasis-markers t
-      org-bullets-bullet-list '("●" "○" "◆" "◇"))
+        org-hide-emphasis-markers t
+        org-bullets-bullet-list '("●" "○" "◆" "◇"))
 (setq org-src-preserve-indentation nil)
 (use-package htmlize :ensure t) ;; allows for syntax highlighting on exports
 
@@ -391,15 +414,22 @@
   '((scheme . t)
    (lua . t)
    (R . t)
-   (haskell . t)
-   ))
+   (hy . t)
+   (js . t)
+   (python . t)
+   (haskell . t)))
+;; basic conf
+(push '("conf-unix" . conf-unix) org-src-lang-modes)
+
+(set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-code nil
+  :inherit '(shadow fixed-pitch))
 
 (require 'ob-js)
-(add-to-list 'org-babel-load-languages '(js . t))
-(org-babel-do-load-languages 'org-babel-load-languages org-babel-load-languages)
 (add-to-list 'org-babel-tangle-lang-exts '("js" . "js"))
 
 (nvmap :states 'normal :keymaps 'override :prefix "SPC"
+  "a"     '(org-agenda :which-key "org-agenda")
   "c c"   '(compile :which-key "Compile")
   "c C"   '(recompile :which-key "Recompile")
   "h r r" '((lambda () (interactive) (load-file "~/.emacs.d/init.el")) :which-key "Reload emacs config")
@@ -412,6 +442,7 @@
   "f s"   '(save-buffer :which-key "Save file")
   "f C"   '(copy-file :which-key "Copy file")
   "f D"   '(delete-file :which-key "Delete file")
+  "r f" '(org-roam-node-find :which-key "find node")
   "f R"   '(rename-file :which-key "Rename file")
   "k k"   '(kill-buffer-and-window :which-key "kill and klose")
   ;; cht sheet

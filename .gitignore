@@ -15,3 +15,6 @@ snips/
 .lsp-session-v1
 request/
 racket-mode/
+bookmarks
+org-roam.db
+.org-id-locations
