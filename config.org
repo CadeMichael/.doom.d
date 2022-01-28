@@ -13,6 +13,24 @@
     (package-refresh-contents))
   #+end_src
 
+** Straight el
+- useful for when use-package fails
+#+begin_src elisp
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+(setq package-enable-at-startup nil) ;; prevents loading before init.el
+#+end_src
+
 ** installing use-package
 
   #+begin_src elisp 
@@ -222,6 +240,8 @@
     (lsp-mode . lsp-enable-which-key-integration)
     (go-mode . lsp-deferred)
     (js-mode . lsp-deferred)
+    (web-mode . lsp-deferred)
+    (svelte-mode . lsp-deferred)
     :commands (lsp lsp-deferred)
     :config
     (define-key lsp-mode-map (kbd "C-l C-l") lsp-command-map))
@@ -381,7 +401,6 @@
 (setq rustic-lsp-client 'lsp-mode)
 #+end_src
 *** JS
-
 - using *js Repl* to get a repl experience 
   #+begin_src elisp
   (use-package nodejs-repl :ensure t)
@@ -400,9 +419,7 @@
   #+end_src
 - getting support for svelte, web mode will not work with lsp mode 
   #+begin_src elisp
-  (use-package svelte-mode
-    :ensure t
-    :config (add-hook 'svelte-mode-hook #'lsp-deferred))
+  (use-package svelte-mode :ensure t)
   (use-package web-mode :ensure t)
   (setq web-mode-enable-auto-pairing t)
   (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
@@ -441,6 +458,15 @@
 - [[https://www.racket-mode.com/#Install-Racket-Mode][racket mode]] website
 #+begin_src elisp
 (use-package racket-mode :ensure t) 
+(use-package ob-racket
+  :after org
+  :config
+  (add-hook 'ob-racket-pre-runtime-library-load-hook
+	      #'ob-racket-raco-make-runtime-library)
+  :straight (ob-racket
+	       :type git :host github :repo "hasu/emacs-ob-racket"
+	       :files ("*.el" "*.rkt")))
+
 (general-define-key
  :states '(normal)
  :keymaps 'racket-mode-map
@@ -628,17 +654,14 @@
 *** TreeSitter
 - doesn't work on apple silicon 
 
-,#+begin_src elisp
+#+begin_src elisp
 (use-package tree-sitter :ensure t)
 (use-package tree-sitter-langs :ensure t)
 (require 'tree-sitter)
-(require 'tree-sitter-hl)
 (require 'tree-sitter-langs)
-(require 'tree-sitter-debug)
-(require 'tree-sitter-query)
 (global-tree-sitter-mode)
 (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
-,#+end_src
+#+end_src
 
 *** Font's
 
@@ -698,7 +721,9 @@
    (lua . t)
    (R . t)
    (hy . t)
+   (lisp . t)
    (js . t)
+   (racket . t)
    (python . t)
    (haskell . t)))
 ;; basic conf
@@ -720,7 +745,6 @@
 #+end_src
 
 * Key Re-mapping
-
 - *keymaps using General plugin*
 - these are non-package related key maps 
   #+begin_src elisp
@@ -740,11 +764,12 @@
     "f D"   '(delete-file :which-key "Delete file")
     "r f" '(org-roam-node-find :which-key "find node")
     "f R"   '(rename-file :which-key "Rename file")
-    "k k"   '(kill-buffer-and-window :which-key "kill and klose")
+    "k b"   '(kill-buffer-and-window :which-key "kill and close current")
+    "k s"   '(kill-some-buffers :which-key "kill some buffers")
     ;; cht sheet
     "c h"   '(cheat-sh :which-key "open cheat sheet lookup"))
-
   #+end_src
+
   - making vim like remaps 
   #+begin_src elisp
   ;; better yanking 

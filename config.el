@@ -5,6 +5,20 @@
 (unless package-archive-contents
   (package-refresh-contents))
 
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+(setq package-enable-at-startup nil)
+
 (unless (package-installed-p 'use-package)
   (package-install 'use-package))
 
@@ -137,6 +151,8 @@
   (lsp-mode . lsp-enable-which-key-integration)
   (go-mode . lsp-deferred)
   (js-mode . lsp-deferred)
+  (web-mode . lsp-deferred)
+  (svelte-mode . lsp-deferred)
   :commands (lsp lsp-deferred)
   :config
   (define-key lsp-mode-map (kbd "C-l C-l") lsp-command-map))
@@ -240,9 +256,7 @@
  :prefix "SPC"
  "r" '(nodejs-repl-send-region :which-key "send region"))
 
-(use-package svelte-mode
-  :ensure t
-  :config (add-hook 'svelte-mode-hook #'lsp-deferred))
+(use-package svelte-mode :ensure t)
 (use-package web-mode :ensure t)
 (setq web-mode-enable-auto-pairing t)
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
@@ -267,6 +281,15 @@
 (use-package geiser-guile :ensure t)
 
 (use-package racket-mode :ensure t) 
+(use-package ob-racket
+  :after org
+  :config
+  (add-hook 'ob-racket-pre-runtime-library-load-hook
+	      #'ob-racket-raco-make-runtime-library)
+  :straight (ob-racket
+	       :type git :host github :repo "hasu/emacs-ob-racket"
+	       :files ("*.el" "*.rkt")))
+
 (general-define-key
  :states '(normal)
  :keymaps 'racket-mode-map
@@ -388,6 +411,13 @@
 (setq tab-line-new-button-show nil)  
 (setq tab-line-close-button-show nil)
 
+(use-package tree-sitter :ensure t)
+(use-package tree-sitter-langs :ensure t)
+(require 'tree-sitter)
+(require 'tree-sitter-langs)
+(global-tree-sitter-mode)
+(add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
+
 (use-package all-the-icons :ensure t)
 (add-to-list 'default-frame-alist '(font . "Monoid Nerd Font 18"))
 
@@ -415,7 +445,9 @@
    (lua . t)
    (R . t)
    (hy . t)
+   (lisp . t)
    (js . t)
+   (racket . t)
    (python . t)
    (haskell . t)))
 ;; basic conf
@@ -444,7 +476,8 @@
   "f D"   '(delete-file :which-key "Delete file")
   "r f" '(org-roam-node-find :which-key "find node")
   "f R"   '(rename-file :which-key "Rename file")
-  "k k"   '(kill-buffer-and-window :which-key "kill and klose")
+  "k b"   '(kill-buffer-and-window :which-key "kill and close current")
+  "k s"   '(kill-some-buffers :which-key "kill some buffers")
   ;; cht sheet
   "c h"   '(cheat-sh :which-key "open cheat sheet lookup"))
 
