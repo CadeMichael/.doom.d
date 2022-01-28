@@ -17,7 +17,7 @@
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
-(setq package-enable-at-startup nil)
+(setq package-enable-at-startup nil) ;; prevents loading before init.el
 
 (unless (package-installed-p 'use-package)
   (package-install 'use-package))
@@ -189,6 +189,16 @@
  "p" '(projectile-command-map :which-key "projectile command map")
  "p f" '(projectile-find-file :which-key "projectile find file"))
 
+(use-package rainbow-delimiters :ensure t)
+(add-hook 'org-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'racket-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'clojure-mode-hook #'rainbow-delimiters-mode)
+(use-package aggressive-indent :ensure t)
+(add-hook 'racket-mode-hook #'aggressive-indent-mode)
+(add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
+(add-hook 'clojure-mode-hook #'aggressive-indent-mode)
+
 (use-package helm-lsp :ensure t)
 (use-package helm :ensure t
   :config (helm-mode)(require 'helm-config))
@@ -325,6 +335,7 @@
 (add-hook 'scheme-mode-hook #'smartparens-mode)
 (add-hook 'rustic-mode-hook #'smartparens-mode)
 (add-hook 'go-mode-hook #'smartparens-mode)
+(add-hook 'js-mode-hook #'smartparens-mode)
 (add-hook 'lua-mode-hook #'smartparens-mode)
 (add-hook 'lisp-interaction-mode-hook #'smartparens-mode)
 (add-hook 'emacs-lisp-mode-hook #'smartparens-mode)
@@ -354,7 +365,9 @@
  :prefix "SPC"
  "r" '(geiser-eval-region :which-key "eval region"))
 
-(use-package markdown-mode :ensure t :config (add-hook 'markdown-mode-hook 'flyspell-mode))
+(use-package markdown-mode :ensure t
+  :config
+  (add-hook 'markdown-mode-hook 'flyspell-mode))
 
 (use-package ess :ensure t)
 (require 'ess-site)
@@ -397,7 +410,11 @@
 
 (global-display-line-numbers-mode 1)
 (global-visual-line-mode t)
-;;(setq display-line-numbers-type 'relative)
+(add-hook 'org-mode-hook
+          (lambda () (display-line-numbers-mode -1)))
+(add-hook 'vterm-mode-hook
+          (lambda () (display-line-numbers-mode -1)))
+(setq display-line-numbers-type 'relative)
 
 (use-package dracula-theme :ensure t)
 (load-theme 'dracula t)

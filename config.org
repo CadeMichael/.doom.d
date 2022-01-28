@@ -308,6 +308,19 @@
 - Some usefull tips
 - Projectile is good about guessing what is in a "project dir" but some of the most telltale are .git's and if you want to force it to see a project you can put a ~.projectile~ file in the main dir of your project.
 - 
+*** colored parens
+- easier to see parenthesis colors
+  #+begin_src elisp
+  (use-package rainbow-delimiters :ensure t)
+  (add-hook 'org-mode-hook #'rainbow-delimiters-mode)
+  (add-hook 'racket-mode-hook #'rainbow-delimiters-mode)
+  (add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
+  (add-hook 'clojure-mode-hook #'rainbow-delimiters-mode)
+  (use-package aggressive-indent :ensure t)
+  (add-hook 'racket-mode-hook #'aggressive-indent-mode)
+  (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
+  (add-hook 'clojure-mode-hook #'aggressive-indent-mode)
+  #+end_src
 *** Helm
 - helm is a fuzzy finder for emacs
 #+begin_src elisp
@@ -517,6 +530,7 @@
 (add-hook 'scheme-mode-hook #'smartparens-mode)
 (add-hook 'rustic-mode-hook #'smartparens-mode)
 (add-hook 'go-mode-hook #'smartparens-mode)
+(add-hook 'js-mode-hook #'smartparens-mode)
 (add-hook 'lua-mode-hook #'smartparens-mode)
 (add-hook 'lisp-interaction-mode-hook #'smartparens-mode)
 (add-hook 'emacs-lisp-mode-hook #'smartparens-mode)
@@ -552,7 +566,9 @@
 *** Markdown
 
 #+begin_src elisp
-(use-package markdown-mode :ensure t :config (add-hook 'markdown-mode-hook 'flyspell-mode))
+(use-package markdown-mode :ensure t
+  :config
+  (add-hook 'markdown-mode-hook 'flyspell-mode))
 #+end_src
 
 *** R
@@ -623,7 +639,11 @@
   #+begin_src elisp
   (global-display-line-numbers-mode 1)
   (global-visual-line-mode t)
-  ;;(setq display-line-numbers-type 'relative)
+  (add-hook 'org-mode-hook
+            (lambda () (display-line-numbers-mode -1)))
+  (add-hook 'vterm-mode-hook
+            (lambda () (display-line-numbers-mode -1)))
+  (setq display-line-numbers-type 'relative)
   #+end_src 
   
 *** Color theme(s)
@@ -778,7 +798,7 @@
               (kbd "y$"))
   #+end_src
 
-**  zooming
+** zooming
 - change text size 
 #+begin_src elisp
 (global-set-key (kbd "C-=") 'text-scale-increase)
