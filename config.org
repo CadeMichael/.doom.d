@@ -94,7 +94,14 @@
    'org-structure-template-alist '("el" . "src elisp"))
   #+end_src
 
-- Org Roam [[orgroam.com][link]]
+- org previewing
+  #+begin_src elisp
+  (use-package org-preview-html
+    :ensure t
+    :config
+    (setq org-preview-html-viewer 'eww))
+  #+end_src
+- Org Roam [[https://www.orgroam.com][link]]
   #+begin_src elisp
   (use-package org-roam
     :ensure t
@@ -146,7 +153,6 @@
  :ensure t
  :init
  (vertico-mode)
-
   ; Optionally enable cycling for `vertico-next' and `vertico-previous'.
   (setq vertico-cycle t))
 #+end_src
@@ -201,10 +207,11 @@
   | x     | fully expands all subdirs of current dir        |
   | C-h   | show/ hide hidden files                         |
   | c-z d | open dired at current point in tree             |
+
 - mac os or "darwin" specific dired config
   #+begin_src elisp
-(when (string= system-type "darwin")       
-  (setq dired-use-ls-dired nil))
+  (when (string= system-type "darwin")       
+    (setq dired-use-ls-dired nil))
   #+end_src 
 
   #+begin_src elisp
@@ -462,7 +469,7 @@
   :ensure t)
 #+end_src 
 
-*** Scheme(s)
+*** Lisp(s)
 **** Guile
 #+begin_src elisp
 (use-package geiser-guile :ensure t)
@@ -782,7 +789,7 @@
     "f s"   '(save-buffer :which-key "Save file")
     "f C"   '(copy-file :which-key "Copy file")
     "f D"   '(delete-file :which-key "Delete file")
-    "r f" '(org-roam-node-find :which-key "find node")
+    "r f"   '(org-roam-node-find :which-key "find node")
     "f R"   '(rename-file :which-key "Rename file")
     "k b"   '(kill-buffer-and-window :which-key "kill and close current")
     "k s"   '(kill-some-buffers :which-key "kill some buffers")

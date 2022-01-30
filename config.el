@@ -58,6 +58,11 @@
 (add-to-list
  'org-structure-template-alist '("el" . "src elisp"))
 
+(use-package org-preview-html
+  :ensure t
+  :config
+  (setq org-preview-html-viewer 'eww))
+
 (use-package org-roam
   :ensure t
   :bind (:map org-mode-map
@@ -97,7 +102,6 @@
  :ensure t
  :init
  (vertico-mode)
-
   ; Optionally enable cycling for `vertico-next' and `vertico-previous'.
   (setq vertico-cycle t))
 
@@ -491,7 +495,7 @@
   "f s"   '(save-buffer :which-key "Save file")
   "f C"   '(copy-file :which-key "Copy file")
   "f D"   '(delete-file :which-key "Delete file")
-  "r f" '(org-roam-node-find :which-key "find node")
+  "r f"   '(org-roam-node-find :which-key "find node")
   "f R"   '(rename-file :which-key "Rename file")
   "k b"   '(kill-buffer-and-window :which-key "kill and close current")
   "k s"   '(kill-some-buffers :which-key "kill some buffers")
