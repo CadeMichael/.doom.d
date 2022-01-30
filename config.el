@@ -7,7 +7,9 @@
 
 (defvar bootstrap-version)
 (let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+       (expand-file-name
+	"straight/repos/straight.el/bootstrap.el"
+	user-emacs-directory))
       (bootstrap-version 5))
   (unless (file-exists-p bootstrap-file)
     (with-current-buffer
@@ -49,9 +51,9 @@
 
 (use-package org-bullets
     :ensure t
-	:init
-	(add-hook 'org-mode-hook (lambda ()
-			    (org-bullets-mode 1))))
+        :init
+        (add-hook 'org-mode-hook (lambda ()
+                            (org-bullets-mode 1))))
 
 (require 'org-tempo)
 ;; src block short cuts
@@ -76,7 +78,8 @@
  :keymaps 'org-mode-map
  :prefix "SPC"
  "r i" '(org-roam-node-insert :which-key "node insert")
- "r b" '(org-roam-buffer-toggle :which-key "buffer toggle"))
+ "r b" '(org-roam-buffer-toggle :which-key "buffer toggle")
+ "P" '(org-preview-html-mode :which-key "Org Preview HTML"))
 
 (setq org-log-done t)
 (setq org-agenda-files '("~/.schedule"))
@@ -106,7 +109,6 @@
   (setq vertico-cycle t))
 
 (setq shell-file-name "/bin/zsh") ;; this will be different for linux and mac machines
-;;(setq shell-file-name "/bin/bash") ;; this will be different for linux and mac machines
 (use-package vterm
   :ensure t)
 (setq vterm-kill-buffer-on-exit t)
@@ -164,10 +166,14 @@
   :ensure t
   :hook
   (lsp-mode . lsp-enable-which-key-integration)
+  ;; golang
   (go-mode . lsp-deferred)
+  ;; javascript
   (js-mode . lsp-deferred)
+  ;; svelte 
   (web-mode . lsp-deferred)
-  (svelte-mode . lsp-deferred)
+  ;; haskell
+  (haskell-mode .lsp-deferred)
   :commands (lsp lsp-deferred)
   :config
   (define-key lsp-mode-map (kbd "C-l C-l") lsp-command-map))
@@ -223,8 +229,6 @@
 (use-package haskell-mode :ensure t)
 (use-package lsp-haskell :ensure t)
 (require 'lsp-haskell)
-(add-hook 'haskell-mode-hook #'lsp)
-(add-hook 'haskell-literate-mode-hook #'lsp)
 
 (require 'haskell-interactive-mode)
 (require 'haskell-process)
@@ -284,7 +288,11 @@
 (use-package svelte-mode :ensure t)
 (use-package web-mode :ensure t)
 (setq web-mode-enable-auto-pairing t)
+;; html support 
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+;; svelte support 
+(setq web-mode-engines-alist
+      '(("svelte" . "\\.svelte\\'")))
 (eval-after-load "web-mode"
   '(setq web-mode-enable-auto-expanding t))
 
@@ -306,6 +314,7 @@
 (use-package geiser-guile :ensure t)
 
 (use-package racket-mode :ensure t) 
+;; org mode src block support
 (use-package ob-racket
   :after org
   :config
@@ -320,6 +329,7 @@
  :keymaps 'racket-mode-map
  :prefix "SPC"
  "\\" '(racket-insert-lambda :which-key "insert lambda"))
+
 (general-define-key
  :states '(visual)
  :keymaps 'racket-mode-map
@@ -329,7 +339,7 @@
 (use-package slime :ensure t)
 (setq inferior-lisp-program "sbcl")
 
-(use-package flycheck-clj-kondo :ensure t)
+(use-package flycheck-clj-kondo :ensure t) ;ensure that you get syntax highlighting
 (use-package clojure-mode
   :ensure t
   :config
@@ -340,11 +350,10 @@
  :keymaps 'cider-mode-map
  :prefix "SPC"
  "r" '(cider-eval-region :which-key "send region"))
-;;(setq cider-lein-parameters "repl :headless :host localhost")
 
 (use-package smartparens :ensure t)
 (require 'smartparens-config)
-(sp-pair "\<" nil :actions :rem)
+(sp-pair "\<" nil :actions :rem) ;don't use with < from html 
 (add-hook 'racket-mode-hook #'smartparens-mode)
 (add-hook 'clojure-mode-hook #'smartparens-mode)
 (add-hook 'scheme-mode-hook #'smartparens-mode)
@@ -382,7 +391,7 @@
 
 (use-package markdown-mode :ensure t
   :config
-  (add-hook 'markdown-mode-hook 'flyspell-mode))
+  (add-hook 'markdown-mode-hook 'flyspell-mode)) ;make sure spelling is alright
 
 (use-package ess :ensure t)
 (require 'ess-site)
@@ -432,7 +441,8 @@
 (setq display-line-numbers-type 'relative)
 
 (use-package dracula-theme :ensure t)
-(load-theme 'dracula t)
+(use-package gruvbox-theme :ensure t)
+(load-theme 'gruvbox t)
 
 (use-package smart-mode-line :ensure t)
 (setq sml/theme 'respectful)
