@@ -61,7 +61,7 @@
 (use-package org-preview-html
   :ensure t
   :config
-  (setq org-preview-html-viewer 'eww))
+  (setq org-preview-html-viewer 'xwidget))
 
 (use-package org-roam
   :ensure t
@@ -121,6 +121,17 @@
 
 (use-package magit :ensure t)
 (use-package git-gutter :ensure t :config (global-git-gutter-mode +1))
+
+(use-package treemacs
+  :ensure t
+  :config
+  (setq treemacs-is-never-other-window t)
+  (general-define-key
+   :states '(normal)
+   :keymaps 'override
+   :prefix "SPC"
+   "N" '(treemacs :which-key "treemacs")
+   "n" '(treemacs-select-window :which-key "treemacs")))
 
 (use-package ztree :ensure t)
 (general-define-key

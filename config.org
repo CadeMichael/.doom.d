@@ -99,7 +99,7 @@
   (use-package org-preview-html
     :ensure t
     :config
-    (setq org-preview-html-viewer 'eww))
+    (setq org-preview-html-viewer 'xwidget))
   #+end_src
 - Org Roam [[https://www.orgroam.com][link]]
   #+begin_src elisp
@@ -183,6 +183,20 @@
 #+end_src
 
 ** File Browser
+- TreeMacs file browser, good for project file browsing
+  #+begin_src elisp
+  (use-package treemacs
+    :ensure t
+    :config
+    (setq treemacs-is-never-other-window t)
+    (general-define-key
+     :states '(normal)
+     :keymaps 'override
+     :prefix "SPC"
+     "N" '(treemacs :which-key "treemacs")
+     "n" '(treemacs-select-window :which-key "treemacs")))
+  #+end_src
+  - ~C-c C-p~ gets you to the right key options
 
 - testing ztree with some "vimified" keybindings to help with file navigation. The main draw of ztree is its simplicity and that it is 100% elisp.
   #+begin_src elisp
@@ -617,11 +631,11 @@
 #+end_src
 
 - some usefull commands
-  | command | function            |
-  |---------+---------------------|
-  | C-RET   | eval line           |
-  | C-M-x   | eval paragraph      |
-  | M-n e   | knit document       |
+  | command | function       |
+  |---------+----------------|
+  | C-RET   | eval line      |
+  | C-M-x   | eval paragraph |
+  | M-n e   | knit document  |
 *** cht.sh
 #+begin_src elisp
 (add-to-list 'load-path "~/.emacs.d/lisp/")
