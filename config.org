@@ -347,6 +347,7 @@
   (add-hook 'racket-mode-hook #'aggressive-indent-mode)
   (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
   (add-hook 'clojure-mode-hook #'aggressive-indent-mode)
+  (add-hook 'svelte-mode-hook #'aggressive-indent-mode)
   #+end_src
 *** Helm
 - helm is a fuzzy finder for emacs
@@ -463,7 +464,8 @@
   (setq web-mode-enable-auto-pairing t)
   ;; html support 
   (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-  ;; svelte support 
+  ;; svelte support
+  (add-to-list 'auto-mode-alist '("\\.svelte\\'" . web-mode))
   (setq web-mode-engines-alist
         '(("svelte" . "\\.svelte\\'")))
   (eval-after-load "web-mode"
@@ -648,8 +650,7 @@
   | M-n e   | knit document  |
 *** cht.sh
 #+begin_src elisp
-(add-to-list 'load-path "~/.emacs.d/lisp/")
-(load "cheat-sh.el")
+(use-package cheat-sh :ensure t)
 #+end_src
 
 * Themes

@@ -219,6 +219,7 @@
 (add-hook 'racket-mode-hook #'aggressive-indent-mode)
 (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
 (add-hook 'clojure-mode-hook #'aggressive-indent-mode)
+(add-hook 'svelte-mode-hook #'aggressive-indent-mode)
 
 (use-package helm-lsp :ensure t)
 (use-package helm :ensure t
@@ -290,7 +291,8 @@
 (setq web-mode-enable-auto-pairing t)
 ;; html support 
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-;; svelte support 
+;; svelte support
+(add-to-list 'auto-mode-alist '("\\.svelte\\'" . web-mode))
 (setq web-mode-engines-alist
       '(("svelte" . "\\.svelte\\'")))
 (eval-after-load "web-mode"
@@ -422,8 +424,7 @@
 (add-to-list 'auto-mode-alist '("\\.Rnw" . poly-noweb+r-mode))
 (add-to-list 'auto-mode-alist '("\\.Rmd" . poly-markdown+r-mode))
 
-(add-to-list 'load-path "~/.emacs.d/lisp/")
-(load "cheat-sh.el")
+(use-package cheat-sh :ensure t)
 
 ;;(menu-bar-mode 0)
 ;;(tool-bar-mode 0)
