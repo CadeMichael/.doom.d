@@ -161,7 +161,13 @@
 (use-package flycheck
   :ensure t
   :init (global-flycheck-mode))
+;; ensure that standard error handling ports to flycheck
+(setq flycheck-standard-error-navigation t)
 
+;; more IDE like features with LSP
+(use-package lsp-ui :ensure t) 
+
+;; lsp mode
 (use-package lsp-mode
   :ensure t
   :hook
@@ -175,10 +181,15 @@
   ;; haskell
   (haskell-mode .lsp-deferred)
   :commands (lsp lsp-deferred)
+  :bind-keymap ("C-l" . lsp-command-map)
   :config
-  (define-key lsp-mode-map (kbd "C-l C-l") lsp-command-map))
-
-(use-package lsp-ui :ensure t)
+  ;; use M-? to peek references
+  (define-key lsp-ui-mode-map
+              [remap xref-find-references]
+              #'lsp-ui-peek-find-references)
+  (define-key lsp-ui-mode-map
+              [remap xref-find-references]
+              #'lsp-ui-peek-find-references))
 
 (use-package company
   :ensure t
@@ -215,11 +226,13 @@
 (add-hook 'racket-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'clojure-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'web-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'go-mode-hook #'rainbow-delimiters-mode)
 (use-package aggressive-indent :ensure t)
 (add-hook 'racket-mode-hook #'aggressive-indent-mode)
 (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
 (add-hook 'clojure-mode-hook #'aggressive-indent-mode)
-(add-hook 'svelte-mode-hook #'aggressive-indent-mode)
+(add-hook 'web-mode-hook #'aggressive-indent-mode)
 
 (use-package helm-lsp :ensure t)
 (use-package helm :ensure t
@@ -273,24 +286,25 @@
 (setq rustic-lsp-client 'lsp-mode)
 
 (use-package nodejs-repl :ensure t)
-  (add-hook 'js-mode-hook
-          (lambda ()
-            (define-key js-mode-map (kbd "C-x C-e") 'nodejs-repl-send-last-expression)
-            (define-key js-mode-map (kbd "C-c C-j") 'nodejs-repl-send-line)
-            (define-key js-mode-map (kbd "C-c C-c") 'nodejs-repl-send-buffer)
-            (define-key js-mode-map (kbd "C-c C-l") 'nodejs-repl-load-file)
-            (define-key js-mode-map (kbd "C-c C-z") 'nodejs-repl-switch-to-repl)))
+(add-hook 'js-mode-hook
+        (lambda ()
+          (define-key js-mode-map (kbd "C-x C-e") 'nodejs-repl-send-last-expression)
+          (define-key js-mode-map (kbd "C-c C-j") 'nodejs-repl-send-line)
+          (define-key js-mode-map (kbd "C-c C-c") 'nodejs-repl-send-buffer)
+          (define-key js-mode-map (kbd "C-c C-l") 'nodejs-repl-load-file)
+          (define-key js-mode-map (kbd "C-c C-z") 'nodejs-repl-switch-to-repl)))
 (general-define-key
  :states '(visual)
  :keymaps 'js-mode-map
  :prefix "SPC"
  "r" '(nodejs-repl-send-region :which-key "send region"))
 
-(use-package svelte-mode :ensure t)
 (use-package web-mode :ensure t)
 (setq web-mode-enable-auto-pairing t)
 ;; html support 
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+;; css support
+(add-to-list 'auto-mode-alist '("\\.css\\'" . css-mode))
 ;; svelte support
 (add-to-list 'auto-mode-alist '("\\.svelte\\'" . web-mode))
 (setq web-mode-engines-alist
@@ -341,7 +355,8 @@
 (use-package slime :ensure t)
 (setq inferior-lisp-program "sbcl")
 
-(use-package flycheck-clj-kondo :ensure t) ;ensure that you get syntax highlighting
+;; error handling / linting
+(use-package flycheck-clj-kondo :ensure t)
 (use-package clojure-mode
   :ensure t
   :config
@@ -356,15 +371,17 @@
 (use-package smartparens :ensure t)
 (require 'smartparens-config)
 (sp-pair "\<" nil :actions :rem) ;don't use with < from html 
-(add-hook 'racket-mode-hook #'smartparens-mode)
 (add-hook 'clojure-mode-hook #'smartparens-mode)
-(add-hook 'scheme-mode-hook #'smartparens-mode)
-(add-hook 'rustic-mode-hook #'smartparens-mode)
+(add-hook 'css-mode-hook #'smartparens-mode)
+(add-hook 'emacs-lisp-mode-hook #'smartparens-mode)
+(add-hook 'lisp-interaction-mode-hook #'smartparens-mode)
+(add-hook 'lua-mode-hook #'smartparens-mode)
 (add-hook 'go-mode-hook #'smartparens-mode)
 (add-hook 'js-mode-hook #'smartparens-mode)
-(add-hook 'lua-mode-hook #'smartparens-mode)
-(add-hook 'lisp-interaction-mode-hook #'smartparens-mode)
-(add-hook 'emacs-lisp-mode-hook #'smartparens-mode)
+(add-hook 'racket-mode-hook #'smartparens-mode)
+(add-hook 'rustic-mode-hook #'smartparens-mode)
+(add-hook 'scheme-mode-hook #'smartparens-mode)
+(add-hook 'svelte-mode-hook #'smartparens-mode)
 (general-define-key
    :states '(normal)
    :keymaps 'smartparens-mode-map
@@ -376,7 +393,7 @@
    "(" '(sp-backward-slurp-sexp :whick-key "Slurp backward")
    ")" '(sp-forward-slurp-sexp :which-key "Slurp forward")
    "^" '(sp-join-sexp :which-key "join sexp")
-   "+" '(sp-absorb-sexp :which-key "join sexp")
+   "+" '(sp-absorb-sexp :which-key "absorb sexp")
    "|" '(sp-split-sexp :which-key "split sexp"))
 
 (general-define-key
@@ -415,19 +432,15 @@
 (require 'poly-R)
 
 ;; MARKDOWN
-
 (add-to-list 'auto-mode-alist '("\\.md" . poly-markdown-mode))
 
-;; R modes
-
-(add-to-list 'auto-mode-alist '("\\.Snw" . poly-noweb+r-mode))
-(add-to-list 'auto-mode-alist '("\\.Rnw" . poly-noweb+r-mode))
+;; R mode
 (add-to-list 'auto-mode-alist '("\\.Rmd" . poly-markdown+r-mode))
 
 (use-package cheat-sh :ensure t)
 
 ;;(menu-bar-mode 0)
-;;(tool-bar-mode 0)
+(tool-bar-mode -1)
 (scroll-bar-mode -1)
 (setq inhibit-splash-screen t)
 (setq make-backup-files nil) 
@@ -442,8 +455,7 @@
 (setq display-line-numbers-type 'relative)
 
 (use-package dracula-theme :ensure t)
-(use-package gruvbox-theme :ensure t)
-(load-theme 'gruvbox t)
+(load-theme 'dracula t)
 
 (use-package smart-mode-line :ensure t)
 (setq sml/theme 'respectful)
@@ -475,7 +487,8 @@
         org-hide-emphasis-markers t
         org-bullets-bullet-list '("●" "○" "◆" "◇"))
 (setq org-src-preserve-indentation nil)
-(use-package htmlize :ensure t) ;; allows for syntax highlighting on exports
+;; allows for syntax highlighting on exports
+(use-package htmlize :ensure t)
 
 (setq org-src-fontify-natively t
     org-src-tab-acts-natively t
@@ -496,9 +509,21 @@
 ;; basic conf
 (push '("conf-unix" . conf-unix) org-src-lang-modes)
 
-(set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+(require 'color)
+;; src blocks
+(set-face-attribute 'org-block nil :foreground nil
+                    :inherit '(fixed-pitch))
+;; code
 (set-face-attribute 'org-code nil
-  :inherit '(shadow fixed-pitch))
+                    :inherit '(shadow fixed-pitch))
+;; darken blocks
+(set-face-attribute 'org-block nil :background
+                    (color-darken-name
+                     (face-attribute 'default :background) 3))
+;; block lines
+(set-face-attribute 'org-block-begin-line nil :background
+                    (color-darken-name
+                     (face-attribute 'default :background) 3))
 
 (require 'ob-js)
 (add-to-list 'org-babel-tangle-lang-exts '("js" . "js"))
@@ -507,7 +532,10 @@
   "a"     '(org-agenda :which-key "org-agenda")
   "c c"   '(compile :which-key "Compile")
   "c C"   '(recompile :which-key "Recompile")
-  "h r r" '((lambda () (interactive) (load-file "~/.emacs.d/init.el")) :which-key "Reload emacs config")
+  "h r r" '((lambda ()
+              (interactive)
+              (load-file "~/.emacs.d/init.el"))
+            :which-key "Reload emacs config")
   "t t"   '(toggle-truncate-lines :which-key "Toggle truncate lines")
   "t l"   '(tab-line-mode :which-key "tab line mode")
   ;; buffers

@@ -1,17 +1,21 @@
 #+TITLE: Vanilla Emacs --> Cade's Emacs
+#+HTML_HEAD: <style>pre.src{background:#282a36;color:white;} </style>
+#+HTML_HEAD: <style>body{background:#44475a;color:white;} </style>
+#+HTML_HEAD: <style>a{color:#50fa7b;} </style>
+#+HTML_HEAD: <style>h1,h2,h3,h4{color:#bd93f9;} </style>
 
 * Packages
 
 ** connect package.el with MELPA
-
-  #+begin_src elisp
-  (require 'package)
-  (add-to-list 'package-archives
-    '("melpa" . "https://melpa.org/packages/"))
-  (package-initialize)
-  (unless package-archive-contents
-    (package-refresh-contents))
-  #+end_src
+- melpa allows package management without needing manual installation
+#+begin_src elisp
+(require 'package)
+(add-to-list 'package-archives
+  '("melpa" . "https://melpa.org/packages/"))
+(package-initialize)
+(unless package-archive-contents
+  (package-refresh-contents))
+#+end_src
 
 ** Straight el
 - useful for when use-package fails
@@ -35,10 +39,10 @@
 
 ** installing use-package
 
-  #+begin_src elisp 
-  (unless (package-installed-p 'use-package)
-    (package-install 'use-package))
-  #+end_src
+#+begin_src elisp 
+(unless (package-installed-p 'use-package)
+  (package-install 'use-package))
+#+end_src
 
 ** Making sure the shell doesn't get messed up
 
@@ -49,105 +53,106 @@
 
 ** Extensible VI Layer
 
-  #+begin_src elisp
-  ;; package used for undoing
-  (use-package undo-fu :ensure t)
-  (use-package evil
-      :ensure t ;; install evil if not installed
-      :init     ;; tweak evil's configuration before loading
-      (setq evil-want-integration t)
-      (setq evil-want-keybinding nil)
-      (setq evil-vsplit-window-right t)
-      (setq evil-split-window-below t)
-      (setq evil-undo-system 'undo-fu)
-      (evil-mode))
-  (use-package evil-collection
-    :after evil
-    :ensure t
-    :config
-    (evil-collection-init))
-  #+end_src
+#+begin_src elisp
+;; package used for undoing
+(use-package undo-fu :ensure t)
+(use-package evil
+    :ensure t ;; install evil if not installed
+    :init     ;; tweak evil's configuration before loading
+    (setq evil-want-integration t)
+    (setq evil-want-keybinding nil)
+    (setq evil-vsplit-window-right t)
+    (setq evil-split-window-below t)
+    (setq evil-undo-system 'undo-fu)
+    (evil-mode))
+(use-package evil-collection
+  :after evil
+  :ensure t
+  :config
+  (evil-collection-init))
+#+end_src
 
 ** General for Key-remaps
 
-  #+begin_src elisp
-  (use-package general
-     :ensure t
-     :config
-     (general-evil-setup t))
-  #+end_src
+#+begin_src elisp
+(use-package general
+   :ensure t
+   :config
+   (general-evil-setup t))
+#+end_src
 
 ** Org-packages
 
 - styling
-  #+begin_src elisp
-  (use-package org-bullets
-      :ensure t
-          :init
-          (add-hook 'org-mode-hook (lambda ()
-                              (org-bullets-mode 1))))
-  #+end_src
+#+begin_src elisp
+(use-package org-bullets
+    :ensure t
+        :init
+        (add-hook 'org-mode-hook (lambda ()
+                            (org-bullets-mode 1))))
+#+end_src
   
 - shortcuts
-  #+begin_src elisp
-  (require 'org-tempo)
-  ;; src block short cuts
-  (add-to-list
-   'org-structure-template-alist '("el" . "src elisp"))
-  #+end_src
+#+begin_src elisp
+(require 'org-tempo)
+;; src block short cuts
+(add-to-list
+ 'org-structure-template-alist '("el" . "src elisp"))
+#+end_src
 
 - org previewing
-  #+begin_src elisp
-  (use-package org-preview-html
-    :ensure t
-    :config
-    (setq org-preview-html-viewer 'xwidget))
-  #+end_src
-- Org Roam [[https://www.orgroam.com][link]]
-  #+begin_src elisp
-  (use-package org-roam
-    :ensure t
-    :bind (:map org-mode-map
-                ("C-M-i" . completion-at-point)))
-  (setq org-roam-directory (file-truename "~/org"))
-  (org-roam-db-autosync-mode)
+#+begin_src elisp
+(use-package org-preview-html
+  :ensure t
+  :config
+  (setq org-preview-html-viewer 'xwidget))
+#+end_src
 
-  ;; kemappings
-  (general-define-key
-   :states '(normal)
-   :keymaps 'org-mode-map
-   :prefix "SPC"
-   "r i" '(org-roam-node-insert :which-key "node insert")
-   "r b" '(org-roam-buffer-toggle :which-key "buffer toggle")
-   "P" '(org-preview-html-mode :which-key "Org Preview HTML"))
-  #+end_src
+- Org Roam [[https://www.orgroam.com][link]]
+#+begin_src elisp
+(use-package org-roam
+  :ensure t
+  :bind (:map org-mode-map
+              ("C-M-i" . completion-at-point)))
+(setq org-roam-directory (file-truename "~/org"))
+(org-roam-db-autosync-mode)
+
+;; kemappings
+(general-define-key
+ :states '(normal)
+ :keymaps 'org-mode-map
+ :prefix "SPC"
+ "r i" '(org-roam-node-insert :which-key "node insert")
+ "r b" '(org-roam-buffer-toggle :which-key "buffer toggle")
+ "P" '(org-preview-html-mode :which-key "Org Preview HTML"))
+#+end_src
 
 - Org Agenda
-  #+begin_src elisp
-  (setq org-log-done t)
-  (setq org-agenda-files '("~/.schedule"))
-  #+end_src
+#+begin_src elisp
+(setq org-log-done t)
+(setq org-agenda-files '("~/.schedule"))
+#+end_src
 
 ** Which Key
 
-  #+begin_src elisp
-  (use-package which-key
-  :ensure t
-  :init
-          (setq which-key-side-window-location 'bottom
-                  which-key-sort-order #'which-key-key-order-alpha
-                  which-key-sort-uppercase-first nil
-                  which-key-add-column-padding 1
-                  which-key-max-display-columns nil
-                  which-key-min-display-lines 6
-                  which-key-side-window-slot -10
-                  which-key-side-window-max-height 0.25
-                  which-key-idle-delay 0.8
-                  which-key-max-description-length 25
-                  which-key-allow-imprecise-window-fit t
-                  which-key-separator " --> " ))
-  (which-key-mode)
-  #+end_src
+#+begin_src elisp
+(use-package which-key
+:ensure t
+:init
+        (setq which-key-side-window-location 'bottom
+                which-key-sort-order #'which-key-key-order-alpha
+                which-key-sort-uppercase-first nil
+                which-key-add-column-padding 1
+                which-key-max-display-columns nil
+                which-key-min-display-lines 6
+                which-key-side-window-slot -10
+                which-key-side-window-max-height 0.25
+                which-key-idle-delay 0.8
+                which-key-max-description-length 25
+                which-key-allow-imprecise-window-fit t
+                which-key-separator " --> " ))
+(which-key-mode)
+#+end_src
 
 ** Vertico
 
@@ -162,20 +167,20 @@
 
 ** V Terminal
 
-  #+begin_src elisp
-  (setq shell-file-name "/bin/zsh") ;; this will be different for linux and mac machines
-  (use-package vterm
-    :ensure t)
-  (setq vterm-kill-buffer-on-exit t)
-  (general-define-key
-   :states '(normal)
-   :keymaps 'override
-   :prefix "SPC"
-   "v" '(vterm-other-window :which-key "open vterm in other window"))
-  (add-hook 'vterm-mode-hook
-            #'(lambda ()
-               (local-set-key (kbd "C-c q") #'kill-buffer-and-window)))
-  #+end_src
+#+begin_src elisp
+(setq shell-file-name "/bin/zsh") ;; this will be different for linux and mac machines
+(use-package vterm
+  :ensure t)
+(setq vterm-kill-buffer-on-exit t)
+(general-define-key
+ :states '(normal)
+ :keymaps 'override
+ :prefix "SPC"
+ "v" '(vterm-other-window :which-key "open vterm in other window"))
+(add-hook 'vterm-mode-hook
+          #'(lambda ()
+             (local-set-key (kbd "C-c q") #'kill-buffer-and-window)))
+#+end_src
 
 ** Git integration
 
@@ -186,33 +191,33 @@
 
 ** File Browser
 - TreeMacs file browser, good for project file browsing
-  #+begin_src elisp
-  (use-package treemacs
-    :ensure t
-    :config
-    (setq treemacs-is-never-other-window t)
-    (general-define-key
-     :states '(normal)
-     :keymaps 'override
-     :prefix "SPC"
-     "N" '(treemacs :which-key "treemacs")
-     "n" '(treemacs-select-window :which-key "treemacs")))
-  #+end_src
-  - ~C-c C-p~ gets you to the right key options
-
-- testing ztree with some "vimified" keybindings to help with file navigation. The main draw of ztree is its simplicity and that it is 100% elisp.
-  #+begin_src elisp
-  (use-package ztree :ensure t)
+#+begin_src elisp
+(use-package treemacs
+  :ensure t
+  :config
+  (setq treemacs-is-never-other-window t)
   (general-define-key
    :states '(normal)
    :keymaps 'override
    :prefix "SPC"
-   "z" '(ztree-dir :which-key "open ztree directory view"))
-  (setq ztree-dir-move-focus t)
-  (add-hook 'ztree-mode-hook
-            #'(lambda ()
-               (local-set-key (kbd "C-c q") #'kill-buffer-and-window)))
-  #+end_src
+   "N" '(treemacs :which-key "treemacs")
+   "n" '(treemacs-select-window :which-key "treemacs")))
+#+end_src
+  - ~C-c C-p~ gets you to the right key options
+
+- testing ztree with some "vimified" keybindings to help with file navigation. The main draw of ztree is its simplicity and that it is 100% elisp.
+#+begin_src elisp
+(use-package ztree :ensure t)
+(general-define-key
+ :states '(normal)
+ :keymaps 'override
+ :prefix "SPC"
+ "z" '(ztree-dir :which-key "open ztree directory view"))
+(setq ztree-dir-move-focus t)
+(add-hook 'ztree-mode-hook
+          #'(lambda ()
+             (local-set-key (kbd "C-c q") #'kill-buffer-and-window)))
+#+end_src
 
 - adding some vim like keymappings
 
@@ -225,21 +230,21 @@
   | c-z d | open dired at current point in tree             |
 
 - mac os or "darwin" specific dired config
-  #+begin_src elisp
-  (when (string= system-type "darwin")       
-    (setq dired-use-ls-dired nil))
-  #+end_src 
+#+begin_src elisp
+(when (string= system-type "darwin")       
+  (setq dired-use-ls-dired nil))
+#+end_src 
 
-  #+begin_src elisp
-  (general-define-key
-   :states '(normal)
-   :keymaps 'ztree-mode-map
-   "H" 'ztree-dir-widen-to-parent
-   "L" 'ztree-dir-narrow-to-dir
-   "o" 'ztree-perform-action)
-  (define-key ztree-mode-map (kbd "C-h") 'ztree-dir-toggle-show-filtered-files)
-  (define-key ztree-mode-map (kbd "C-z d") 'ztree-dir-open-dired-at-point)
-  #+end_src
+#+begin_src elisp
+(general-define-key
+ :states '(normal)
+ :keymaps 'ztree-mode-map
+ "H" 'ztree-dir-widen-to-parent
+ "L" 'ztree-dir-narrow-to-dir
+ "o" 'ztree-perform-action)
+(define-key ztree-mode-map (kbd "C-h") 'ztree-dir-toggle-show-filtered-files)
+(define-key ztree-mode-map (kbd "C-z d") 'ztree-dir-open-dired-at-point)
+#+end_src
 
 ** Language support
 
@@ -249,74 +254,90 @@
 (use-package flycheck
   :ensure t
   :init (global-flycheck-mode))
+;; ensure that standard error handling ports to flycheck
+(setq flycheck-standard-error-navigation t)
 #+end_src
+- some most used error key bindings 
+| M-g n   | next error             |
+| M-g p   | previous error         |
+| C-c !   | error command map      |
+| C-c ! e | explain error at point |
+| C-c ! h | display error at point |
+| C-c ! l | list errors            |
 
 *** LSP-mode
 
 - using lsp-deferred so that only when a buffer is open, this should make startup faster and emacs a bit more performant (i hope)
 - I will only be using the LSP with certain languages, for most languages I will try to refrain from using a language server purely to force myself to be a bit more precise while programming
 - to add and remove folders use 'C-l -> C-l -> F'
-  #+begin_src elisp
-  (use-package lsp-mode
-    :ensure t
-    :hook
-    (lsp-mode . lsp-enable-which-key-integration)
-    ;; golang
-    (go-mode . lsp-deferred)
-    ;; javascript
-    (js-mode . lsp-deferred)
-    ;; svelte 
-    (web-mode . lsp-deferred)
-    ;; haskell
-    (haskell-mode .lsp-deferred)
-    :commands (lsp lsp-deferred)
-    :config
-    (define-key lsp-mode-map (kbd "C-l C-l") lsp-command-map))
-  #+End_src
-- also using lsp-ui to give more of an IDE feel to emacs
-  #+begin_src elisp
-  (use-package lsp-ui :ensure t)
-  #+end_src
+#+begin_src elisp
+;; more IDE like features with LSP
+(use-package lsp-ui :ensure t) 
+
+;; lsp mode
+(use-package lsp-mode
+  :ensure t
+  :hook
+  (lsp-mode . lsp-enable-which-key-integration)
+  ;; golang
+  (go-mode . lsp-deferred)
+  ;; javascript
+  (js-mode . lsp-deferred)
+  ;; svelte 
+  (web-mode . lsp-deferred)
+  ;; haskell
+  (haskell-mode .lsp-deferred)
+  :commands (lsp lsp-deferred)
+  :bind-keymap ("C-l" . lsp-command-map)
+  :config
+  ;; use M-? to peek references
+  (define-key lsp-ui-mode-map
+              [remap xref-find-references]
+              #'lsp-ui-peek-find-references)
+  (define-key lsp-ui-mode-map
+              [remap xref-find-references]
+              #'lsp-ui-peek-find-references))
+#+end_src
 - the documentation of what I am using can be found [[https://emacs-lsp.github.io/lsp-mode/page/main-features/][here]]
 
 *** Company-mode
 
 - this mode allows for an autocomplete window to popup as you code
 - i had it enabled in all buffers but was not a huge fan of this so I bound it to the vim COC control space keybinding to initialize it 
-  #+begin_src elisp
-  (use-package company
-    :ensure t
-    :bind ("C-SPC" . company-mode)
-    :config (setq lsp-completion-provider :capf))
+#+begin_src elisp
+(use-package company
+  :ensure t
+  :bind ("C-SPC" . company-mode)
+  :config (setq lsp-completion-provider :capf))
 
-  (with-eval-after-load 'company
-    (define-key company-active-map (kbd "Tab") nil)
-    (define-key company-active-map (kbd "<tab>") nil))
-  #+end_src
+(with-eval-after-load 'company
+  (define-key company-active-map (kbd "Tab") nil)
+  (define-key company-active-map (kbd "<tab>") nil))
+#+end_src
 
 - Remove the tab function as it conflicts with yas snippet
 
 - the "recommended settings"
-  #+begin_src elisp
-  (setq company-minimum-prefix-length 1
-        company-idle-delay 0.0) ;; default is 0.2
-  (setq company-selection-wrap-around t)
-  (setq lsp-ui-doc-show-with-cursor nil)
-  #+end_src
+#+begin_src elisp
+(setq company-minimum-prefix-length 1
+      company-idle-delay 0.0) ;; default is 0.2
+(setq company-selection-wrap-around t)
+(setq lsp-ui-doc-show-with-cursor nil)
+#+end_src
 
 *** Yas Snippet
 - what would and IDE be without some snippets?
 - using yas snippet seems to be the best
 - enable the global minor mode
 
-  #+begin_src elisp
-  (use-package yasnippet :ensure t
-    :config
-    (setq yas-snippet-dirs '("~/.emacs.d/snips"))
-    ;; preventing weird indenting 
-    (setq yas-indent-line 'fixed)
-    (yas-global-mode 1))
-  #+end_src
+#+begin_src elisp
+(use-package yasnippet :ensure t
+  :config
+  (setq yas-snippet-dirs '("~/.emacs.d/snips"))
+  ;; preventing weird indenting 
+  (setq yas-indent-line 'fixed)
+  (yas-global-mode 1))
+#+end_src
 
 - Snippets are just files (no extension) 
 
@@ -337,18 +358,20 @@
 - 
 *** colored parens
 - easier to see parenthesis colors
-  #+begin_src elisp
-  (use-package rainbow-delimiters :ensure t)
-  (add-hook 'org-mode-hook #'rainbow-delimiters-mode)
-  (add-hook 'racket-mode-hook #'rainbow-delimiters-mode)
-  (add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
-  (add-hook 'clojure-mode-hook #'rainbow-delimiters-mode)
-  (use-package aggressive-indent :ensure t)
-  (add-hook 'racket-mode-hook #'aggressive-indent-mode)
-  (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
-  (add-hook 'clojure-mode-hook #'aggressive-indent-mode)
-  (add-hook 'svelte-mode-hook #'aggressive-indent-mode)
-  #+end_src
+#+begin_src elisp
+(use-package rainbow-delimiters :ensure t)
+(add-hook 'org-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'racket-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'clojure-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'web-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'go-mode-hook #'rainbow-delimiters-mode)
+(use-package aggressive-indent :ensure t)
+(add-hook 'racket-mode-hook #'aggressive-indent-mode)
+(add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
+(add-hook 'clojure-mode-hook #'aggressive-indent-mode)
+(add-hook 'web-mode-hook #'aggressive-indent-mode)
+#+end_src
 *** Helm
 - helm is a fuzzy finder for emacs
 #+begin_src elisp
@@ -371,38 +394,38 @@
 - interactive haskell support, as detailed [[http://haskell.github.io/haskell-mode/manual/latest/Interactive-Haskell.html#Interactive-Haskell][here]] 
   - C-c C-l will open an interactive buffer /REPL like environment
 
-    #+begin_src elisp
-    (require 'haskell-interactive-mode)
-    (require 'haskell-process)
-    (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
-    #+end_src 
+#+begin_src elisp
+(require 'haskell-interactive-mode)
+(require 'haskell-process)
+(add-hook 'haskell-mode-hook 'interactive-haskell-mode)
+#+end_src 
 
   - some "helpful and benign" customizations
 
-    #+begin_src elisp
-    (custom-set-variables
-      '(haskell-process-suggest-remove-import-lines t)
-      '(haskell-process-auto-import-loaded-modules t)
-      '(haskell-process-log t))
-    #+end_src
+#+begin_src elisp
+(custom-set-variables
+  '(haskell-process-suggest-remove-import-lines t)
+  '(haskell-process-auto-import-loaded-modules t)
+  '(haskell-process-log t))
+#+end_src
 
   - some "special" keybindings that rely heavily on the space bar 
 
-    #+begin_src elisp
-    (general-define-key
-     :states '(normal)
-     :keymaps 'haskell-mode-map
-     :prefix "SPC"
-     "c l" '(haskell-process-load-or-reload :which-key "load current file")
-     "'" '(haskell-interactive-bring :which-key "interactive bring")
-     "c t" '(haskell-process-do-type :which-key "process do type")
-     "c i" '(haskell-process-do-info :which-key "process do info")
-     "c SPC c" '(haskell-process-cabal-build :which-key "cabal build")
-     "c k" '(haskell-interactive-mode-clear :which-key "interactive mode clear")
-     "c c" '(haskell-process-cabal :which-key "process cabal"))
-    ;; managing imports
-    (define-key haskell-mode-map (kbd "<f8>") 'haskell-navigate-imports)
-    #+end_src
+#+begin_src elisp
+(general-define-key
+ :states '(normal)
+ :keymaps 'haskell-mode-map
+ :prefix "SPC"
+ "c l" '(haskell-process-load-or-reload :which-key "load current file")
+ "'" '(haskell-interactive-bring :which-key "interactive bring")
+ "c t" '(haskell-process-do-type :which-key "process do type")
+ "c i" '(haskell-process-do-info :which-key "process do info")
+ "c SPC c" '(haskell-process-cabal-build :which-key "cabal build")
+ "c k" '(haskell-interactive-mode-clear :which-key "interactive mode clear")
+ "c c" '(haskell-process-cabal :which-key "process cabal"))
+;; managing imports
+(define-key haskell-mode-map (kbd "<f8>") 'haskell-navigate-imports)
+#+end_src
 *** Lua
 - using lua mode with the lsp server that was compiled and installed to .emacs.d/.cache/lsp
 - some of the helpful commands and more involved instructions can be found on the [[https://emacs-lsp.github.io/lsp-mode/page/lsp-lua-language-server/][emacs-lsp]] website
@@ -417,19 +440,18 @@
 - to get flycheck to work install luacheck
   - ~luarocks install luacheck~
 *** GoLang
-
 - Getting go-mode installed
-  #+begin_src elisp
-  (use-package go-mode :ensure t)
-  #+end_src
+#+begin_src elisp
+(use-package go-mode :ensure t)
+#+end_src
 
 - some settings promoted by go, allows for auto-formatting on save
-  #+begin_src elisp
-  (defun lsp-go-install-save-hooks ()
-    (add-hook 'before-save-hook #'lsp-format-buffer t t)
-    (add-hook 'before-save-hook #'lsp-organize-imports t t))
-  (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
-  #+end_src
+#+begin_src elisp
+(defun lsp-go-install-save-hooks ()
+  (add-hook 'before-save-hook #'lsp-format-buffer t t)
+  (add-hook 'before-save-hook #'lsp-organize-imports t t))
+(add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+#+end_src
 *** Rust
 - Rustic seems to be a very well thought out (and hopefully implemented package) it connects to lsp mode / flycheck and uses rust-analyzer by default.
 - I will set these just to be extra specific 
@@ -441,36 +463,37 @@
 #+end_src
 *** JS
 - using *js Repl* to get a repl experience 
-  #+begin_src elisp
-  (use-package nodejs-repl :ensure t)
-  (add-hook 'js-mode-hook
-          (lambda ()
-            (define-key js-mode-map (kbd "C-x C-e") 'nodejs-repl-send-last-expression)
-            (define-key js-mode-map (kbd "C-c C-j") 'nodejs-repl-send-line)
-            (define-key js-mode-map (kbd "C-c C-c") 'nodejs-repl-send-buffer)
-            (define-key js-mode-map (kbd "C-c C-l") 'nodejs-repl-load-file)
-            (define-key js-mode-map (kbd "C-c C-z") 'nodejs-repl-switch-to-repl)))
+#+begin_src elisp
+(use-package nodejs-repl :ensure t)
+(add-hook 'js-mode-hook
+        (lambda ()
+          (define-key js-mode-map (kbd "C-x C-e") 'nodejs-repl-send-last-expression)
+          (define-key js-mode-map (kbd "C-c C-j") 'nodejs-repl-send-line)
+          (define-key js-mode-map (kbd "C-c C-c") 'nodejs-repl-send-buffer)
+          (define-key js-mode-map (kbd "C-c C-l") 'nodejs-repl-load-file)
+          (define-key js-mode-map (kbd "C-c C-z") 'nodejs-repl-switch-to-repl)))
 (general-define-key
  :states '(visual)
  :keymaps 'js-mode-map
  :prefix "SPC"
  "r" '(nodejs-repl-send-region :which-key "send region"))
-  #+end_src
+#+end_src
 
 - getting support for svelte/ web development
-  #+begin_src elisp
-  (use-package svelte-mode :ensure t)
-  (use-package web-mode :ensure t)
-  (setq web-mode-enable-auto-pairing t)
-  ;; html support 
-  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-  ;; svelte support
-  (add-to-list 'auto-mode-alist '("\\.svelte\\'" . web-mode))
-  (setq web-mode-engines-alist
-        '(("svelte" . "\\.svelte\\'")))
-  (eval-after-load "web-mode"
-    '(setq web-mode-enable-auto-expanding t))
-  #+end_src
+#+begin_src elisp
+(use-package web-mode :ensure t)
+(setq web-mode-enable-auto-pairing t)
+;; html support 
+(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+;; css support
+(add-to-list 'auto-mode-alist '("\\.css\\'" . css-mode))
+;; svelte support
+(add-to-list 'auto-mode-alist '("\\.svelte\\'" . web-mode))
+(setq web-mode-engines-alist
+      '(("svelte" . "\\.svelte\\'")))
+(eval-after-load "web-mode"
+  '(setq web-mode-enable-auto-expanding t))
+#+end_src
 *** Java
 #+begin_src elisp
 (use-package lsp-java :ensure t :config (add-hook 'java-mode-hook #'lsp-deferred))
@@ -541,7 +564,8 @@
 #+end_src
 **** Clojure
 #+begin_src elisp
-(use-package flycheck-clj-kondo :ensure t) ;ensure that you get syntax highlighting
+;; error handling / linting
+(use-package flycheck-clj-kondo :ensure t)
 (use-package clojure-mode
   :ensure t
   :config
@@ -553,20 +577,23 @@
  :prefix "SPC"
  "r" '(cider-eval-region :which-key "send region"))
 #+end_src
+
 **** smart parens
 #+begin_src elisp
 (use-package smartparens :ensure t)
 (require 'smartparens-config)
 (sp-pair "\<" nil :actions :rem) ;don't use with < from html 
-(add-hook 'racket-mode-hook #'smartparens-mode)
 (add-hook 'clojure-mode-hook #'smartparens-mode)
-(add-hook 'scheme-mode-hook #'smartparens-mode)
-(add-hook 'rustic-mode-hook #'smartparens-mode)
+(add-hook 'css-mode-hook #'smartparens-mode)
+(add-hook 'emacs-lisp-mode-hook #'smartparens-mode)
+(add-hook 'lisp-interaction-mode-hook #'smartparens-mode)
+(add-hook 'lua-mode-hook #'smartparens-mode)
 (add-hook 'go-mode-hook #'smartparens-mode)
 (add-hook 'js-mode-hook #'smartparens-mode)
-(add-hook 'lua-mode-hook #'smartparens-mode)
-(add-hook 'lisp-interaction-mode-hook #'smartparens-mode)
-(add-hook 'emacs-lisp-mode-hook #'smartparens-mode)
+(add-hook 'racket-mode-hook #'smartparens-mode)
+(add-hook 'rustic-mode-hook #'smartparens-mode)
+(add-hook 'scheme-mode-hook #'smartparens-mode)
+(add-hook 'svelte-mode-hook #'smartparens-mode)
 (general-define-key
    :states '(normal)
    :keymaps 'smartparens-mode-map
@@ -578,7 +605,7 @@
    "(" '(sp-backward-slurp-sexp :whick-key "Slurp backward")
    ")" '(sp-forward-slurp-sexp :which-key "Slurp forward")
    "^" '(sp-join-sexp :which-key "join sexp")
-   "+" '(sp-absorb-sexp :which-key "join sexp")
+   "+" '(sp-absorb-sexp :which-key "absorb sexp")
    "|" '(sp-split-sexp :which-key "split sexp"))
 #+end_src
 **** Geiser
@@ -631,15 +658,10 @@
 (require 'poly-R)
 
 ;; MARKDOWN
-
 (add-to-list 'auto-mode-alist '("\\.md" . poly-markdown-mode))
 
-;; R modes
-
-(add-to-list 'auto-mode-alist '("\\.Snw" . poly-noweb+r-mode))
-(add-to-list 'auto-mode-alist '("\\.Rnw" . poly-noweb+r-mode))
+;; R mode
 (add-to-list 'auto-mode-alist '("\\.Rmd" . poly-markdown+r-mode))
-
 #+end_src
 
 - some usefull commands
@@ -657,26 +679,26 @@
 
 - getting rid of some junk
 
-  #+begin_src elisp
-  ;;(menu-bar-mode 0)
-  ;;(tool-bar-mode 0)
-  (scroll-bar-mode -1)
-  (setq inhibit-splash-screen t)
-  (setq make-backup-files nil) 
-  (setq auto-save-default nil)
-  #+end_src
+#+begin_src elisp
+;;(menu-bar-mode 0)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+(setq inhibit-splash-screen t)
+(setq make-backup-files nil) 
+(setq auto-save-default nil)
+#+end_src
 
 - adding line numbers
 
-  #+begin_src elisp
-  (global-display-line-numbers-mode 1)
-  (global-visual-line-mode t)
-  (add-hook 'org-mode-hook
-            (lambda () (display-line-numbers-mode -1)))
-  (add-hook 'vterm-mode-hook
-            (lambda () (display-line-numbers-mode -1)))
-  (setq display-line-numbers-type 'relative)
-  #+end_src 
+#+begin_src elisp
+(global-display-line-numbers-mode 1)
+(global-visual-line-mode t)
+(add-hook 'org-mode-hook
+          (lambda () (display-line-numbers-mode -1)))
+(add-hook 'vterm-mode-hook
+          (lambda () (display-line-numbers-mode -1)))
+(setq display-line-numbers-type 'relative)
+#+end_src 
   
 *** Color theme(s)
 
@@ -684,8 +706,7 @@
   
 #+begin_src elisp
 (use-package dracula-theme :ensure t)
-(use-package gruvbox-theme :ensure t)
-(load-theme 'gruvbox t)
+(load-theme 'dracula t)
 #+end_src
 
 *** modeline
@@ -722,23 +743,23 @@
   - using the all the icons package to make sure that unicode glyphs don't get messed up
   - you have to remember to run ~m-x all-the-icons-install-fonts~ 
 
-  #+begin_src elisp
-  (use-package all-the-icons :ensure t)
-  (add-to-list 'default-frame-alist '(font . "Monoid Nerd Font 18"))
-  #+end_src
-  - for whatever reason you need the add to list for emacs server to work
+#+begin_src elisp
+(use-package all-the-icons :ensure t)
+(add-to-list 'default-frame-alist '(font . "Monoid Nerd Font 18"))
+#+end_src
+- for whatever reason you need the add to list for emacs server to work
 
 *** Errors & warnings 
   
 - getting the error bell sound to go away and just having the mode-line flash
 
-  #+begin_src elisp
-  (setq visible-bell nil
-        ring-bell-function 'flash-mode-line)
-  (defun flash-mode-line ()
-    (invert-face 'mode-line)
-    (run-with-timer 0.1 nil #'invert-face 'mode-line))
-  #+end_src
+#+begin_src elisp
+(setq visible-bell nil
+      ring-bell-function 'flash-mode-line)
+(defun flash-mode-line ()
+  (invert-face 'mode-line)
+  (run-with-timer 0.1 nil #'invert-face 'mode-line))
+#+end_src
   
 * Org-configuration
 
@@ -750,17 +771,23 @@
         org-hide-emphasis-markers t
         org-bullets-bullet-list '("●" "○" "◆" "◇"))
 (setq org-src-preserve-indentation nil)
-(use-package htmlize :ensure t) ;; allows for syntax highlighting on exports
+;; allows for syntax highlighting on exports
+(use-package htmlize :ensure t) 
 #+end_src
+- adding the following lines give *dracula* export
+  - /#+HTML_HEAD: <style>pre.src{background:#282a36;color:white;} </style>/
+  - /#+HTML_HEAD: <style>body{background:#44475a;color:white;} </style>/
+  - /#+HTML_HEAD: <style>a{color:#50fa7b;} </style>/
+  - /#+HTML_HEAD: <style>h1,h2,h3,h4{color:#bd93f9;} </style>/
 
 ** Code-Block highlighting
 
-    #+begin_src elisp
-    (setq org-src-fontify-natively t
-        org-src-tab-acts-natively t
-        org-confirm-babel-evaluate nil
-        org-edit-src-content-indentation 0)
-    #+end_src
+#+begin_src elisp
+(setq org-src-fontify-natively t
+    org-src-tab-acts-natively t
+    org-confirm-babel-evaluate nil
+    org-edit-src-content-indentation 0)
+#+end_src
 
 ** Babel Code-Block Configuration
 
@@ -784,11 +811,23 @@
 #+end_src
 
 - making sure that the colors are the right shade etc... using the fixed pitch variable
-  #+begin_src elisp
-  (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
-  (set-face-attribute 'org-code nil
-    :inherit '(shadow fixed-pitch))
-  #+end_src
+#+begin_src elisp
+(require 'color)
+;; src blocks
+(set-face-attribute 'org-block nil :foreground nil
+                    :inherit '(fixed-pitch))
+;; code
+(set-face-attribute 'org-code nil
+                    :inherit '(shadow fixed-pitch))
+;; darken blocks
+(set-face-attribute 'org-block nil :background
+                    (color-darken-name
+                     (face-attribute 'default :background) 3))
+;; block lines
+(set-face-attribute 'org-block-begin-line nil :background
+                    (color-darken-name
+                     (face-attribute 'default :background) 3))
+#+end_src
 
 - JS configuration for babel source blocks
 
@@ -800,36 +839,39 @@
 * Key Re-mapping
 - *keymaps using General plugin*
 - these are non-package related key maps 
-  #+begin_src elisp
-  (nvmap :states 'normal :keymaps 'override :prefix "SPC"
-    "a"     '(org-agenda :which-key "org-agenda")
-    "c c"   '(compile :which-key "Compile")
-    "c C"   '(recompile :which-key "Recompile")
-    "h r r" '((lambda () (interactive) (load-file "~/.emacs.d/init.el")) :which-key "Reload emacs config")
-    "t t"   '(toggle-truncate-lines :which-key "Toggle truncate lines")
-    "t l"   '(tab-line-mode :which-key "tab line mode")
-    ;; buffers
-    "b"     '(switch-to-buffer :which-key "switch to buffer")
-    ;; File manipulation
-    "."     '(find-file :which-key "Find file")
-    "f s"   '(save-buffer :which-key "Save file")
-    "f C"   '(copy-file :which-key "Copy file")
-    "f D"   '(delete-file :which-key "Delete file")
-    "r f"   '(org-roam-node-find :which-key "find node")
-    "f R"   '(rename-file :which-key "Rename file")
-    "k b"   '(kill-buffer-and-window :which-key "kill and close current")
-    "k s"   '(kill-some-buffers :which-key "kill some buffers")
-    ;; cht sheet
-    "c h"   '(cheat-sh :which-key "open cheat sheet lookup"))
-  #+end_src
+#+begin_src elisp
+(nvmap :states 'normal :keymaps 'override :prefix "SPC"
+  "a"     '(org-agenda :which-key "org-agenda")
+  "c c"   '(compile :which-key "Compile")
+  "c C"   '(recompile :which-key "Recompile")
+  "h r r" '((lambda ()
+              (interactive)
+              (load-file "~/.emacs.d/init.el"))
+            :which-key "Reload emacs config")
+  "t t"   '(toggle-truncate-lines :which-key "Toggle truncate lines")
+  "t l"   '(tab-line-mode :which-key "tab line mode")
+  ;; buffers
+  "b"     '(switch-to-buffer :which-key "switch to buffer")
+  ;; File manipulation
+  "."     '(find-file :which-key "Find file")
+  "f s"   '(save-buffer :which-key "Save file")
+  "f C"   '(copy-file :which-key "Copy file")
+  "f D"   '(delete-file :which-key "Delete file")
+  "r f"   '(org-roam-node-find :which-key "find node")
+  "f R"   '(rename-file :which-key "Rename file")
+  "k b"   '(kill-buffer-and-window :which-key "kill and close current")
+  "k s"   '(kill-some-buffers :which-key "kill some buffers")
+  ;; cht sheet
+  "c h"   '(cheat-sh :which-key "open cheat sheet lookup"))
+#+end_src
 
-  - making vim like remaps 
-  #+begin_src elisp
-  ;; better yanking 
-  (define-key evil-normal-state-map
-              (kbd "Y")
-              (kbd "y$"))
-  #+end_src
+- making vim like remaps 
+#+begin_src elisp
+;; better yanking 
+(define-key evil-normal-state-map
+            (kbd "Y")
+            (kbd "y$"))
+#+end_src
 
 ** zooming
 - change text size 
