@@ -481,9 +481,9 @@
 (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
 
 (use-package all-the-icons :ensure t)
-(if (string= system-type "darwin")
-    (add-to-list 'default-frame-alist '(font . "FiraCode Nerd Font 14"))
-  (add-to-list 'default-frame-alist '(font . "Monoid Nerd Font 14")))
+(add-to-list 'default-frame-alist '(font . "Monoid Nerd Font 14"))
+(when (string= system-type "darwin")       
+  (add-to-list 'default-frame-alist '(font . "FiraCode Nerd Font 14")))
 
 (setq visible-bell nil
       ring-bell-function 'flash-mode-line)
