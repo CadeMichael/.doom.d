@@ -9,7 +9,7 @@
 ** connect package.el with MELPA
 - melpa allows package management without needing manual installation
 #+begin_src elisp
-(require 'package)
+(require 'package) 
 (add-to-list 'package-archives
   '("melpa" . "https://melpa.org/packages/"))
 (package-initialize)
@@ -752,7 +752,9 @@
 
 #+begin_src elisp
 (use-package all-the-icons :ensure t)
-(add-to-list 'default-frame-alist '(font . "Monoid Nerd Font 18"))
+(if (string= system-type "darwin")
+    (add-to-list 'default-frame-alist '(font . "FiraCode Nerd Font 14"))
+  (add-to-list 'default-frame-alist '(font . "Monoid Nerd Font 14")))
 #+end_src
 - for whatever reason you need the add to list for emacs server to work
 

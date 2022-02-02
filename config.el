@@ -1,4 +1,4 @@
-(require 'package)
+(require 'package) 
 (add-to-list 'package-archives
   '("melpa" . "https://melpa.org/packages/"))
 (package-initialize)
@@ -67,8 +67,11 @@
 
 (use-package org-roam
   :ensure t
+  :config
+  (require 'org-roam-utils)
   :bind (:map org-mode-map
               ("C-M-i" . completion-at-point)))
+;; directory where notes are stored
 (setq org-roam-directory (file-truename "~/org"))
 (org-roam-db-autosync-mode)
 
@@ -478,7 +481,9 @@
 (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
 
 (use-package all-the-icons :ensure t)
-(add-to-list 'default-frame-alist '(font . "Monoid Nerd Font 18"))
+(if (string= system-type "darwin")
+    (add-to-list 'default-frame-alist '(font . "FiraCode Nerd Font 14"))
+  (add-to-list 'default-frame-alist '(font . "Monoid Nerd Font 14")))
 
 (setq visible-bell nil
       ring-bell-function 'flash-mode-line)
