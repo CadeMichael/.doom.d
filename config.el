@@ -1,9 +1,12 @@
 (require 'package) 
 (add-to-list 'package-archives
-  '("melpa" . "https://melpa.org/packages/"))
+  '("melpa" . "https://melpa.org/packages/")) 
 (package-initialize)
 (unless package-archive-contents
   (package-refresh-contents))
+;; using http instead might stop hangs or having the following
+;; (custom-set-variables
+;;  '(gnutls-algorithm-priority "normal:-vers-tls1.3"))
 
 (defvar bootstrap-version)
 (let ((bootstrap-file
@@ -127,7 +130,10 @@
               (local-set-key (kbd "C-c q") #'kill-buffer-and-window)))
 
 ;; Git Integration
-(use-package magit :ensure t)
+(use-package magit
+  :ensure t
+  :commands (magit-status magit-get-current-branch))
+(use-package evil-magit :ensure t :after magit)
 ;; highlight line where there are changes
 (use-package git-gutter :ensure t :config (global-git-gutter-mode +1))
 
@@ -188,7 +194,7 @@
   ;; haskell
   (haskell-mode .lsp-deferred)
   :commands (lsp lsp-deferred)
-  :bind-keymap ("C-l" . lsp-command-map)
+  :bind-keymap ("C-SPC" . lsp-command-map)
   :config
   ;; use M-? to peek references
   (define-key lsp-ui-mode-map
@@ -200,7 +206,7 @@
 
 (use-package company
   :ensure t
-  :bind ("C-SPC" . company-mode)
+  :bind ("C-<tab>" . company-mode)
   :config (setq lsp-completion-provider :capf))
 
 (with-eval-after-load 'company
@@ -219,8 +225,10 @@
   (setq yas-indent-line 'fixed)
   (yas-global-mode 1))
 
-(use-package projectile :ensure t)
-(projectile-mode +1)
+(use-package projectile
+  :ensure t
+  :custom ((projectile-completion-system 'helm))
+  :config (projectile-mode))
 ;; Recommended keymap prefix on Windows/Linux
 (general-define-key
  :states '(normal)
@@ -244,8 +252,6 @@
 (use-package helm-lsp :ensure t)
 (use-package helm :ensure t
   :config (helm-mode)(require 'helm-config))
-(use-package helm-projectile :ensure t
-  :config (helm-projectile-on))
 
 (use-package haskell-mode :ensure t)
 (use-package lsp-haskell :ensure t)
@@ -470,8 +476,16 @@
 (setq sml/shorten-modes t)
 (sml/setup)
 
-(setq tab-line-new-button-show nil)  
-(setq tab-line-close-button-show nil)
+(use-package centaur-tabs
+  :ensure t
+  :config
+  (setq
+   centaur-tabs-set-icons t
+   centaur-tabs-gray-out-icons 'buffer
+   centaur-tabs-set-modified-marker t
+   centaur-tabs-modified-marker ""
+   centaur-tabs-height 32))
+(centaur-tabs-change-fonts "Monoid Nerd Font" 160)
 
 (use-package tree-sitter :ensure t)
 (use-package tree-sitter-langs :ensure t)
@@ -481,7 +495,8 @@
 (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
 
 (use-package all-the-icons :ensure t)
-(add-to-list 'default-frame-alist '(font . "Monoid Nerd Font 14"))
+(when (string= system-type "gnu/linux")
+  (add-to-list 'default-frame-alist '(font . "Monoid Nerd Font 18")))
 (when (string= system-type "darwin")       
   (add-to-list 'default-frame-alist '(font . "FiraCode Nerd Font 14")))
 
@@ -546,7 +561,9 @@
               (load-file "~/.emacs.d/init.el"))
             :which-key "Reload emacs config")
   "t t"   '(toggle-truncate-lines :which-key "Toggle truncate lines")
-  "t l"   '(tab-line-mode :which-key "tab line mode")
+  "t l"   '(centaur-tabs-mode :which-key "tab line mode")
+  "<left>"   '(centaur-tabs-backward :which-key "tab backward")
+  "<right>"  '(centaur-tabs-forward :which-key "tab forward")
   ;; buffers
   "b"     '(switch-to-buffer :which-key "switch to buffer")
   ;; File manipulation
