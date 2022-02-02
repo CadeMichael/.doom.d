@@ -3,7 +3,6 @@
 *.eld
 projectile-bookmarks.eld
 *.org~
-!lisp/cheat-sh.el
 !snips/
 elpa/
 auto-save-list/
@@ -20,3 +19,4 @@ org-roam.db
 .org-id-locations
 straight/
 *.html
+config.el

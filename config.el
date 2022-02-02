@@ -131,9 +131,7 @@
 
 ;; Git Integration
 (use-package magit
-  :ensure t
-  :commands (magit-status magit-get-current-branch))
-(use-package evil-magit :ensure t :after magit)
+  :ensure t)
 ;; highlight line where there are changes
 (use-package git-gutter :ensure t :config (global-git-gutter-mode +1))
 
