@@ -84,28 +84,29 @@
 (setq org-log-done t)
 (setq org-agenda-files '("~/.schedule"))
 
+;; show key binding function
 (use-package which-key
-:ensure t
-:init
-        (setq which-key-side-window-location 'bottom
-                which-key-sort-order #'which-key-key-order-alpha
-                which-key-sort-uppercase-first nil
-                which-key-add-column-padding 1
-                which-key-max-display-columns nil
-                which-key-min-display-lines 6
-                which-key-side-window-slot -10
-                which-key-side-window-max-height 0.25
-                which-key-idle-delay 0.8
-                which-key-max-description-length 25
-                which-key-allow-imprecise-window-fit t
-                which-key-separator " --> " ))
+  :ensure t
+  :init
+  (setq which-key-side-window-location 'bottom
+        which-key-sort-order #'which-key-key-order-alpha
+        which-key-sort-uppercase-first nil
+        which-key-add-column-padding 1
+        which-key-max-display-columns nil
+        which-key-min-display-lines 6
+        which-key-side-window-slot -10
+        which-key-side-window-max-height 0.25
+        which-key-idle-delay 0.8
+        which-key-max-description-length 25
+        which-key-allow-imprecise-window-fit t
+        which-key-separator " --> " ))
 (which-key-mode)
 
 (use-package vertico
- :ensure t
- :init
- (vertico-mode)
-  ; Optionally enable cycling for `vertico-next' and `vertico-previous'.
+  :ensure t
+  :init
+  (vertico-mode)
+  ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
   (setq vertico-cycle t))
 
 (setq shell-file-name "/bin/zsh") ;; this will be different for linux and mac machines
@@ -117,11 +118,14 @@
  :keymaps 'override
  :prefix "SPC"
  "v" '(vterm-other-window :which-key "open vterm in other window"))
+;; keybind for closing vterm
 (add-hook 'vterm-mode-hook
           #'(lambda ()
-             (local-set-key (kbd "C-c q") #'kill-buffer-and-window)))
+              (local-set-key (kbd "C-c q") #'kill-buffer-and-window)))
 
+;; Git Integration
 (use-package magit :ensure t)
+;; highlight line where there are changes
 (use-package git-gutter :ensure t :config (global-git-gutter-mode +1))
 
 (use-package treemacs
