@@ -260,6 +260,13 @@
 
 - *Dired Config* 
 #+begin_src elisp
+;; hide and show dot files
+(use-package dired-hide-dotfiles
+  :ensure t
+  :config
+  (evil-collection-define-key 'normal 'dired-mode-map
+    "H"  'dired-hide-dotfiles-mode))
+
 ;; to prevent persistent dired buffers getting buried
 ;; dired-single kills old buffers
 (use-package dired-single :ensure t)
@@ -268,7 +275,10 @@
   :ensure nil
   :commands (dired dired-jump)
   :bind (("C-x C-j" . dired-jump))
-  :custom ((dired-listing-switches "-agho --group-directories-first"))
+  :custom
+  ((when
+       (string= system-type "gnu/linux") ;mac os ls sucks
+     (dired-listing-switches "-agho --group-directories-first")))
   :config
   (evil-collection-define-key
     'normal 'dired-mode-map
@@ -284,13 +294,6 @@
 (use-package all-the-icons-dired
   :ensure t
   :hook (dired-mode . all-the-icons-dired-mode))
-
-;; hide and show dot files
-(use-package dired-hide-dotfiles
-  :ensure t
-  :config
-  (evil-collection-define-key 'normal 'dired-mode-map
-    "H"  'dired-hide-dotfiles-mode))
 #+end_src
 
 ** Language support

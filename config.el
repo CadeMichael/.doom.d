@@ -169,6 +169,41 @@
 (define-key ztree-mode-map (kbd "C-h") 'ztree-dir-toggle-show-filtered-files)
 (define-key ztree-mode-map (kbd "C-z d") 'ztree-dir-open-dired-at-point)
 
+;; hide and show dot files
+(use-package dired-hide-dotfiles
+  :ensure t
+  :config
+  (evil-collection-define-key 'normal 'dired-mode-map
+    "H"  'dired-hide-dotfiles-mode))
+
+;; to prevent persistent dired buffers getting buried
+;; dired-single kills old buffers
+(use-package dired-single :ensure t)
+
+(use-package dired 
+  :ensure nil
+  :commands (dired dired-jump)
+  :bind (("C-x C-j" . dired-jump))
+  :custom
+  ((when
+       (string= system-type "gnu/linux") ;mac os ls sucks
+     (dired-listing-switches "-agho --group-directories-first")))
+  :config
+  (evil-collection-define-key
+    'normal 'dired-mode-map
+    "h" 'dired-single-up-directory
+    "l" 'dired-single-buffer))
+
+;; if two dired buffers are open and you go to copy,
+;; location will default to other dired buffer
+(setq dired-dwim-target t)
+;; might need (require 'dired-x)
+
+;; file icons
+(use-package all-the-icons-dired
+  :ensure t
+  :hook (dired-mode . all-the-icons-dired-mode))
+
 (use-package flycheck
   :ensure t
   :init (global-flycheck-mode))
