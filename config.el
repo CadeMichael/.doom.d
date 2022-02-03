@@ -108,13 +108,6 @@
         which-key-separator " --> " ))
 (which-key-mode)
 
-(use-package vertico
-  :ensure t
-  :init
-  (vertico-mode)
-  ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
-  (setq vertico-cycle t))
-
 (setq shell-file-name "/bin/zsh") ;; this will be different for linux and mac machines
 (use-package vterm
   :ensure t)
@@ -283,8 +276,15 @@
 (add-hook 'web-mode-hook #'aggressive-indent-mode)
 
 (use-package helm-lsp :ensure t)
-(use-package helm :ensure t
-  :config (helm-mode)(require 'helm-config))
+(use-package helm
+  ;; recommended to use straight
+  :straight t 				 
+  :bind
+  (("M-x" . helm-M-x))
+  (("C-x C-f" . helm-find-files))
+  :config
+  (helm-mode 1)
+  (require 'helm-config))
 
 (use-package haskell-mode :ensure t)
 (use-package lsp-haskell :ensure t)
@@ -585,7 +585,7 @@
 (require 'ob-js)
 (add-to-list 'org-babel-tangle-lang-exts '("js" . "js"))
 
-(nvmap :states 'normal :keymaps 'override :prefix "SPC"
+(general-def :states 'normal :keymaps 'override :prefix "SPC"
   "a"     '(org-agenda :which-key "org-agenda")
   "c c"   '(compile :which-key "Compile")
   "c C"   '(recompile :which-key "Recompile")
@@ -600,7 +600,7 @@
   ;; buffers
   "b"     '(switch-to-buffer :which-key "switch to buffer")
   ;; File manipulation
-  "."     '(find-file :which-key "Find file")
+  "."     '(helm-find-files :which-key "Find file")
   "f s"   '(save-buffer :which-key "Save file")
   "f C"   '(copy-file :which-key "Copy file")
   "f D"   '(delete-file :which-key "Delete file")
@@ -612,9 +612,23 @@
   "c h"   '(cheat-sh :which-key "open cheat sheet lookup"))
 
 ;; better yanking 
-(define-key evil-normal-state-map
-            (kbd "Y")
-            (kbd "y$"))
+(general-nmap "Y" (kbd "y$"))
+
+;; better searching
+;; centers each result
+(general-nmap "n" 'search-next-center-evil)
+(defun search-next-center-evil () 
+  (interactive)
+    (evil-search-next)
+    (evil-scroll-line-to-center
+      (line-number-at-pos (point))))
+
+(general-nmap "N" 'search-prev-center-evil)
+(defun search-prev-center-evil () 
+  (interactive)
+    (evil-search-previous)
+    (evil-scroll-line-to-center
+      (line-number-at-pos (point))))
 
 (global-set-key (kbd "C-=") 'text-scale-increase)
 (global-set-key (kbd "C--") 'text-scale-decrease)
