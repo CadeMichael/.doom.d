@@ -2,8 +2,6 @@
 *.el~
 *.eld
 projectile-bookmarks.eld
-*.org~
-!snips/
 elpa/
 auto-save-list/
 transient/
@@ -19,4 +17,5 @@ org-roam.db
 .org-id-locations
 straight/
 *.html
+config.el~
 config.el
