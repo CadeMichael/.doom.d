@@ -777,7 +777,10 @@
    centaur-tabs-set-modified-marker t
    centaur-tabs-modified-marker ""
    centaur-tabs-height 32))
-(centaur-tabs-change-fonts "Monoid Nerd Font" 160)
+;; (when (string= "gnu/linux" system-type) (centaur-tabs-change-fonts "Monoid Nerd Font" 160))
+(if (string= "gnu/linux" system-type)
+    (centaur-tabs-change-fonts "Monoid Nerd Font" 160)
+  (centaur-tabs-change-fonts "Fira Code Nerd Font" 160))
 #+end_src
 *** TreeSitter
 - doesn't work on apple silicon 
