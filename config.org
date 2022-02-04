@@ -821,6 +821,22 @@
   (run-with-timer 0.1 nil #'invert-face 'mode-line))
 #+end_src
   
+*** Dashboard
+#+begin_src elisp
+(use-package dashboard
+  :ensure t
+  :config
+  (setq dashboard-startup-banner 3)
+  (setq dashboard-set-init-info nil)
+  (setq dashboard-center-content t)
+  (setq dashboard-set-heading-icons t)
+  (setq dashboard-set-file-icons t)
+  (setq dashboard-items
+           '((projects . 10)
+            (recents . 5))))
+;; startup the dashboard 
+(dashboard-setup-startup-hook)
+#+end_src
 * Org-configuration
 
 ** Org Beautification, basics

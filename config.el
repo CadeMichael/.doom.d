@@ -542,6 +542,22 @@
   (invert-face 'mode-line)
   (run-with-timer 0.1 nil #'invert-face 'mode-line))
 
+(use-package dashboard
+  :ensure t
+  :config
+  (setq dashboard-startup-banner 3)
+  (setq dashboard-set-init-info nil)
+  (setq dashboard-center-content t)
+  (setq dashboard-set-heading-icons t)
+  (setq dashboard-set-file-icons t)
+  (setq dashboard-items
+           '((projects . 10)
+            (recents . 5))))
+;; startup the dashboard 
+(dashboard-setup-startup-hook)
+;; have ec buffers open to dash
+(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+
 (add-hook 'org-mode-hook 'org-indent-mode)
 (setq org-directory "~/org/"
         org-hide-emphasis-markers t
