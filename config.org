@@ -336,6 +336,9 @@
   (define-key lsp-ui-mode-map
               [remap xref-find-references]
               #'lsp-ui-peek-find-references))
+;; blurry icons on mac
+(when (string= "darwin" system-type)
+  (setq lsp-headerline-breadcrumb-icons-enable nil))
 #+end_src
 - the documentation of what I am using can be found [[https://emacs-lsp.github.io/lsp-mode/page/main-features/][here]]
 

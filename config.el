@@ -229,6 +229,9 @@
   (define-key lsp-ui-mode-map
               [remap xref-find-references]
               #'lsp-ui-peek-find-references))
+;; blurry icons on mac
+(when (string= "darwin" system-type)
+  (setq lsp-headerline-breadcrumb-icons-enable nil))
 
 (use-package company
   :ensure t
@@ -555,8 +558,6 @@
             (recents . 5))))
 ;; startup the dashboard 
 (dashboard-setup-startup-hook)
-;; have ec buffers open to dash
-(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
 
 (add-hook 'org-mode-hook 'org-indent-mode)
 (setq org-directory "~/org/"
