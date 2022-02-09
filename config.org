@@ -74,6 +74,7 @@
   :config
   (evil-collection-init))
 #+end_src
+- zc, zo, zm, zr for folding, need to enable hs minor mode
 
 ** General for Key-remaps
 
@@ -308,10 +309,24 @@
 
 - using lsp-deferred so that only when a buffer is open, this should make startup faster and emacs a bit more performant (i hope)
 - I will only be using the LSP with certain languages, for most languages I will try to refrain from using a language server purely to force myself to be a bit more precise while programming
-- to add and remove folders use 'C-l -> C-l -> F'
+- to add and remove folders use 'C-SPC F'
 #+begin_src elisp
 ;; more IDE like features with LSP
-(use-package lsp-ui :ensure t) 
+(use-package lsp-ui
+  :ensure t
+  :after (lsp-mode)
+  :commands lsp-ui-doc-hide
+  :init
+  (setq lsp-ui-doc-enable t)
+  :config
+  (advice-add #'keyboard-quit :before #'lsp-ui-doc-hide)
+  (general-nmap
+    :keymap 'lsp-ui-mode-map
+    "gD" '(lsp-ui-peek-find-definitions :which-key "peek definitions")
+    "gr" '(lsp-ui-peek-find-references :which-key "peek references")
+    "TAB" '(lsp-ui-doc-focus-frame :which-key "lsp ui doc focus")
+    "K" '(lsp-ui-doc-show :which-key "lsp ui doc show")))
+
 
 ;; lsp mode
 (use-package lsp-mode
@@ -328,17 +343,18 @@
   (haskell-mode .lsp-deferred)
   :commands (lsp lsp-deferred)
   :bind-keymap ("C-SPC" . lsp-command-map)
-  :config
-  ;; use M-? to peek references
-  (define-key lsp-ui-mode-map
-              [remap xref-find-references]
-              #'lsp-ui-peek-find-references)
-  (define-key lsp-ui-mode-map
-              [remap xref-find-references]
-              #'lsp-ui-peek-find-references))
+  :bind (:map lsp-mode-map
+	      ("C-SPC c" . helm-lsp-code-actions)))
+
 ;; blurry icons on mac
 (when (string= "darwin" system-type)
   (setq lsp-headerline-breadcrumb-icons-enable nil))
+
+;; dap mode - helpful with dart
+(use-package dap-mode
+  :ensure t
+  :after lsp-mode
+  :config (dap-auto-configure-mode))
 #+end_src
 - the documentation of what I am using can be found [[https://emacs-lsp.github.io/lsp-mode/page/main-features/][here]]
 
@@ -430,6 +446,39 @@
   (helm-mode 1)
   (require 'helm-config))
 #+end_src
+*** Flutter/ dart
+- flutter & dart support
+- automatically connects with lsp mode 
+#+begin_src elisp
+  (use-package lsp-dart
+    :ensure t
+    :hook
+    (dart-mode . lsp-deferred)
+    (dart-mode . hs-minor-mode))
+  ;; hover for running apps
+  (use-package hover
+    :ensure t
+    :after dart-mode
+    :init (hover-minor-mode 1))
+  (setq hover-hot-reload-on-save t)
+
+  ;; Assuming usage with dart-mode
+  (use-package dart-mode
+    :custom
+    (dart-sdk-path (concat (getenv "HOME") "/flutter/bin/cache/dark-sdk/")
+     dart-format-on-save t))
+  ;; keybindings, using d as primary key
+  (general-def
+    :states 'normal
+    :keymaps 'dart-mode-map
+    :prefix "SPC"
+    "d o" '(lsp-dart-show-flutter-outline :which-key "show flutter outline")
+    "d r" '(lsp-dart-run :which-key "dart run")
+    "d h r" '(lsp-dart-dap-flutter-hot-reload :which-key "hot reload")
+    "d h R" '(lsp-dart-dap-flutter-hot-restart :which-key "hot restart")
+    "d h h" '(hover-run-or-hot-reload :which-key "hover run or hot reload")
+    "d p" '(lsp-dart-pub-get :which-key "dart pub get"))
+#+end_src
 *** Haskell
 
 - getting the base language support
@@ -449,7 +498,7 @@
 (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
 #+end_src 
 
-  - some "helpful and benign" customizations
+- some "helpful and benign" customizations
 
 #+begin_src elisp
 (custom-set-variables
@@ -458,7 +507,7 @@
   '(haskell-process-log t))
 #+end_src
 
-  - some "special" keybindings that rely heavily on the space bar 
+- some "special" keybindings that rely heavily on the space bar 
 
 #+begin_src elisp
 (general-define-key
@@ -466,7 +515,6 @@
  :keymaps 'haskell-mode-map
  :prefix "SPC"
  "c l" '(haskell-process-load-or-reload :which-key "load current file")
- "'" '(haskell-interactive-bring :which-key "interactive bring")
  "c t" '(haskell-process-do-type :which-key "process do type")
  "c i" '(haskell-process-do-info :which-key "process do info")
  "c SPC c" '(haskell-process-cabal-build :which-key "cabal build")
@@ -475,19 +523,6 @@
 ;; managing imports
 (define-key haskell-mode-map (kbd "<f8>") 'haskell-navigate-imports)
 #+end_src
-*** Lua
-- using lua mode with the lsp server that was compiled and installed to .emacs.d/.cache/lsp
-- some of the helpful commands and more involved instructions can be found on the [[https://emacs-lsp.github.io/lsp-mode/page/lsp-lua-language-server/][emacs-lsp]] website
-#+begin_src elisp
-(use-package lua-mode :ensure t)
-(general-define-key
- :states '(visual)
- :keymaps 'lua-mode-map
- :prefix "SPC"
- "r" '(lua-send-region :which-key "send region"))
-#+end_src
-- to get flycheck to work install luacheck
-  - ~luarocks install luacheck~
 *** GoLang
 - Getting go-mode installed
 #+begin_src elisp
@@ -542,12 +577,6 @@
       '(("svelte" . "\\.svelte\\'")))
 (eval-after-load "web-mode"
   '(setq web-mode-enable-auto-expanding t))
-#+end_src
-*** Java
-#+begin_src elisp
-(use-package lsp-java :ensure t :config (add-hook 'java-mode-hook #'lsp-deferred))
-(use-package dap-mode :ensure t :after lsp-mode :config (dap-auto-configure-mode))
-(use-package dap-java :ensure nil)
 #+end_src
 *** Python
 - uses lsp-pyright with the open source pyright server. Using this because it can be used with nvim /emacs.
@@ -719,6 +748,7 @@
   | C-RET   | eval line      |
   | C-M-x   | eval paragraph |
   | M-n e   | knit document  |
+
 *** cht.sh
 #+begin_src elisp
 (use-package cheat-sh :ensure t)
@@ -875,8 +905,8 @@
   
 #+begin_src elisp
 (org-babel-do-load-languages
-  'org-babel-load-languages
-  '((scheme . t)
+ 'org-babel-load-languages
+ '((scheme . t)
    (lua . t)
    (R . t)
    (hy . t)

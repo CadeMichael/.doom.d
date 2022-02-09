@@ -204,7 +204,21 @@
 (setq flycheck-standard-error-navigation t)
 
 ;; more IDE like features with LSP
-(use-package lsp-ui :ensure t) 
+(use-package lsp-ui
+  :ensure t
+  :after (lsp-mode)
+  :commands lsp-ui-doc-hide
+  :init
+  (setq lsp-ui-doc-enable t)
+  :config
+  (advice-add #'keyboard-quit :before #'lsp-ui-doc-hide)
+  (general-nmap
+    :keymap 'lsp-ui-mode-map
+    "gD" '(lsp-ui-peek-find-definitions :which-key "peek definitions")
+    "gr" '(lsp-ui-peek-find-references :which-key "peek references")
+    "TAB" '(lsp-ui-doc-focus-frame :which-key "lsp ui doc focus")
+    "K" '(lsp-ui-doc-show :which-key "lsp ui doc show")))
+
 
 ;; lsp mode
 (use-package lsp-mode
@@ -221,17 +235,18 @@
   (haskell-mode .lsp-deferred)
   :commands (lsp lsp-deferred)
   :bind-keymap ("C-SPC" . lsp-command-map)
-  :config
-  ;; use M-? to peek references
-  (define-key lsp-ui-mode-map
-              [remap xref-find-references]
-              #'lsp-ui-peek-find-references)
-  (define-key lsp-ui-mode-map
-              [remap xref-find-references]
-              #'lsp-ui-peek-find-references))
+  :bind (:map lsp-mode-map
+	      ("C-SPC c" . helm-lsp-code-actions)))
+
 ;; blurry icons on mac
 (when (string= "darwin" system-type)
   (setq lsp-headerline-breadcrumb-icons-enable nil))
+
+;; dap mode - helpful with dart
+(use-package dap-mode
+  :ensure t
+  :after lsp-mode
+  :config (dap-auto-configure-mode))
 
 (use-package company
   :ensure t
@@ -289,6 +304,35 @@
   (helm-mode 1)
   (require 'helm-config))
 
+(use-package lsp-dart
+  :ensure t
+  :hook
+  (dart-mode . lsp-deferred)
+  (dart-mode . hs-minor-mode))
+;; hover for running apps
+(use-package hover
+  :ensure t
+  :after dart-mode
+  :init (hover-minor-mode 1))
+(setq hover-hot-reload-on-save t)
+
+;; Assuming usage with dart-mode
+(use-package dart-mode
+  :custom
+  (dart-sdk-path (concat (getenv "HOME") "/flutter/bin/cache/dark-sdk/")
+   dart-format-on-save t))
+;; keybindings, using d as primary key
+(general-def
+  :states 'normal
+  :keymaps 'dart-mode-map
+  :prefix "SPC"
+  "d o" '(lsp-dart-show-flutter-outline :which-key "show flutter outline")
+  "d r" '(lsp-dart-run :which-key "dart run")
+  "d h r" '(lsp-dart-dap-flutter-hot-reload :which-key "hot reload")
+  "d h R" '(lsp-dart-dap-flutter-hot-restart :which-key "hot restart")
+  "d h h" '(hover-run-or-hot-reload :which-key "hover run or hot reload")
+  "d p" '(lsp-dart-pub-get :which-key "dart pub get"))
+
 (use-package haskell-mode :ensure t)
 (use-package lsp-haskell :ensure t)
 (require 'lsp-haskell)
@@ -307,7 +351,6 @@
  :keymaps 'haskell-mode-map
  :prefix "SPC"
  "c l" '(haskell-process-load-or-reload :which-key "load current file")
- "'" '(haskell-interactive-bring :which-key "interactive bring")
  "c t" '(haskell-process-do-type :which-key "process do type")
  "c i" '(haskell-process-do-info :which-key "process do info")
  "c SPC c" '(haskell-process-cabal-build :which-key "cabal build")
@@ -315,13 +358,6 @@
  "c c" '(haskell-process-cabal :which-key "process cabal"))
 ;; managing imports
 (define-key haskell-mode-map (kbd "<f8>") 'haskell-navigate-imports)
-
-(use-package lua-mode :ensure t)
-(general-define-key
- :states '(visual)
- :keymaps 'lua-mode-map
- :prefix "SPC"
- "r" '(lua-send-region :which-key "send region"))
 
 (use-package go-mode :ensure t)
 
@@ -360,10 +396,6 @@
       '(("svelte" . "\\.svelte\\'")))
 (eval-after-load "web-mode"
   '(setq web-mode-enable-auto-expanding t))
-
-(use-package lsp-java :ensure t :config (add-hook 'java-mode-hook #'lsp-deferred))
-(use-package dap-mode :ensure t :after lsp-mode :config (dap-auto-configure-mode))
-(use-package dap-java :ensure nil)
 
 (use-package lsp-pyright
   :ensure t
@@ -573,8 +605,8 @@
     org-edit-src-content-indentation 0)
 
 (org-babel-do-load-languages
-  'org-babel-load-languages
-  '((scheme . t)
+ 'org-babel-load-languages
+ '((scheme . t)
    (lua . t)
    (R . t)
    (hy . t)

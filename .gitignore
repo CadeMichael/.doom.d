@@ -20,3 +20,5 @@ straight/
 config.el~
 config.el
 recentf
+url/
+projectile.cache
