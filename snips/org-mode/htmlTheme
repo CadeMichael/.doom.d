@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: htmlTheme
+# key: <dh
+# --
+
+#+HTML_HEAD: <style>pre.src{background:#282a36;color:white;} </style>
+#+HTML_HEAD: <style>body{background:#44475a;color:white;} </style>
+#+HTML_HEAD: <style>a{color:#50fa7b;} </style>
+#+HTML_HEAD: <style>h1,h2,h3,h4{color:#bd93f9;} </style>
