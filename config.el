@@ -389,7 +389,7 @@
 ;; html support 
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 ;; css support
-(add-to-list 'auto-mode-alist '("\\.css\\'" . css-mode))
+(add-to-list 'auto-mode-alist '("\\.css\\'" . web-mode))
 ;; svelte support
 (add-to-list 'auto-mode-alist '("\\.svelte\\'" . web-mode))
 (setq web-mode-engines-alist
@@ -453,7 +453,6 @@
 (require 'smartparens-config)
 (sp-pair "\<" nil :actions :rem) ;don't use with < from html 
 (add-hook 'clojure-mode-hook #'smartparens-mode)
-(add-hook 'css-mode-hook #'smartparens-mode)
 (add-hook 'emacs-lisp-mode-hook #'smartparens-mode)
 (add-hook 'lisp-interaction-mode-hook #'smartparens-mode)
 (add-hook 'lua-mode-hook #'smartparens-mode)
@@ -462,7 +461,6 @@
 (add-hook 'racket-mode-hook #'smartparens-mode)
 (add-hook 'rustic-mode-hook #'smartparens-mode)
 (add-hook 'scheme-mode-hook #'smartparens-mode)
-(add-hook 'svelte-mode-hook #'smartparens-mode)
 (general-define-key
    :states '(normal)
    :keymaps 'smartparens-mode-map

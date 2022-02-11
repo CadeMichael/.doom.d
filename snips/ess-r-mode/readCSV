@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: readCSV
+# key: <csv
+# --
+
+${1:object_name} <- read_csv("${2:file_path}")
+$0

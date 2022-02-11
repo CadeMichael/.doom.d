@@ -8,7 +8,7 @@ transient/
 .dap-breakpoints
 .cache/
 eln-cache/
-snips/
+!snips/
 .lsp-session-v1
 request/
 racket-mode/

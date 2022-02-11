@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: function 
+# key: <f 
+# --
+
+${1:func} <- function(${2:params}) {
+    $0
+}
