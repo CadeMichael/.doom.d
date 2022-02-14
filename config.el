@@ -408,6 +408,14 @@
 (use-package ob-hy
   :ensure t)
 
+(use-package pyvenv
+  :ensure t
+  :diminish
+  :config
+  (setq pyvenv-mode-line-indicator
+        '(pyvenv-virtual-env-name ("[venv:" pyvenv-virtual-env-name "] ")))
+  (pyvenv-mode +1))
+
 (use-package geiser-guile :ensure t)
 
 (use-package racket-mode :ensure t) 

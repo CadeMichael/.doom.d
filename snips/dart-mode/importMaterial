@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: importMaterial
+# key: <m
+# --
+import 'package:flutter/material.dart';
+$0

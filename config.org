@@ -581,7 +581,6 @@
 *** Python
 - uses lsp-pyright with the open source pyright server. Using this because it can be used with nvim /emacs.
 - the settings of which can be found [[https://emacs-lsp.github.io/lsp-pyright/][here]]. 
-
 #+begin_src elisp
 (use-package lsp-pyright
   :ensure t
@@ -595,6 +594,16 @@
   :ensure t)
 #+end_src 
 
+- *pyenv* to get access to virtual environments
+#+begin_src elisp
+(use-package pyvenv
+  :ensure t
+  :diminish
+  :config
+  (setq pyvenv-mode-line-indicator
+        '(pyvenv-virtual-env-name ("[venv:" pyvenv-virtual-env-name "] ")))
+  (pyvenv-mode +1))
+#+end_src
 *** Lisp(s)
 **** Guile
 #+begin_src elisp
