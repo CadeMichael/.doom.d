@@ -234,9 +234,9 @@
   ;; haskell
   (haskell-mode .lsp-deferred)
   :commands (lsp lsp-deferred)
-  :bind-keymap ("C-SPC" . lsp-command-map)
+  :bind-keymap ("C-l" . lsp-command-map)
   :bind (:map lsp-mode-map
-	      ("C-SPC c" . helm-lsp-code-actions)))
+	      ("C-l c" . helm-lsp-code-actions)))
 
 ;; blurry icons on mac
 (when (string= "darwin" system-type)
@@ -393,7 +393,9 @@
 ;; svelte support
 (add-to-list 'auto-mode-alist '("\\.svelte\\'" . web-mode))
 (setq web-mode-engines-alist
-      '(("svelte" . "\\.svelte\\'")))
+      '(("svelte" . "\\.svelte\\'")
+        ("django" . "\\.html\\'")))
+
 (eval-after-load "web-mode"
   '(setq web-mode-enable-auto-expanding t))
 
@@ -626,19 +628,14 @@
 
 (require 'color)
 ;; src blocks
-(set-face-attribute 'org-block nil :foreground nil
-                    :inherit '(fixed-pitch))
+(set-face-attribute
+ 'org-block nil
+ :foreground nil
+ :background "#1c1d26"
+ :inherit '(fixed-pitch))
 ;; code
 (set-face-attribute 'org-code nil
                     :inherit '(shadow fixed-pitch))
-;; darken blocks
-(set-face-attribute 'org-block nil :background
-                    (color-darken-name
-                     (face-attribute 'default :background) 3))
-;; block lines
-(set-face-attribute 'org-block-begin-line nil :background
-                    (color-darken-name
-                     (face-attribute 'default :background) 3))
 
 (require 'ob-js)
 (add-to-list 'org-babel-tangle-lang-exts '("js" . "js"))
