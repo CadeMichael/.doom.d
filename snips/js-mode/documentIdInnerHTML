@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: documentIdInnerHTML
+# key: <dii
+# --
+
+document.getElementById($1).innerHTML = $0
