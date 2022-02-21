@@ -399,6 +399,9 @@
 (eval-after-load "web-mode"
   '(setq web-mode-enable-auto-expanding t))
 
+;; allows for org block highlighting
+(use-package svelte-mode :ensure t)
+
 (use-package lsp-pyright
   :ensure t
   :hook (python-mode . (lambda ()
