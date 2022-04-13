@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: specialChar
+# key: \s
+# --
+
+\\${1:name}_{$0}

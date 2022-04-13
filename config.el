@@ -216,9 +216,9 @@
     :keymap 'lsp-ui-mode-map
     "gD" '(lsp-ui-peek-find-definitions :which-key "peek definitions")
     "gr" '(lsp-ui-peek-find-references :which-key "peek references")
+    "gc" '(helm-lsp-code-actions :which-key "code actions")
     "TAB" '(lsp-ui-doc-focus-frame :which-key "lsp ui doc focus")
     "K" '(lsp-ui-doc-show :which-key "lsp ui doc show")))
-
 
 ;; lsp mode
 (use-package lsp-mode
@@ -234,9 +234,7 @@
   ;; haskell
   (haskell-mode .lsp-deferred)
   :commands (lsp lsp-deferred)
-  :bind-keymap ("C-l" . lsp-command-map)
-  :bind (:map lsp-mode-map
-	      ("C-l c" . helm-lsp-code-actions)))
+  :bind-keymap ("C-l" . lsp-command-map))
 
 ;; blurry icons on mac
 (when (string= "darwin" system-type)
@@ -407,11 +405,6 @@
   :hook (python-mode . (lambda ()
                           (require 'lsp-pyright)
                           (lsp-deferred))))
-;;; support for hy
-(use-package hy-mode
-  :ensure t)
-(use-package ob-hy
-  :ensure t)
 
 (use-package pyvenv
   :ensure t
