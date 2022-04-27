@@ -613,7 +613,6 @@
  '((scheme . t)
    (lua . t)
    (R . t)
-   (hy . t)
    (lisp . t)
    (js . t)
    (racket . t)
