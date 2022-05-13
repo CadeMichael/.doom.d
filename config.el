@@ -400,6 +400,10 @@
 ;; allows for org block highlighting
 (use-package svelte-mode :ensure t)
 
+(use-package emmet-mode
+  :ensure t
+  :hook (web-mode . emmet-mode))
+
 (use-package lsp-pyright
   :ensure t
   :hook (python-mode . (lambda ()

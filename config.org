@@ -581,6 +581,13 @@
 ;; allows for org block highlighting
 (use-package svelte-mode :ensure t)
 #+end_src
+*** HTML
+- emmet mode for easy html 
+#+begin_src elisp
+(use-package emmet-mode
+  :ensure t
+  :hook (web-mode . emmet-mode))
+#+end_src
 *** Python
 - uses lsp-pyright with the open source pyright server. Using this because it can be used with nvim /emacs.
 - the settings of which can be found [[https://emacs-lsp.github.io/lsp-pyright/][here]]. 
