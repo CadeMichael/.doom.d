@@ -575,7 +575,7 @@
 
 (use-package all-the-icons :ensure t)
 (when (string= system-type "gnu/linux")
-  (add-to-list 'default-frame-alist '(font . "Monoid Nerd Font 18")))
+  (add-to-list 'default-frame-alist '(font . "Monoid Nerd Font 14")))
 (when (string= system-type "darwin")       
   (add-to-list 'default-frame-alist '(font . "FiraCode Nerd Font 14")))
 
