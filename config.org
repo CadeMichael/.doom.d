@@ -653,7 +653,12 @@
 - org babel enabled 
 #+begin_src elisp
 (use-package slime :ensure t)
-(setq inferior-lisp-program "sbcl")
+(setq slime-lisp-implementations 
+      '((roswell ("ros" "-L" "sbcl-bin" "run"))))
+(general-define-key
+ :keymaps 'lisp-mode-map
+ :prefix "C-c"
+ "C-z" '(slime :which-key "slime"))
 #+end_src
 **** Clojure
 #+begin_src elisp

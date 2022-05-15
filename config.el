@@ -444,7 +444,16 @@
  "r" '(racket-send-region :which-key "send region"))
 
 (use-package slime :ensure t)
-(setq inferior-lisp-program "sbcl")
+(setq slime-lisp-implementations 
+      '((roswell ("ros" "-L" "sbcl-bin" "run"))))
+(general-define-key
+ :keymaps 'lisp-mode-map
+ :prefix "C-c"
+ "C-z" '(slime :which-key "slime"))
+(general-define-key
+ :keymaps 'slime-mode-map
+ :prefix "C-c"
+ "C-z" '(previous-buffer :which-key "previous buffer"))
 
 ;; error handling / linting
 (use-package flycheck-clj-kondo :ensure t)
