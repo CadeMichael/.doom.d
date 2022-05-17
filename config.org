@@ -687,11 +687,11 @@
   
 *** Color theme(s)
 
-- a nice dracula theme for tiling window manager setup
+- a nice gruv theme for tiling window manager setup
   
 #+begin_src elisp
-(use-package dracula-theme :ensure t)
-(load-theme 'dracula t)
+(use-package gruvbox-theme :ensure t)
+(load-theme 'gruvbox-dark-soft t)
 #+end_src
 
 *** modeline
@@ -825,7 +825,7 @@
 (set-face-attribute
  'org-block nil
  :foreground nil
- :background "#1c1d26"
+ :background "#282828"
  :inherit '(fixed-pitch))
 ;; code
 (set-face-attribute 'org-code nil

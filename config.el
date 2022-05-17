@@ -475,8 +475,8 @@
           (lambda () (display-line-numbers-mode -1)))
 (setq display-line-numbers-type 'relative)
 
-(use-package dracula-theme :ensure t)
-(load-theme 'dracula t)
+(use-package gruvbox-theme :ensure t)
+(load-theme 'gruvbox-dark-soft t)
 
 (use-package smart-mode-line :ensure t)
 (setq sml/theme 'respectful)
@@ -561,7 +561,7 @@
 (set-face-attribute
  'org-block nil
  :foreground nil
- :background "#1c1d26"
+ :background "#282828"
  :inherit '(fixed-pitch))
 ;; code
 (set-face-attribute 'org-code nil
