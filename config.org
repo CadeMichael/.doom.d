@@ -48,7 +48,7 @@
 #+end_src
 
 ** Making sure the shell doesn't get messed up
-
+- this package should be loaded first to prevent environment issues
 #+begin_src elisp
 (use-package exec-path-from-shell :ensure t)
 (exec-path-from-shell-initialize)
@@ -335,14 +335,11 @@
   (lsp-mode . lsp-enable-which-key-integration)
   ;; golang
   (go-mode . lsp-deferred)
-  ;; javascript
-  (js-mode . lsp-deferred)
   ;; svelte 
   (web-mode . lsp-deferred)
-  ;; haskell
-  (haskell-mode .lsp-deferred)
   :commands (lsp lsp-deferred)
   :bind-keymap ("C-l" . lsp-command-map))
+
 
 ;; blurry icons on mac
 (when (string= "darwin" system-type)
@@ -477,50 +474,6 @@
     "d h h" '(hover-run-or-hot-reload :which-key "hover run or hot reload")
     "d p" '(lsp-dart-pub-get :which-key "dart pub get"))
 #+end_src
-*** Haskell
-
-- getting the base language support
-  
-#+begin_src elisp
-(use-package haskell-mode :ensure t)
-(use-package lsp-haskell :ensure t)
-(require 'lsp-haskell)
-#+end_src
-
-- interactive haskell support, as detailed [[http://haskell.github.io/haskell-mode/manual/latest/Interactive-Haskell.html#Interactive-Haskell][here]] 
-  - C-c C-l will open an interactive buffer /REPL like environment
-
-#+begin_src elisp
-(require 'haskell-interactive-mode)
-(require 'haskell-process)
-(add-hook 'haskell-mode-hook 'interactive-haskell-mode)
-#+end_src 
-
-- some "helpful and benign" customizations
-
-#+begin_src elisp
-(custom-set-variables
-  '(haskell-process-suggest-remove-import-lines t)
-  '(haskell-process-auto-import-loaded-modules t)
-  '(haskell-process-log t))
-#+end_src
-
-- some "special" keybindings that rely heavily on the space bar 
-
-#+begin_src elisp
-(general-define-key
- :states '(normal)
- :keymaps 'haskell-mode-map
- :prefix "SPC"
- "c l" '(haskell-process-load-or-reload :which-key "load current file")
- "c t" '(haskell-process-do-type :which-key "process do type")
- "c i" '(haskell-process-do-info :which-key "process do info")
- "c SPC c" '(haskell-process-cabal-build :which-key "cabal build")
- "c k" '(haskell-interactive-mode-clear :which-key "interactive mode clear")
- "c c" '(haskell-process-cabal :which-key "process cabal"))
-;; managing imports
-(define-key haskell-mode-map (kbd "<f8>") 'haskell-navigate-imports)
-#+end_src
 *** GoLang
 - Getting go-mode installed
 #+begin_src elisp
@@ -543,25 +496,8 @@
 (setq rustic-lsp-server 'rust-analyzer)
 (setq rustic-lsp-client 'lsp-mode)
 #+end_src
-*** JS
-- using *js Repl* to get a repl experience 
-#+begin_src elisp
-(use-package nodejs-repl :ensure t)
-(add-hook 'js-mode-hook
-        (lambda ()
-          (define-key js-mode-map (kbd "C-x C-e") 'nodejs-repl-send-last-expression)
-          (define-key js-mode-map (kbd "C-c C-j") 'nodejs-repl-send-line)
-          (define-key js-mode-map (kbd "C-c C-c") 'nodejs-repl-send-buffer)
-          (define-key js-mode-map (kbd "C-c C-l") 'nodejs-repl-load-file)
-          (define-key js-mode-map (kbd "C-c C-z") 'nodejs-repl-switch-to-repl)))
-(general-define-key
- :states '(visual)
- :keymaps 'js-mode-map
- :prefix "SPC"
- "r" '(nodejs-repl-send-region :which-key "send region"))
-#+end_src
-
-- getting support for svelte/ web development
+*** JS / TS
+- getting support for *svelte* / web development
 #+begin_src elisp
 (use-package web-mode :ensure t)
 (setq web-mode-enable-auto-pairing t)
@@ -580,6 +516,18 @@
 
 ;; allows for org block highlighting
 (use-package svelte-mode :ensure t)
+#+end_src
+
+- typescript-mode a major mode for ts files 
+#+begin_src elisp
+(use-package typescript-mode
+  :ensure t
+  :hook (typescript-mode . (lambda ()
+			     (setq lsp-disabled-clients '(ts-ls))
+			     (lsp-deferred))))
+(add-hook 'js-mode-hook (lambda ()
+			  (setq lsp-disabled-clients '())
+			  (lsp-deferred)))
 #+end_src
 *** HTML
 - emmet mode for easy html 
@@ -611,10 +559,6 @@
   (pyvenv-mode +1))
 #+end_src
 *** Lisp(s)
-**** Guile
-#+begin_src elisp
-(use-package geiser-guile :ensure t)
-#+end_src
 **** Racket
 - [[https://www.racket-mode.com/#Install-Racket-Mode][racket mode]] website
 #+begin_src elisp
@@ -704,21 +648,6 @@
    "+" '(sp-absorb-sexp :which-key "absorb sexp")
    "|" '(sp-split-sexp :which-key "split sexp"))
 #+end_src
-**** Geiser
-#+begin_src elisp
-(general-define-key
- :states '(normal)
- :keymaps 'geiser-mode-map
- :prefix "SPC"
- "l f" '(geiser-load-file :which-key "load file")
- "\\" '(geiser-insert-lambda :which-key "insert lambda"))
-(general-define-key
- :states '(visual)
- :keymaps 'geiser-mode-map
- :prefix "SPC"
- "r" '(geiser-eval-region :which-key "eval region"))
-#+end_src
-
 *** Markdown
 
 #+begin_src elisp
@@ -727,51 +656,10 @@
   (add-hook 'markdown-mode-hook 'flyspell-mode)) ;make sure spelling is alright
 #+end_src
 
-*** R
-- to open an R repl use mx-R, to use lintr you need to install and have a folder ~~/.R/lintr_cache~ otherwise it won't work, if you enable company mode you will get completions aswell.
-#+begin_src elisp
-(use-package ess :ensure t)
-(require 'ess-site)
-(setq ess-use-flymake nil)
-#+end_src
-- for the Rdired buffer I will make a command that should toggle it. p for preview, d for delete, v for view...
-#+begin_src elisp
-(add-hook 'ess-r-mode-hook
-	  #'(lambda ()
-	     (local-set-key (kbd "C-c C-r d") #'ess-rdired)))
-
-(add-hook 'ess-rdired-mode-hook
-	  #'(lambda ()
-	     (local-set-key (kbd "C-c C-r d") #'kill-buffer-and-window)))
-;; so I don't have to remap the standard bindings
-(evil-set-initial-state 'ess-rdired-mode 'emacs)
-#+end_src
-- to properly configure r markdown you need the following plugins.
-#+begin_src elisp
-(use-package poly-markdown :ensure t)
-(use-package poly-R :ensure t)
-(require 'poly-markdown)
-(require 'poly-R)
-
-;; MARKDOWN
-(add-to-list 'auto-mode-alist '("\\.md" . poly-markdown-mode))
-
-;; R mode
-(add-to-list 'auto-mode-alist '("\\.Rmd" . poly-markdown+r-mode))
-#+end_src
-
-- some usefull commands
-  | command | function       |
-  |---------+----------------|
-  | C-RET   | eval line      |
-  | C-M-x   | eval paragraph |
-  | M-n e   | knit document  |
-
 *** cht.sh
 #+begin_src elisp
 (use-package cheat-sh :ensure t)
 #+end_src
-
 * Themes
 
 - getting rid of some junk
@@ -889,9 +777,7 @@
 (dashboard-setup-startup-hook)
 #+end_src
 * Org-configuration
-
 ** Org Beautification, basics
-  
 #+begin_src elisp
 (add-hook 'org-mode-hook 'org-indent-mode)
 (setq org-directory "~/org/"
@@ -906,16 +792,13 @@
   - /#+HTML_HEAD: <style>body{background:#44475a;color:white;} </style>/
   - /#+HTML_HEAD: <style>a{color:#50fa7b;} </style>/
   - /#+HTML_HEAD: <style>h1,h2,h3,h4{color:#bd93f9;} </style>/
-
 ** Code-Block highlighting
-
 #+begin_src elisp
 (setq org-src-fontify-natively t
     org-src-tab-acts-natively t
     org-confirm-babel-evaluate nil
     org-edit-src-content-indentation 0)
 #+end_src
-
 ** Babel Code-Block Configuration
 
 - language configuration
@@ -930,8 +813,7 @@
    (lisp . t)
    (js . t)
    (racket . t)
-   (python . t)
-   (haskell . t)))
+   (python . t)))
 ;; basic conf
 (push '("conf-unix" . conf-unix) org-src-lang-modes)
 #+end_src
@@ -1009,7 +891,6 @@
     (evil-scroll-line-to-center
       (line-number-at-pos (point))))
 #+end_src
-
 ** zooming
 - change text size 
 #+begin_src elisp

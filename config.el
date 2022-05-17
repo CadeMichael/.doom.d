@@ -227,14 +227,11 @@
   (lsp-mode . lsp-enable-which-key-integration)
   ;; golang
   (go-mode . lsp-deferred)
-  ;; javascript
-  (js-mode . lsp-deferred)
   ;; svelte 
   (web-mode . lsp-deferred)
-  ;; haskell
-  (haskell-mode .lsp-deferred)
   :commands (lsp lsp-deferred)
   :bind-keymap ("C-l" . lsp-command-map))
+
 
 ;; blurry icons on mac
 (when (string= "darwin" system-type)
@@ -331,32 +328,6 @@
   "d h h" '(hover-run-or-hot-reload :which-key "hover run or hot reload")
   "d p" '(lsp-dart-pub-get :which-key "dart pub get"))
 
-(use-package haskell-mode :ensure t)
-(use-package lsp-haskell :ensure t)
-(require 'lsp-haskell)
-
-(require 'haskell-interactive-mode)
-(require 'haskell-process)
-(add-hook 'haskell-mode-hook 'interactive-haskell-mode)
-
-(custom-set-variables
-  '(haskell-process-suggest-remove-import-lines t)
-  '(haskell-process-auto-import-loaded-modules t)
-  '(haskell-process-log t))
-
-(general-define-key
- :states '(normal)
- :keymaps 'haskell-mode-map
- :prefix "SPC"
- "c l" '(haskell-process-load-or-reload :which-key "load current file")
- "c t" '(haskell-process-do-type :which-key "process do type")
- "c i" '(haskell-process-do-info :which-key "process do info")
- "c SPC c" '(haskell-process-cabal-build :which-key "cabal build")
- "c k" '(haskell-interactive-mode-clear :which-key "interactive mode clear")
- "c c" '(haskell-process-cabal :which-key "process cabal"))
-;; managing imports
-(define-key haskell-mode-map (kbd "<f8>") 'haskell-navigate-imports)
-
 (use-package go-mode :ensure t)
 
 (defun lsp-go-install-save-hooks ()
@@ -367,20 +338,6 @@
 (use-package rustic :ensure t)
 (setq rustic-lsp-server 'rust-analyzer)
 (setq rustic-lsp-client 'lsp-mode)
-
-(use-package nodejs-repl :ensure t)
-(add-hook 'js-mode-hook
-        (lambda ()
-          (define-key js-mode-map (kbd "C-x C-e") 'nodejs-repl-send-last-expression)
-          (define-key js-mode-map (kbd "C-c C-j") 'nodejs-repl-send-line)
-          (define-key js-mode-map (kbd "C-c C-c") 'nodejs-repl-send-buffer)
-          (define-key js-mode-map (kbd "C-c C-l") 'nodejs-repl-load-file)
-          (define-key js-mode-map (kbd "C-c C-z") 'nodejs-repl-switch-to-repl)))
-(general-define-key
- :states '(visual)
- :keymaps 'js-mode-map
- :prefix "SPC"
- "r" '(nodejs-repl-send-region :which-key "send region"))
 
 (use-package web-mode :ensure t)
 (setq web-mode-enable-auto-pairing t)
@@ -400,6 +357,15 @@
 ;; allows for org block highlighting
 (use-package svelte-mode :ensure t)
 
+(use-package typescript-mode
+  :ensure t
+  :hook (typescript-mode . (lambda ()
+			     (setq lsp-disabled-clients '(ts-ls))
+			     (lsp-deferred))))
+(add-hook 'js-mode-hook (lambda ()
+			  (setq lsp-disabled-clients '())
+			  (lsp-deferred)))
+
 (use-package emmet-mode
   :ensure t
   :hook (web-mode . emmet-mode))
@@ -417,8 +383,6 @@
   (setq pyvenv-mode-line-indicator
         '(pyvenv-virtual-env-name ("[venv:" pyvenv-virtual-env-name "] ")))
   (pyvenv-mode +1))
-
-(use-package geiser-guile :ensure t)
 
 (use-package racket-mode :ensure t) 
 ;; org mode src block support
@@ -450,10 +414,6 @@
  :keymaps 'lisp-mode-map
  :prefix "C-c"
  "C-z" '(slime :which-key "slime"))
-(general-define-key
- :keymaps 'slime-mode-map
- :prefix "C-c"
- "C-z" '(previous-buffer :which-key "previous buffer"))
 
 ;; error handling / linting
 (use-package flycheck-clj-kondo :ensure t)
@@ -494,46 +454,9 @@
    "+" '(sp-absorb-sexp :which-key "absorb sexp")
    "|" '(sp-split-sexp :which-key "split sexp"))
 
-(general-define-key
- :states '(normal)
- :keymaps 'geiser-mode-map
- :prefix "SPC"
- "l f" '(geiser-load-file :which-key "load file")
- "\\" '(geiser-insert-lambda :which-key "insert lambda"))
-(general-define-key
- :states '(visual)
- :keymaps 'geiser-mode-map
- :prefix "SPC"
- "r" '(geiser-eval-region :which-key "eval region"))
-
 (use-package markdown-mode :ensure t
   :config
   (add-hook 'markdown-mode-hook 'flyspell-mode)) ;make sure spelling is alright
-
-(use-package ess :ensure t)
-(require 'ess-site)
-(setq ess-use-flymake nil)
-
-(add-hook 'ess-r-mode-hook
-	  #'(lambda ()
-	     (local-set-key (kbd "C-c C-r d") #'ess-rdired)))
-
-(add-hook 'ess-rdired-mode-hook
-	  #'(lambda ()
-	     (local-set-key (kbd "C-c C-r d") #'kill-buffer-and-window)))
-;; so I don't have to remap the standard bindings
-(evil-set-initial-state 'ess-rdired-mode 'emacs)
-
-(use-package poly-markdown :ensure t)
-(use-package poly-R :ensure t)
-(require 'poly-markdown)
-(require 'poly-R)
-
-;; MARKDOWN
-(add-to-list 'auto-mode-alist '("\\.md" . poly-markdown-mode))
-
-;; R mode
-(add-to-list 'auto-mode-alist '("\\.Rmd" . poly-markdown+r-mode))
 
 (use-package cheat-sh :ensure t)
 
@@ -629,8 +552,7 @@
    (lisp . t)
    (js . t)
    (racket . t)
-   (python . t)
-   (haskell . t)))
+   (python . t)))
 ;; basic conf
 (push '("conf-unix" . conf-unix) org-src-lang-modes)
 
