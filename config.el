@@ -242,11 +242,12 @@
   :ensure t
   :after lsp-mode
   :config (dap-auto-configure-mode))
+;; for golang
+(require 'dap-dlv-go)
 
 (use-package company
   :ensure t
-  :bind ("C-<tab>" . company-mode)
-  :config (setq lsp-completion-provider :capf))
+  :bind ("C-<tab>" . company-mode))
 
 (with-eval-after-load 'company
   (define-key company-active-map (kbd "Tab") nil)
@@ -282,6 +283,8 @@
 (add-hook 'clojure-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'web-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'go-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'typescript-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'python-mode-hook #'rainbow-delimiters-mode)
 (use-package aggressive-indent :ensure t)
 (add-hook 'racket-mode-hook #'aggressive-indent-mode)
 (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
@@ -335,9 +338,8 @@
   (add-hook 'before-save-hook #'lsp-organize-imports t t))
 (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
 
-(use-package rustic :ensure t)
-(setq rustic-lsp-server 'rust-analyzer)
-(setq rustic-lsp-client 'lsp-mode)
+(use-package restclient :ensure t)
+(add-to-list 'auto-mode-alist '("\\.http\\'" . restclient-mode))
 
 (use-package web-mode :ensure t)
 (setq web-mode-enable-auto-pairing t)
@@ -347,9 +349,9 @@
 (add-to-list 'auto-mode-alist '("\\.css\\'" . web-mode))
 ;; svelte support
 (add-to-list 'auto-mode-alist '("\\.svelte\\'" . web-mode))
+;; framework engines
 (setq web-mode-engines-alist
-      '(("svelte" . "\\.svelte\\'")
-        ("django" . "\\.html\\'")))
+      '(("svelte" . "\\.svelte\\'")))
 
 (eval-after-load "web-mode"
   '(setq web-mode-enable-auto-expanding t))
@@ -368,21 +370,14 @@
 
 (use-package emmet-mode
   :ensure t
-  :hook (web-mode . emmet-mode))
+  :hook
+  (web-mode . emmet-mode))
 
 (use-package lsp-pyright
   :ensure t
   :hook (python-mode . (lambda ()
                           (require 'lsp-pyright)
                           (lsp-deferred))))
-
-(use-package pyvenv
-  :ensure t
-  :diminish
-  :config
-  (setq pyvenv-mode-line-indicator
-        '(pyvenv-virtual-env-name ("[venv:" pyvenv-virtual-env-name "] ")))
-  (pyvenv-mode +1))
 
 (use-package racket-mode :ensure t) 
 ;; org mode src block support
@@ -431,15 +426,19 @@
 (use-package smartparens :ensure t)
 (require 'smartparens-config)
 (sp-pair "\<" nil :actions :rem) ;don't use with < from html 
+
+;; language support
 (add-hook 'clojure-mode-hook #'smartparens-mode)
 (add-hook 'emacs-lisp-mode-hook #'smartparens-mode)
 (add-hook 'lisp-interaction-mode-hook #'smartparens-mode)
 (add-hook 'lua-mode-hook #'smartparens-mode)
 (add-hook 'go-mode-hook #'smartparens-mode)
 (add-hook 'js-mode-hook #'smartparens-mode)
+(add-hook 'typescript-mode-hook #'smartparens-mode)
 (add-hook 'racket-mode-hook #'smartparens-mode)
-(add-hook 'rustic-mode-hook #'smartparens-mode)
 (add-hook 'scheme-mode-hook #'smartparens-mode)
+(add-hook 'python-mode-hook #'smartparens-mode)
+
 (general-define-key
    :states '(normal)
    :keymaps 'smartparens-mode-map
@@ -478,11 +477,14 @@
 (use-package gruvbox-theme :ensure t)
 (load-theme 'gruvbox-dark-soft t)
 
-(use-package smart-mode-line :ensure t)
-(setq sml/theme 'respectful)
-(setq sml/no-confirm-load-theme t)
-(setq sml/shorten-modes t)
-(sml/setup)
+;; (use-package smart-mode-line :ensure t)
+;; (setq sml/theme 'respectful)
+;; (setq sml/no-confirm-load-theme t)
+;; (setq sml/shorten-modes t)
+;; (sml/setup)
+(use-package doom-modeline
+  :ensure t
+  :init (doom-modeline-mode 1))
 
 (use-package centaur-tabs
   :ensure t
@@ -547,8 +549,6 @@
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((scheme . t)
-   (lua . t)
-   (R . t)
    (lisp . t)
    (js . t)
    (racket . t)

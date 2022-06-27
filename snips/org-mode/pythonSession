@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: pythonSession
+# key: <ps
+# --
+
+#+begin_src python :session :results outputs
+$0
+#+end_src

@@ -350,6 +350,8 @@
   :ensure t
   :after lsp-mode
   :config (dap-auto-configure-mode))
+;; for golang
+(require 'dap-dlv-go)
 #+end_src
 - the documentation of what I am using can be found [[https://emacs-lsp.github.io/lsp-mode/page/main-features/][here]]
 
@@ -360,8 +362,7 @@
 #+begin_src elisp
 (use-package company
   :ensure t
-  :bind ("C-<tab>" . company-mode)
-  :config (setq lsp-completion-provider :capf))
+  :bind ("C-<tab>" . company-mode))
 
 (with-eval-after-load 'company
   (define-key company-active-map (kbd "Tab") nil)
@@ -421,6 +422,8 @@
 (add-hook 'clojure-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'web-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'go-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'typescript-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'python-mode-hook #'rainbow-delimiters-mode)
 (use-package aggressive-indent :ensure t)
 (add-hook 'racket-mode-hook #'aggressive-indent-mode)
 (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
@@ -487,16 +490,24 @@
   (add-hook 'before-save-hook #'lsp-organize-imports t t))
 (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
 #+end_src
-*** Rust
-- Rustic seems to be a very well thought out (and hopefully implemented package) it connects to lsp mode / flycheck and uses rust-analyzer by default.
-- I will set these just to be extra specific 
-- [[https://github.com/brotzeit/rustic][rustic github]]
+*** Web Languages (JS, TS, Svelte)
+- *REST client* in emacs
 #+begin_src elisp
-(use-package rustic :ensure t)
-(setq rustic-lsp-server 'rust-analyzer)
-(setq rustic-lsp-client 'lsp-mode)
+(use-package restclient :ensure t)
+(add-to-list 'auto-mode-alist '("\\.http\\'" . restclient-mode))
 #+end_src
-*** JS / TS
+- C-c C-c: runs the query under the cursor, tries to pretty-print the response (if possible)
+- C-c C-r: same, but doesn't do anything with the response, just shows the buffer
+- C-c C-v: same as C-c C-c, but doesn't switch focus to other window
+- C-c C-p: jump to the previous query
+- C-c C-n: jump to the next query
+- C-c C-.: mark the query under the cursor
+- C-c C-u: copy query under the cursor as a curl command
+- C-c C-g: start a helm session with sources for variables and requests (if helm is available, of course)
+- C-c n n: narrow to region of current request (including headers)
+- TAB: hide/show current request body, only if
+- C-c C-a: show all collapsed regions
+- C-c C-i: show variable at point 
 - getting support for *svelte* / web development
 #+begin_src elisp
 (use-package web-mode :ensure t)
@@ -507,9 +518,9 @@
 (add-to-list 'auto-mode-alist '("\\.css\\'" . web-mode))
 ;; svelte support
 (add-to-list 'auto-mode-alist '("\\.svelte\\'" . web-mode))
+;; framework engines
 (setq web-mode-engines-alist
-      '(("svelte" . "\\.svelte\\'")
-        ("django" . "\\.html\\'")))
+      '(("svelte" . "\\.svelte\\'")))
 
 (eval-after-load "web-mode"
   '(setq web-mode-enable-auto-expanding t))
@@ -518,7 +529,7 @@
 (use-package svelte-mode :ensure t)
 #+end_src
 
-- typescript-mode a major mode for ts files 
+- *typescript-mode* a major mode for ts files 
 #+begin_src elisp
 (use-package typescript-mode
   :ensure t
@@ -534,7 +545,8 @@
 #+begin_src elisp
 (use-package emmet-mode
   :ensure t
-  :hook (web-mode . emmet-mode))
+  :hook
+  (web-mode . emmet-mode))
 #+end_src
 *** Python
 - uses lsp-pyright with the open source pyright server. Using this because it can be used with nvim /emacs.
@@ -547,17 +559,6 @@
                           (lsp-deferred))))
 #+end_src 
 
-- *pyenv* to get access to virtual environments
-  - is needed when using something like flask, django, etc...
-#+begin_src elisp
-(use-package pyvenv
-  :ensure t
-  :diminish
-  :config
-  (setq pyvenv-mode-line-indicator
-        '(pyvenv-virtual-env-name ("[venv:" pyvenv-virtual-env-name "] ")))
-  (pyvenv-mode +1))
-#+end_src
 *** Lisp(s)
 **** Racket
 - [[https://www.racket-mode.com/#Install-Racket-Mode][racket mode]] website
@@ -625,15 +626,19 @@
 (use-package smartparens :ensure t)
 (require 'smartparens-config)
 (sp-pair "\<" nil :actions :rem) ;don't use with < from html 
+
+;; language support
 (add-hook 'clojure-mode-hook #'smartparens-mode)
 (add-hook 'emacs-lisp-mode-hook #'smartparens-mode)
 (add-hook 'lisp-interaction-mode-hook #'smartparens-mode)
 (add-hook 'lua-mode-hook #'smartparens-mode)
 (add-hook 'go-mode-hook #'smartparens-mode)
 (add-hook 'js-mode-hook #'smartparens-mode)
+(add-hook 'typescript-mode-hook #'smartparens-mode)
 (add-hook 'racket-mode-hook #'smartparens-mode)
-(add-hook 'rustic-mode-hook #'smartparens-mode)
 (add-hook 'scheme-mode-hook #'smartparens-mode)
+(add-hook 'python-mode-hook #'smartparens-mode)
+
 (general-define-key
    :states '(normal)
    :keymaps 'smartparens-mode-map
@@ -698,11 +703,14 @@
 
 - smart mode line, seems like a better vanilla mode line 
 #+begin_src elisp
-(use-package smart-mode-line :ensure t)
-(setq sml/theme 'respectful)
-(setq sml/no-confirm-load-theme t)
-(setq sml/shorten-modes t)
-(sml/setup)
+;; (use-package smart-mode-line :ensure t)
+;; (setq sml/theme 'respectful)
+;; (setq sml/no-confirm-load-theme t)
+;; (setq sml/shorten-modes t)
+;; (sml/setup)
+(use-package doom-modeline
+  :ensure t
+  :init (doom-modeline-mode 1))
 #+end_src
 
 *** Tabline
@@ -808,8 +816,6 @@
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((scheme . t)
-   (lua . t)
-   (R . t)
    (lisp . t)
    (js . t)
    (racket . t)
