@@ -474,8 +474,10 @@
           (lambda () (display-line-numbers-mode -1)))
 (setq display-line-numbers-type 'relative)
 
-(use-package gruvbox-theme :ensure t)
-(load-theme 'gruvbox-dark-soft t)
+(use-package dracula-theme :ensure t)
+(load-theme 'dracula t)
+;; (use-package gruvbox-theme :ensure t)
+;; (load-theme 'gruvbox-dark-soft t)
 
 ;; (use-package smart-mode-line :ensure t)
 ;; (setq sml/theme 'respectful)
@@ -509,7 +511,7 @@
 
 (use-package all-the-icons :ensure t)
 (when (string= system-type "gnu/linux")
-  (add-to-list 'default-frame-alist '(font . "Monoid Nerd Font 14")))
+  (add-to-list 'default-frame-alist '(font . "Monoid Nerd Font 12")))
 (when (string= system-type "darwin")       
   (add-to-list 'default-frame-alist '(font . "FiraCode Nerd Font 14")))
 

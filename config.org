@@ -695,8 +695,10 @@
 - a nice gruv theme for tiling window manager setup
   
 #+begin_src elisp
-(use-package gruvbox-theme :ensure t)
-(load-theme 'gruvbox-dark-soft t)
+(use-package dracula-theme :ensure t)
+(load-theme 'dracula t)
+;; (use-package gruvbox-theme :ensure t)
+;; (load-theme 'gruvbox-dark-soft t)
 #+end_src
 
 *** modeline
