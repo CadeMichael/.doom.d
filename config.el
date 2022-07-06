@@ -283,6 +283,7 @@
 (add-hook 'clojure-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'web-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'go-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'js-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'typescript-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'python-mode-hook #'rainbow-delimiters-mode)
 (use-package aggressive-indent :ensure t)
@@ -301,6 +302,8 @@
   :config
   (helm-mode 1)
   (require 'helm-config))
+
+(use-package lua-mode :ensure t)
 
 (use-package lsp-dart
   :ensure t
@@ -409,6 +412,19 @@
  :keymaps 'lisp-mode-map
  :prefix "C-c"
  "C-z" '(slime :which-key "slime"))
+
+(use-package geiser-guile :ensure t)
+(general-define-key
+ :states '(normal)
+ :keymaps 'geiser-mode-map
+ :prefix "SPC"
+ "l f" '(geiser-load-file :which-key "load file")
+ "\\" '(geiser-insert-lambda :which-key "insert lambda"))
+(general-define-key
+ :states '(visual)
+ :keymaps 'geiser-mode-map
+ :prefix "SPC"
+ "r" '(geiser-eval-region :which-key "eval region"))
 
 ;; error handling / linting
 (use-package flycheck-clj-kondo :ensure t)
