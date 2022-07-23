@@ -286,11 +286,13 @@
 (add-hook 'js-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'typescript-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'python-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'geiser-mode-hook #'rainbow-delimiters-mode)
 (use-package aggressive-indent :ensure t)
 (add-hook 'racket-mode-hook #'aggressive-indent-mode)
 (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
 (add-hook 'clojure-mode-hook #'aggressive-indent-mode)
 (add-hook 'web-mode-hook #'aggressive-indent-mode)
+(add-hook 'geiser-mode-hook #'rainbow-delimiters-mode)
 
 (use-package helm-lsp :ensure t)
 (use-package helm
@@ -340,6 +342,8 @@
   (add-hook 'before-save-hook #'lsp-format-buffer t t)
   (add-hook 'before-save-hook #'lsp-organize-imports t t))
 (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+
+(use-package julia-mode :ensure t)
 
 (use-package restclient :ensure t)
 (add-to-list 'auto-mode-alist '("\\.http\\'" . restclient-mode))
