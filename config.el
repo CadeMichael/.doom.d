@@ -286,6 +286,8 @@
 (add-hook 'js-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'typescript-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'python-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'julia-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'zig-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'geiser-mode-hook #'rainbow-delimiters-mode)
 (use-package aggressive-indent :ensure t)
 (add-hook 'racket-mode-hook #'aggressive-indent-mode)
@@ -344,6 +346,8 @@
 (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
 
 (use-package julia-mode :ensure t)
+
+(use-package zig-mode :ensure t)
 
 (use-package restclient :ensure t)
 (add-to-list 'auto-mode-alist '("\\.http\\'" . restclient-mode))

@@ -425,6 +425,8 @@
 (add-hook 'js-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'typescript-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'python-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'julia-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'zig-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'geiser-mode-hook #'rainbow-delimiters-mode)
 (use-package aggressive-indent :ensure t)
 (add-hook 'racket-mode-hook #'aggressive-indent-mode)
@@ -502,6 +504,11 @@
 - essentially a newer version of python. Like it for data science as it's *jit* compiled and all packages are written just in julia.
 #+begin_src elisp
 (use-package julia-mode :ensure t)
+#+end_src
+*** Zig
+- supposed to be a better C
+#+begin_src elisp
+(use-package zig-mode :ensure t)
 #+end_src
 *** Web Languages (JS, TS, Svelte)
 - *REST client* in emacs
