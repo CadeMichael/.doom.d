@@ -227,6 +227,8 @@
   (lsp-mode . lsp-enable-which-key-integration)
   ;; golang
   (go-mode . lsp-deferred)
+  ;; rust
+  (rust-mode . lsp-defered)
   ;; svelte 
   (web-mode . lsp-deferred)
   :commands (lsp lsp-deferred)
@@ -288,6 +290,7 @@
 (add-hook 'python-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'julia-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'zig-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'rust-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'geiser-mode-hook #'rainbow-delimiters-mode)
 (use-package aggressive-indent :ensure t)
 (add-hook 'racket-mode-hook #'aggressive-indent-mode)
@@ -344,6 +347,12 @@
   (add-hook 'before-save-hook #'lsp-format-buffer t t)
   (add-hook 'before-save-hook #'lsp-organize-imports t t))
 (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+
+(use-package rust-mode :ensure t)
+(add-hook 'rust-mode-hook
+	  (lambda () (setq indent-tabs-mode nil)))
+(setq rust-format-on-save t)
+(use-package cargo-mode :ensure t)
 
 (use-package julia-mode :ensure t)
 
@@ -460,8 +469,10 @@
 (add-hook 'js-mode-hook #'smartparens-mode)
 (add-hook 'typescript-mode-hook #'smartparens-mode)
 (add-hook 'racket-mode-hook #'smartparens-mode)
+(add-hook 'rust-mode-hook #'smartparens-mode)
 (add-hook 'scheme-mode-hook #'smartparens-mode)
 (add-hook 'python-mode-hook #'smartparens-mode)
+(add-hook 'zig-mode-hook #'smartparens-mode)
 
 (general-define-key
    :states '(normal)
