@@ -228,7 +228,7 @@
   ;; golang
   (go-mode . lsp-deferred)
   ;; rust
-  (rust-mode . lsp-defered)
+  (rust-mode . lsp-deferred)
   ;; svelte 
   (web-mode . lsp-deferred)
   :commands (lsp lsp-deferred)
