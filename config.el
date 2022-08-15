@@ -353,6 +353,7 @@
 	  (lambda () (setq indent-tabs-mode nil)))
 (setq rust-format-on-save t)
 (use-package cargo-mode :ensure t)
+(use-package ob-rust :ensure t)
 
 (use-package julia-mode :ensure t)
 
@@ -585,11 +586,14 @@
 
 (org-babel-do-load-languages
  'org-babel-load-languages
- '((scheme . t)
-   (lisp . t)
+ '(
    (js . t)
+   (lisp . t)
+   (python . t)
    (racket . t)
-   (python . t)))
+   (rust . t)
+   (scheme . t)
+))
 ;; basic conf
 (push '("conf-unix" . conf-unix) org-src-lang-modes)
 
