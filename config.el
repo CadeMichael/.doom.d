@@ -342,6 +342,7 @@
   "d p" '(lsp-dart-pub-get :which-key "dart pub get"))
 
 (use-package go-mode :ensure t)
+(use-package ob-go :ensure t)
 
 (defun lsp-go-install-save-hooks ()
   (add-hook 'before-save-hook #'lsp-format-buffer t t)
@@ -586,14 +587,13 @@
 
 (org-babel-do-load-languages
  'org-babel-load-languages
- '(
+ '((go .t)
    (js . t)
    (lisp . t)
    (python . t)
    (racket . t)
    (rust . t)
-   (scheme . t)
-))
+   (scheme . t)))
 ;; basic conf
 (push '("conf-unix" . conf-unix) org-src-lang-modes)
 
@@ -602,7 +602,7 @@
 (set-face-attribute
  'org-block nil
  :foreground nil
- :background "#282828"
+ :background "#191a21"
  :inherit '(fixed-pitch))
 ;; code
 (set-face-attribute 'org-code nil
