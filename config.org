@@ -432,11 +432,11 @@
 (add-hook 'rust-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'geiser-mode-hook #'rainbow-delimiters-mode)
 (use-package aggressive-indent :ensure t)
-(add-hook 'racket-mode-hook #'aggressive-indent-mode)
-(add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
 (add-hook 'clojure-mode-hook #'aggressive-indent-mode)
+(add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
+(add-hook 'geiser-mode-hook #'aggressive-indent-mode)
+(add-hook 'racket-mode-hook #'aggressive-indent-mode)
 (add-hook 'web-mode-hook #'aggressive-indent-mode)
-(add-hook 'geiser-mode-hook #'rainbow-delimiters-mode)
 #+end_src
 *** Helm
 - helm is a fuzzy finder for emacs
