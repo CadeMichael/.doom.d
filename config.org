@@ -1,4 +1,6 @@
 #+TITLE: Vanilla Emacs --> Cade's Emacs
+
+* Style for exporting
 #+HTML_HEAD: <style>pre.src{background:#282a36;color:white;} </style>
 #+HTML_HEAD: <style>body{background:#44475a;color:white;} </style>
 #+HTML_HEAD: <style>a{color:#50fa7b;} </style>
@@ -137,6 +139,7 @@
 - Org Agenda
 #+begin_src elisp
 (setq org-log-done t)
+;; set the file path 
 (setq org-agenda-files '("~/.schedule"))
 #+end_src
 
@@ -418,19 +421,19 @@
 - easier to see parenthesis colors
 #+begin_src elisp
 (use-package rainbow-delimiters :ensure t)
-(add-hook 'org-mode-hook #'rainbow-delimiters-mode)
-(add-hook 'racket-mode-hook #'rainbow-delimiters-mode)
-(add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'clojure-mode-hook #'rainbow-delimiters-mode)
-(add-hook 'web-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'geiser-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'go-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'js-mode-hook #'rainbow-delimiters-mode)
-(add-hook 'typescript-mode-hook #'rainbow-delimiters-mode)
-(add-hook 'python-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'julia-mode-hook #'rainbow-delimiters-mode)
-(add-hook 'zig-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'org-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'python-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'racket-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'rust-mode-hook #'rainbow-delimiters-mode)
-(add-hook 'geiser-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'typescript-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'web-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'zig-mode-hook #'rainbow-delimiters-mode)
 (use-package aggressive-indent :ensure t)
 (add-hook 'clojure-mode-hook #'aggressive-indent-mode)
 (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
