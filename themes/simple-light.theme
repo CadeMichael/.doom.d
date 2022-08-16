@@ -109,13 +109,7 @@
 #+HTML_HEAD: code, pre {
 #+HTML_HEAD:     font-family:  Menlo, Monaco, Consolas, "Courier New", monospace;
 #+HTML_HEAD: }
-#+HTML_HEAD: code {
-#+HTML_HEAD:     color:  #d14;
-#+HTML_HEAD: }
-#+HTML_HEAD: code:before, code: after {
-#+HTML_HEAD:     content:  "=";
-#+HTML_HEAD:     color:  #ccc;
-#+HTML_HEAD: }
+#+HTML_HEAD: pre.src{background:#282a36; color:white;}
 #+HTML_HEAD: pre {
 #+HTML_HEAD:     display:  block;
 #+HTML_HEAD:     margin:  0 0 14px;

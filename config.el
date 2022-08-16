@@ -88,6 +88,7 @@
  "P" '(org-preview-html-mode :which-key "Org Preview HTML"))
 
 (setq org-log-done t)
+;; set the file path 
 (setq org-agenda-files '("~/.schedule"))
 
 ;; show key binding function
@@ -279,19 +280,19 @@
  "p f" '(projectile-find-file :which-key "projectile find file"))
 
 (use-package rainbow-delimiters :ensure t)
-(add-hook 'org-mode-hook #'rainbow-delimiters-mode)
-(add-hook 'racket-mode-hook #'rainbow-delimiters-mode)
-(add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'clojure-mode-hook #'rainbow-delimiters-mode)
-(add-hook 'web-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'geiser-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'go-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'js-mode-hook #'rainbow-delimiters-mode)
-(add-hook 'typescript-mode-hook #'rainbow-delimiters-mode)
-(add-hook 'python-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'julia-mode-hook #'rainbow-delimiters-mode)
-(add-hook 'zig-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'org-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'python-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'racket-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'rust-mode-hook #'rainbow-delimiters-mode)
-(add-hook 'geiser-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'typescript-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'web-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'zig-mode-hook #'rainbow-delimiters-mode)
 (use-package aggressive-indent :ensure t)
 (add-hook 'clojure-mode-hook #'aggressive-indent-mode)
 (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
