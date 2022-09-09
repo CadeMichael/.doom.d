@@ -1,0 +1,11 @@
+;;;; Emacs Bookmark Format Version 1;;;; -*- coding: utf-8-emacs; mode: lisp-data -*-
+;;; This format is meant to be slightly human-readable;
+;;; nevertheless, you probably don't want to edit it.
+;;; -*- End Of Bookmark File Format Version Stamp -*-
+(("org-capture-last-stored"
+ (filename . "~/org/20220829143844-focusonforce.org")
+ (front-context-string . "\n- practice test")
+ (rear-context-string . "e: FocusOnForce\n")
+ (position . 90)
+ (last-modified 25357 9185 96364 0))
+)

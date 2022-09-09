@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: loadLibs 
-# key: <ll
-# --
-
-library(tidyverse)
-$0

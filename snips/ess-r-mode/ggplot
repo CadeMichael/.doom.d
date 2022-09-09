@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: ggplot
-# key: <gg
-# --
-
-${1:object} %>%
-     ggplot($0)

@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# name: RacketSrc
-# key: <ra
-# --
-
-#+begin_src racket :result output
-$0
-#+end_src
