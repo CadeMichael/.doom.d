@@ -749,10 +749,13 @@
 - a nice gruv theme for tiling window manager setup
   
 #+begin_src elisp
-(use-package dracula-theme :ensure t)
-(load-theme 'dracula t)
-;; (use-package gruvbox-theme :ensure t)
-;; (load-theme 'gruvbox-dark-soft t)
+;; (use-package dracula-theme :ensure t)
+;; (load-theme 'dracula t)
+(use-package catppuccin-theme
+  :ensure t
+  :config
+  (setq catppuccin-height-title1 1.5))
+(load-theme 'catppuccin t)
 #+end_src
 
 *** modeline

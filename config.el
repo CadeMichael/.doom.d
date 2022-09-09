@@ -512,10 +512,13 @@
           (lambda () (display-line-numbers-mode -1)))
 (setq display-line-numbers-type 'relative)
 
-(use-package dracula-theme :ensure t)
-(load-theme 'dracula t)
-;; (use-package gruvbox-theme :ensure t)
-;; (load-theme 'gruvbox-dark-soft t)
+;; (use-package dracula-theme :ensure t)
+;; (load-theme 'dracula t)
+(use-package catppuccin-theme
+  :ensure t
+  :config
+  (setq catppuccin-height-title1 1.5))
+(load-theme 'catppuccin t)
 
 ;; (use-package smart-mode-line :ensure t)
 ;; (setq sml/theme 'respectful)
