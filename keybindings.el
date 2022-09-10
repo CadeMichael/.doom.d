@@ -99,8 +99,6 @@
 (sp-pair "{" "}" :wrap "C-{")
 ;; []
 (sp-pair "[" "]" :wrap "M-[")
-;; ** 
-(sp-pair "*" "*" :wrap "M-*")
 
 ;; ----- V Term
 (general-define-key

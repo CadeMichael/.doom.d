@@ -43,9 +43,17 @@
 (use-package evil 
   :ensure t
   :init
+  ;; set to nil for use with evil collection
+  (setq evil-want-keybinding nil)
   ;; set undo to undo-fu before loading
   (setq evil-undo-system 'undo-fu))
 (evil-mode 1)
+;; evil collections for use with dired
+(use-package evil-collection
+  :after evil
+  :ensure t
+  :config
+  (evil-collection-init))
 
 ;; ----- Smart Parens
 (use-package smartparens
@@ -67,6 +75,8 @@
   :ensure t
   :config
   (require 'org-roam-utils)
+  ;; for exporting
+  (require 'org-roam-export)
   :bind (:map org-mode-map
               ("C-M-i" . completion-at-point)))
 ;; directory where notes are stored
@@ -77,6 +87,16 @@
 ;; org shortcuts
 (require 'org-tempo)
 
+;; custom function for resetting org links for export
+(defun reset-roam-links ()
+    "Reset links in org when it can't export."
+    (interactive)
+    (progn
+      (org-roam-db-clear-all)
+      (org-roam-db-sync)
+      (org-id-update-id-locations)
+      (org-roam-update-org-id-locations)))
+  
 ;; ----- Rainbow-delimiters
 (use-package rainbow-delimiters
   :ensure t)
@@ -88,6 +108,16 @@
 (which-key-mode)
 
 ;; ----- Theme(s)
+;; startup
+(setq inhibit-startup-screen t)
+;; solarized
+(use-package solarized-theme
+  :ensure t)
+(load-theme 'solarized-selenized-light t)
+;; monokai
+(use-package monokai-theme
+  :ensure t)
+;; (load-theme 'monokai t)
 ;; vscode dark theme
 (use-package vscode-dark-plus-theme 
   :ensure t)
@@ -95,7 +125,7 @@
 ;; Gruv
 (use-package gruvbox-theme
   :ensure t)
-(load-theme 'gruvbox-dark-soft t)
+;; (load-theme 'gruvbox-dark-soft t)
 
 ;; hiding toolbar
 (tool-bar-mode -1)
