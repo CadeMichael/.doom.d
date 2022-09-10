@@ -1,7 +1,5 @@
-elpa/
-lsp-cache/
-bookmarks
-org-roam.db
-eshell/
-eln-cache/
-auto-save-list/
+/*
+*/
+*
+!config.org
+!init.el
