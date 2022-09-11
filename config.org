@@ -206,6 +206,14 @@
   :commands lsp-ui-mode)
 (setq lsp-ui-sideline-show-diagnostics t)
 
+;; Yas Snippet
+(use-package yasnippet :ensure t
+  :config
+  (setq yas-snippet-dirs '("~/.emacs.d/snips"))
+  ;; preventing weird indenting 
+  (setq yas-indent-line 'fixed)
+  (yas-global-mode 1))
+
 ;; Helm
 (use-package helm
   :ensure t)
