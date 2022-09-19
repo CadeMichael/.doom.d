@@ -1,6 +1,6 @@
 #+TITLE: Minimal Literate Config
 
-* Config & Packages 
+* Config & Packages
 #+begin_src elisp
 ;; ----- Native Comp Settings
 (setq warning-minimum-level :error)
@@ -187,8 +187,9 @@
   :ensure t
   :init
   (setq lsp-keymap-prefix "C-c l")
-  :hook ((rust-mode . lsp)
-         (js-mode . lsp)
+  :hook ((clojure-mode . lsp)
+	   (js-mode . lsp)
+         (rust-mode . lsp)
          (lsp-mode . lsp-enable-which-key-integration))
   :commands lsp)
 
@@ -231,12 +232,24 @@
 (add-hook 'after-init-hook 'global-company-mode)
 ;; ---------------
 
+;; ----- Clojure
+(use-package clojure-mode
+  :ensure t
+  :hook
+  (clojure-mode . smartparens-mode))
+;; REPL managment
+(use-package cider
+  :ensure t)
+;; org
+(require 'ob-clojure)
+(setq org-babel-clojure-backend 'cider)
+
 ;; ----- Go
 (use-package go-mode
-  :ensure t)
-;; lang specific hooks
-(add-hook 'go-mode-hook #'tree-sitter-hl-mode)
-(add-hook 'go-mode-hook #'smartparens-mode)
+  :ensure t
+  :hook
+  (go-mode . tree-sitter-hl-mode)
+  (go-mode . smartparens-mode))
 
 ;; ----- HTML / Vue
 ;; use C-j to expand
@@ -251,16 +264,32 @@
   (add-to-list 'auto-mode-alist '("\\.vue\\'" . web-mode))
   (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode)))
 
-;; ----- JS
+;; ----- JS /TS
 ;; lang specific hooks
 (add-hook 'js-mode-hook #'tree-sitter-hl-mode)
 (add-hook 'js-mode-hook #'smartparens-mode)
 ;; run org blocks
 (require 'ob-js)
+;; TS setup 
+(use-package typescript-mode
+  :ensure t
+  :hook
+  (typescript-mode . smartparens-mode)
+  (typescript-mode . tree-sitter-hl-mode))
+
+;; ----- Julia
+(use-package julia-mode
+  :ensure t
+  :hook
+  (julia-mode . tree-sitter-hl-mode)
+  (julia-mode . smartparens-mode))
 
 ;; ----- Rust
 (use-package rust-mode
-  :ensure t)
+  :ensure t
+  :hook
+  (rust-mode . tree-sitter-hl-mode)
+  (rust-mode . smartparens-mode))
 ;; org src support
 (use-package ob-rust
   :ensure t)
@@ -269,13 +298,12 @@
 (use-package svelte-mode
   :ensure t)
 
-;; lang specific hooks
-(add-hook 'rust-mode-hook #'tree-sitter-hl-mode)
-(add-hook 'rust-mode-hook #'smartparens-mode)
-
 ;; ----- Zig
 (use-package zig-mode
-  :ensure t)
+  :ensure t
+  :hook
+  (zig-mode . tree-sitter-hl-mode)
+  (zig-mode . smartparens-mode))
 
 ;; ----- Org Config
 ;; better indentation
@@ -284,7 +312,8 @@
 ;; load babel languages
 (org-babel-do-load-languages
  'org-babel-load-languages
- '((js . t)
+ '((clojure . t)
+   (js . t)
    (rust . t)))
 
 ;; ---------------------
@@ -382,6 +411,18 @@
 (evil-define-key 'normal neotree-mode-map (kbd "A") 'neotree-stretch-toggle)
 (evil-define-key 'normal neotree-mode-map (kbd "H") 'neotree-hidden-file-toggle)
 
+;; ----- Clojure 
+;; "g z" switches btwn buffer and repl
+(general-define-key
+ :states 'normal
+ :keymaps 'clojure-mode-map
+ :prefix "SPC"
+ "c j" '(cider-jack-in-clj :which-key "cider jack in clj")
+ "c r" '(cider-eval-region :which-key "cider eval region")
+ "c b" '(cider-eval-buffer :which-key "cider eval buffer")
+ "c f" '(cider-eval-file :which-key "cider eval file")
+ )
+
 ;; ----- JS  
 (general-define-key
  :states 'normal
@@ -449,4 +490,12 @@
 ;; need -shell-escape for minted
 (setq org-latex-pdf-process
       '("latexmk -pdflatex='%latex -shell-escape -interaction nonstopmode' -pdf -output-directory=%o -f %f"))
+#+end_src
+** custom funcs 
+#+begin_src elisp
+(defun rename-pdf-note ()
+  "Renames exported pdf's to something a bit more readable."
+  (interactive)
+  (shell-command
+   "cd ~/org && clj -M rename.clj"))
 #+end_src
