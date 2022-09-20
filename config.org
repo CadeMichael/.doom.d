@@ -294,10 +294,6 @@
 (use-package ob-rust
   :ensure t)
 
-;; ----- Svelte
-(use-package svelte-mode
-  :ensure t)
-
 ;; ----- Zig
 (use-package zig-mode
   :ensure t
