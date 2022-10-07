@@ -53,7 +53,7 @@
   :after evil
   :ensure t
   :config
-  (evil-collection-init))
+  (evil-collection-init '(calendar magit dired ediff)))
 
 ;; ----- Smart Parens
 (use-package smartparens
@@ -117,13 +117,14 @@
 (setq inhibit-startup-screen t)
 ;; solarized
 (use-package solarized-theme
-  :ensure t)
-;; (load-theme 'solarized-selenized-light t)
-;; Dracula
-(use-package dracula-theme
   :ensure t
   :config
-  (load-theme 'dracula t))
+  (load-theme 'solarized-selenized-white t))
+;; Dracula
+;; (use-package dracula-theme
+;;   :ensure t
+;;   :config
+;;   (load-theme 'dracula t))
 
 ;; hiding toolbar
 (tool-bar-mode -1)
@@ -283,7 +284,24 @@
   :hook
   (julia-mode . tree-sitter-hl-mode)
   (julia-mode . smartparens-mode))
+;; repl support
+(use-package julia-vterm
+  :ensure t)
+;; babel support
+(use-package ob-julia-vterm
+  :ensure t)
 
+;; ----- Lua
+(use-package lua-mode
+  :ensure t
+  :hook
+  (lua-mode . smartparens-mode))
+;; org integration
+(require 'ob-lua)
+
+;; ----- PHP
+(use-package php-mode
+  :ensure t)
 ;; ----- Rust
 (use-package rust-mode
   :ensure t
@@ -293,6 +311,9 @@
 ;; org src support
 (use-package ob-rust
   :ensure t)
+
+;; ruby
+(require 'ob-ruby)
 
 ;; ----- Svelte
 (use-package svelte-mode
@@ -314,6 +335,8 @@
  'org-babel-load-languages
  '((clojure . t)
    (js . t)
+   (julia . t)
+   (ruby . t)
    (rust . t)))
 
 ;; ---------------------
@@ -332,6 +355,19 @@
                    (shell-quote-argument xfpath)))
           (revert-buffer t t t))
       (user-error "Current buffer must be a file"))))
+
+(defun ruby-load-file ()
+  "open eshell with ruby loaded in"
+  (interactive)
+  (let
+      ((file buffer-file-name)
+       (term-buf (vterm)))
+    (switch-to-buffer (other-buffer term-buf))
+    (switch-to-buffer-other-window term-buf)
+    (with-current-buffer term-buf
+      (vterm--goto-line -1)
+      (vterm-send-string (format " irb -r %s" file))
+      (vterm-send-return))))
 #+end_src
 * Keybindings
 #+begin_src elisp
@@ -437,6 +473,13 @@
  :prefix "SPC"
  "r i" '(org-roam-node-insert :which-key "org roam node insert")
  "r b" '(org-roam-buffer-toggle :which-key "org roam buffer toggle"))
+
+;; ----- Ruby
+(general-define-key
+ :states 'normal
+ :keymaps 'ruby-mode-map
+ :prefix "SPC"
+ "L" '(ruby-load-file :which-key "ruby load file"))
 
 ;; ----- Smartparens
 ;; ()
