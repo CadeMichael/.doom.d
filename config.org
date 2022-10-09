@@ -314,6 +314,9 @@
 
 ;; ruby
 (require 'ob-ruby)
+(use-package enh-ruby-mode
+  :ensure t)
+(add-to-list 'auto-mode-alist '("\\.rb\\'" . enh-ruby-mode))
 
 ;; ----- Svelte
 (use-package svelte-mode
@@ -336,7 +339,6 @@
  '((clojure . t)
    (js . t)
    (julia . t)
-   (ruby . t)
    (rust . t)))
 
 ;; ---------------------
@@ -472,14 +474,15 @@
  :keymaps 'org-mode-map
  :prefix "SPC"
  "r i" '(org-roam-node-insert :which-key "org roam node insert")
- "r b" '(org-roam-buffer-toggle :which-key "org roam buffer toggle"))
+ "r b" '(org-roam-buffer-toggle :which-key "org roam buffer toggle")
+ "l p" '(org-latex-preview :which-key "org latex preview"))
 
 ;; ----- Ruby
 (general-define-key
  :states 'normal
- :keymaps 'ruby-mode-map
+ :keymaps 'enh-ruby-mode-map
  :prefix "SPC"
- "L" '(ruby-load-file :which-key "ruby load file"))
+ "l" '(ruby-load-file :which-key "ruby load file"))
 
 ;; ----- Smartparens
 ;; ()
@@ -507,7 +510,11 @@
   (progn
     (setq org-export-with-toc nil)
     (org-latex-export-to-pdf)
-    (setq org-export-with-toc t)))
+    (setq org-export-with-toc t)
+    (rename-pdf-note)))
+;; increase size of latex preview
+(setq org-format-latex-options
+      (plist-put org-format-latex-options :scale 2.5))
 ;; create custom note class
 (add-to-list 'org-latex-classes
 	     ;; elegantnote should come with latex
