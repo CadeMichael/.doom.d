@@ -115,11 +115,10 @@
 ;; ----- Theme(s)
 ;; startup
 (setq inhibit-startup-screen t)
-;; solarized
-(use-package solarized-theme
+(use-package gruvbox-theme
   :ensure t
   :config
-  (load-theme 'solarized-selenized-white t))
+  (load-theme 'gruvbox-light-medium t))
 ;; Dracula
 ;; (use-package dracula-theme
 ;;   :ensure t
@@ -358,6 +357,7 @@
           (revert-buffer t t t))
       (user-error "Current buffer must be a file"))))
 
+;; Load ruby file into repl
 (defun ruby-load-file ()
   "open eshell with ruby loaded in"
   (interactive)
@@ -511,7 +511,7 @@
     (setq org-export-with-toc nil)
     (org-latex-export-to-pdf)
     (setq org-export-with-toc t)
-    (rename-pdf-note)))
+    (rename-exported-notes)))
 ;; increase size of latex preview
 (setq org-format-latex-options
       (plist-put org-format-latex-options :scale 2.5))
@@ -544,7 +544,7 @@
 ** custom funcs 
 #+begin_src elisp
 ;; fix exported names 
-(defun rename-pdf-note ()
+(defun rename-exported-notes ()
   "Renames exported pdf's to something a bit more readable."
   (interactive)
   (shell-command
