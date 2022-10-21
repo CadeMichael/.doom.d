@@ -537,7 +537,7 @@
     (if
 	(string= "*vterm*" (buffer-name))
 	;; true
-	(other-window 1)
+	(previous-multiframe-window)
       ;; false
       (find-term bufs))))
 #+end_src
