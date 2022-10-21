@@ -118,7 +118,7 @@
 (use-package gruvbox-theme
   :ensure t
   :config
-  (load-theme 'gruvbox-light-medium t))
+  (load-theme 'gruvbox-dark-medium t))
 ;; Dracula
 ;; (use-package dracula-theme
 ;;   :ensure t
@@ -185,12 +185,21 @@
 ;; ----- lsp-mode
 (use-package lsp-mode
   :ensure t
+  :custom
+  (lsp-completion-provider :none) ;; corfu used
   :init
   (setq lsp-keymap-prefix "C-c l")
-  :hook ((clojure-mode . lsp)
-	   (js-mode . lsp)
-         (rust-mode . lsp)
-         (lsp-mode . lsp-enable-which-key-integration))
+  (defun my/lsp-mode-setup-completion ()
+    (setf
+     (alist-get 'styles
+                (alist-get 'lsp-capf completion-category-defaults))
+     '(flex))) ;; Configure flex
+  :hook
+  ((lsp-completion-mode . my/lsp-mode-setup-completion)
+   (clojure-mode . lsp)
+   (js-mode . lsp)
+   (rust-mode . lsp)
+   (lsp-mode . lsp-enable-which-key-integration))
   :commands lsp)
 
 ;; Flycheck
@@ -226,10 +235,14 @@
   :ensure t
   :commands helm-lsp-workspace-symbol)
 
-;; ----- Company
-(use-package company
-  :ensure t)
-(add-hook 'after-init-hook 'global-company-mode)
+;; ---- Corfu
+(use-package corfu
+  :ensure t
+  :custom
+  (corfu-cycle t)
+  (corfu-auto t)
+  :init
+  (global-corfu-mode))
 ;; ---------------
 
 ;; ----- Clojure
@@ -401,15 +414,15 @@
 ;; search next
 (defun search-next-center-evil ()
   (interactive)
-    (evil-search-next)
-    (evil-scroll-line-to-center
-      (line-number-at-pos (point))))
+  (evil-search-next)
+  (evil-scroll-line-to-center
+   (line-number-at-pos (point))))
 ;; search previous 
 (defun search-prev-center-evil () 
   (interactive)
-    (evil-search-previous)
-    (evil-scroll-line-to-center
-      (line-number-at-pos (point))))
+  (evil-search-previous)
+  (evil-scroll-line-to-center
+   (line-number-at-pos (point))))
 ;; remap
 (general-define-key
  :states 'normal
@@ -482,7 +495,7 @@
  :states 'normal
  :keymaps 'enh-ruby-mode-map
  :prefix "SPC"
- "l" '(ruby-load-file :which-key "ruby load file"))
+ "l f" '(ruby-load-file :which-key "ruby load file"))
 
 ;; ----- Smartparens
 ;; ()
@@ -496,7 +509,37 @@
 (general-define-key
  :states 'normal
  :prefix "SPC"
- "v" '(vterm-other-window :which-key "vterm-other-window"))
+ "v" '(switch-to-vterm :which-key "switch-to-vterm"))
+
+;; ---------------------
+;; ----- Functions -----
+;; ---------------------
+(defun find-term (lis)
+  "find terminal and switch to term buffer"
+  (cond
+   ;; if 
+   ((eq '() lis)
+    ;; then
+    (vterm-other-window))
+   ;; if 
+   ((string= (car lis) "*vterm*")
+    ;; then
+    (switch-to-buffer-other-window (car lis)))
+   ;; else
+   (t
+    (find-term (cdr lis)))))
+
+(defun switch-to-vterm ()
+  "switch to or from vterm window"
+  (interactive)
+  (let
+      ((bufs (mapcar #'buffer-name (buffer-list))))
+    (if
+	(string= "*vterm*" (buffer-name))
+	;; true
+	(other-window 1)
+      ;; false
+      (find-term bufs))))
 #+end_src
 * Notes
 ** Setting up note class
