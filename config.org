@@ -63,6 +63,8 @@
 ;; ----- General
 (use-package general 
   :ensure t
+  :init
+  (setq general-override-states '(motion))
   :config
   (general-evil-setup t))
 
@@ -89,18 +91,18 @@
 
 ;; setting up org src blocks
 (setq
-  org-confirm-babel-evaluate nil
-  org-edit-src-content-indentation 0)
+ org-confirm-babel-evaluate nil
+ org-edit-src-content-indentation 0)
 
 ;; custom function for resetting org links for export
 (defun reset-roam-links ()
-    "Reset links in org when it can't export."
-    (interactive)
-    (progn
-      (org-roam-db-clear-all)
-      (org-roam-db-sync)
-      (org-id-update-id-locations)
-      (org-roam-update-org-id-locations)))
+  "Reset links in org when it can't export."
+  (interactive)
+  (progn
+    (org-roam-db-clear-all)
+    (org-roam-db-sync)
+    (org-id-update-id-locations)
+    (org-roam-update-org-id-locations)))
 
 ;; ----- Rainbow-delimiters
 (use-package rainbow-delimiters
@@ -314,6 +316,12 @@
 ;; ----- PHP
 (use-package php-mode
   :ensure t)
+
+;; ----- Python
+(require 'python)
+(use-package pyvenv
+  :ensure t)
+
 ;; ----- Rust
 (use-package rust-mode
   :ensure t
@@ -383,12 +391,64 @@
       (vterm--goto-line -1)
       (vterm-send-string (format " irb -r %s" file))
       (vterm-send-return))))
+
+;; ---- Rails Functions
+(defun is-rails-project? ()
+  "Using projectile determine if file is in a rails project."
+  (if (eq nil (projectile-project-root))
+      (progn (message "not in project") nil)
+    (if (eq nil
+	    (executable-find (format "%sbin/rails" (projectile-project-root))))
+	(progn (message "not rails project") nil)
+      t)))
+
+(defun rails-command-send (args)
+  "Send given [ARGS] to \='compilation-start\=' so project rails can run it."
+  (let ((rails-exe
+	 (format "%sbin/rails %s" (projectile-project-root) args)))
+    (compilation-start
+     (format "cd %s && %s" (projectile-project-root) rails-exe))))
+
+(defun rails-run-server ()
+  "Start rails server with \='rails-command-send\=' function."
+  (interactive)
+  (if (is-rails-project?)
+      (progn 
+	(message "running rails server...")
+	(rails-command-send "s"))
+    nil))
+
+(defun rails-run-command ()
+  "Get user input and use `compilation-start' to run it."
+  (interactive)
+  (if (is-rails-project?)
+      (rails-command-send (read-string "Rails => "))
+    nil))
+
+(defun rails-start-console ()
+  "Start rails console using a new vterm buffer named accordingly."
+  (interactive)
+  (if (is-rails-project?)
+      (let ((arg "c")
+	    (rails-exe
+	     (format "%sbin/rails c" (projectile-project-root)))
+	    (term-buf
+	     (vterm (concat "*" "rails console" "*"))))
+	(message "starting rails console...")
+	(switch-to-buffer (other-buffer term-buf))
+	(switch-to-buffer-other-window term-buf)
+	(with-current-buffer term-buf
+	  (vterm--goto-line -1)
+	  (vterm-send-string rails-exe)
+	  (vterm-send-return)))
+    nil))
 #+end_src
 * Keybindings
 #+begin_src elisp
 ;; ----- All Modes 
 (general-define-key
- :states 'normal
+ :states '(normal motion)
+ :keymaps 'override
  :prefix "SPC"
  ;; buffer management
  "b s" '(switch-to-buffer :which-key "switch to buffer")
@@ -495,7 +555,9 @@
  :states 'normal
  :keymaps 'enh-ruby-mode-map
  :prefix "SPC"
- "l f" '(ruby-load-file :which-key "ruby load file"))
+ "l f" '(ruby-load-file :which-key "ruby load file")
+ "r s" '(rails-run-server :which-key "rails run server")
+ "r c" '(rails-start-console :which-key "rails start console"))
 
 ;; ----- Smartparens
 ;; ()
@@ -514,7 +576,7 @@
 ;; ---------------------
 ;; ----- Functions -----
 ;; ---------------------
-(defun find-term (lis)
+(defun find-vterm (lis)
   "find terminal and switch to term buffer"
   (cond
    ;; if 
@@ -527,7 +589,7 @@
     (switch-to-buffer-other-window (car lis)))
    ;; else
    (t
-    (find-term (cdr lis)))))
+    (find-vterm (cdr lis)))))
 
 (defun switch-to-vterm ()
   "switch to or from vterm window"
@@ -539,7 +601,7 @@
 	;; true
 	(previous-multiframe-window)
       ;; false
-      (find-term bufs))))
+      (find-vterm bufs))))
 #+end_src
 * Notes
 ** Setting up note class
