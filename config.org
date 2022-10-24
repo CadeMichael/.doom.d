@@ -117,15 +117,15 @@
 ;; ----- Theme(s)
 ;; startup
 (setq inhibit-startup-screen t)
-(use-package gruvbox-theme
-  :ensure t
-  :config
-  (load-theme 'gruvbox-dark-medium t))
-;; Dracula
-;; (use-package dracula-theme
+;; (use-package gruvbox-theme
 ;;   :ensure t
 ;;   :config
-;;   (load-theme 'dracula t))
+;;   (load-theme 'gruvbox-dark-medium t))
+;; Dracula
+(use-package dracula-theme
+  :ensure t
+  :config
+  (load-theme 'dracula t))
 
 ;; hiding toolbar
 (tool-bar-mode -1)
@@ -145,6 +145,15 @@
 (add-hook 'org-mode-hook
           (lambda ()
             (display-line-numbers-mode -1)))
+
+;; src blocks
+(add-hook 'org-mode-hook
+	  (lambda ()
+	    (set-face-attribute
+	     'org-block nil
+	     :foreground nil
+	     :background "#191a21"
+	     :inherit '(fixed-pitch))))
 
 ;; ----- TreeSitter
 (use-package tree-sitter
@@ -272,10 +281,11 @@
   :ensure t
   :hook
   (web-mode . emmet-mode))
-;; web mode for better html editing
+;; Web Mode for better html editing
 (use-package web-mode
   :ensure t
   :config
+  (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
   (add-to-list 'auto-mode-alist '("\\.vue\\'" . web-mode))
   (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode)))
 
@@ -335,7 +345,9 @@
 ;; ruby
 (require 'ob-ruby)
 (use-package enh-ruby-mode
-  :ensure t)
+  :ensure t
+  :hook
+  (enh-ruby-mode . smartparens-mode))
 (add-to-list 'auto-mode-alist '("\\.rb\\'" . enh-ruby-mode))
 
 ;; ----- Svelte
@@ -450,6 +462,8 @@
  :states '(normal motion)
  :keymaps 'override
  :prefix "SPC"
+ ;; Helm 
+ "." '(helm-find-files :which-key "helm-find-files")
  ;; buffer management
  "b s" '(switch-to-buffer :which-key "switch to buffer")
  "b k" '(kill-buffer-and-window :which-key "kill buffer and window")
@@ -457,12 +471,15 @@
  "b t" '(tear-off-window :which-key "tear off window")
  ;; compiling
  "c c" '(compile :which-key "compile")
- ;; Helm 
- "." '(helm-find-files :which-key "helm-find-files")
+ ;; Projectile
+ "p f ." '(projectile-find-file :which-key "projectile find file")
+ "p f w" '(projectile-find-file-other-window :which-key "projectile find file other window")
  ;; Neotree
  "n" '(neotree-toggle :which-key "neotree toggle")
  ;; Org Roam
- "r f" '(org-roam-node-find :which-key "org roam node find"))
+ "r f" '(org-roam-node-find :which-key "org roam node find")
+ ;; whitespace
+ "w" '(whitespace-mode :which-key "whitespace mode"))
 
 ;; ----- Evil Bindings
 ;; Yanking to end of line
