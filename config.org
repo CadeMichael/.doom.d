@@ -70,7 +70,13 @@
 
 ;; ----- NeoTree
 (use-package neotree
-  :ensure t)
+  :ensure t
+  :init
+  (setq neo-theme 'arrow)
+  :hook
+  (neotree-mode .
+		(lambda ()
+		  (display-line-numbers-mode -1))))
 
 ;; ----- Org Roam
 (use-package org-roam
@@ -147,13 +153,13 @@
             (display-line-numbers-mode -1)))
 
 ;; src blocks
-(add-hook 'org-mode-hook
-	  (lambda ()
-	    (set-face-attribute
-	     'org-block nil
-	     :foreground nil
-	     :background "#191a21"
-	     :inherit '(fixed-pitch))))
+(require 'color)
+(set-face-attribute
+ 'org-block nil
+ :foreground nil
+ :background
+ (color-darken-name
+  (face-attribute 'default :background) 10))
 
 ;; ----- TreeSitter
 (use-package tree-sitter
