@@ -53,7 +53,13 @@
   :after evil
   :ensure t
   :config
-  (evil-collection-init '(calendar magit dired ediff)))
+  (evil-collection-init
+   '(calendar
+     magit
+     dired
+     corfu
+     xref
+     ediff)))
 
 ;; ----- Smart Parens
 (use-package smartparens
