@@ -68,6 +68,14 @@
   :config
   (general-evil-setup t))
 
+;; ----- Helm
+(use-package helm
+  :ensure t)
+;; remap chords to helm
+(global-set-key (kbd "M-x") #'helm-M-x)
+(global-set-key (kbd "C-x C-f") #'helm-find-files)
+(helm-mode 1)				; global enable
+
 ;; ----- NeoTree
 (use-package neotree
   :ensure t
@@ -123,10 +131,7 @@
 ;; ----- Theme(s)
 ;; startup
 (setq inhibit-startup-screen t)
-;; (use-package gruvbox-theme
-;;   :ensure t
-;;   :config
-;;   (load-theme 'gruvbox-dark-medium t))
+
 ;; Dracula
 (use-package dracula-theme
   :ensure t
@@ -148,18 +153,6 @@
 
 ;; line numbers
 (global-display-line-numbers-mode)
-(add-hook 'org-mode-hook
-          (lambda ()
-            (display-line-numbers-mode -1)))
-
-;; src blocks
-(require 'color)
-(set-face-attribute
- 'org-block nil
- :foreground nil
- :background
- (color-darken-name
-  (face-attribute 'default :background) 10))
 
 ;; ----- TreeSitter
 (use-package tree-sitter
@@ -198,8 +191,33 @@
 #+end_src
 * Languages
 #+begin_src elisp
+;; ---------------
 ;; ----- LSP -----
-;; ----- lsp-mode
+;; ---------------
+
+;; ---- Corfu
+(use-package corfu
+  :ensure t
+  :custom
+  (corfu-cycle t)
+  (corfu-auto t)
+  :init
+  (global-corfu-mode))
+
+;; Flycheck
+(use-package flycheck
+  :ensure t
+  :config
+  (global-flycheck-mode))		; global enable
+;; use flycheck by default
+(setq flycheck-standard-error-navigation t)
+
+;; Helm Lsp
+(use-package helm-lsp
+  :ensure t
+  :commands helm-lsp-workspace-symbol)
+
+;; ----- Lsp-Mode
 (use-package lsp-mode
   :ensure t
   :custom
@@ -219,19 +237,12 @@
    (lsp-mode . lsp-enable-which-key-integration))
   :commands lsp)
 
-;; Flycheck
-(use-package flycheck
-  :ensure t
-  :config
-  (global-flycheck-mode))		; global enable
-;; use flycheck by default
-(setq flycheck-standard-error-navigation t)
-
 ;; Lsp UI
 (use-package lsp-ui
   :ensure t
   :commands lsp-ui-mode)
 (setq lsp-ui-sideline-show-diagnostics t)
+;; ---------------
 
 ;; Yas Snippet
 (use-package yasnippet :ensure t
@@ -240,27 +251,6 @@
   ;; preventing weird indenting 
   (setq yas-indent-line 'fixed)
   (yas-global-mode 1))
-
-;; Helm
-(use-package helm
-  :ensure t)
-;; remap chords to helm
-(global-set-key (kbd "M-x") #'helm-M-x)
-(global-set-key (kbd "C-x C-f") #'helm-find-files)
-(helm-mode 1)				; global enable
-(use-package helm-lsp
-  :ensure t
-  :commands helm-lsp-workspace-symbol)
-
-;; ---- Corfu
-(use-package corfu
-  :ensure t
-  :custom
-  (corfu-cycle t)
-  (corfu-auto t)
-  :init
-  (global-corfu-mode))
-;; ---------------
 
 ;; ----- Clojure
 (use-package clojure-mode
@@ -368,6 +358,20 @@
   (zig-mode . smartparens-mode))
 
 ;; ----- Org Config
+;; no line numbers
+(add-hook 'org-mode-hook
+          (lambda ()
+            (display-line-numbers-mode -1)))
+
+;; src blocks
+(require 'color)
+(set-face-attribute
+ 'org-block nil
+ :foreground nil
+ :background
+ (color-darken-name
+  (face-attribute 'default :background) 10))
+
 ;; better indentation
 (add-hook 'org-mode-hook
           'org-indent-mode)
@@ -414,10 +418,10 @@
 (defun is-rails-project? ()
   "Using projectile determine if file is in a rails project."
   (if (eq nil (projectile-project-root))
-      (progn (message "not in project") nil)
+      (progn (user-error "not in project") nil)
     (if (eq nil
 	    (executable-find (format "%sbin/rails" (projectile-project-root))))
-	(progn (message "not rails project") nil)
+	(progn (user-error "not rails project") nil)
       t)))
 
 (defun rails-command-send (args)
