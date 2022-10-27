@@ -434,8 +434,12 @@
   "Send given [ARGS] to \='compilation-start\=' so project rails can run it."
   (let ((rails-exe
 	 (format "%sbin/rails %s" (projectile-project-root) args)))
-    (compilation-start
-     (format "cd %s && %s" (projectile-project-root) rails-exe))))
+    (async-shell-command
+     (format "cd %s && %s" (projectile-project-root) rails-exe)
+     "*Rails Command*")
+    (pop-to-buffer "*Rails Command*")
+    (evil-normal-state)))
+    
 
 (defun rails-run-server ()
   "Start rails server with \='rails-command-send\=' function."
@@ -451,6 +455,20 @@
   (interactive)
   (if (is-rails-project?)
       (rails-command-send (read-string "Rails => "))
+    nil))
+
+(defun rails-test-file ()
+  "If the current file is in a RoR project use the project rails to test it."
+  (interactive)
+  (if (is-rails-project?)
+      (let ((rails-exe
+	     (format "%sbin/rails" (projectile-project-root)))
+	    (b-name (format "===TEST[%s]===" (buffer-name)))
+	    (test-file (buffer-file-name)))
+	(with-output-to-temp-buffer b-name
+	  (shell-command
+	   (format "%s test %s" rails-exe test-file) b-name))
+	(pop-to-buffer b-name))
     nil))
 
 (defun rails-start-console ()
@@ -590,7 +608,9 @@
  :prefix "SPC"
  "l f" '(ruby-load-file :which-key "ruby load file")
  "r s" '(rails-run-server :which-key "rails run server")
- "r c" '(rails-start-console :which-key "rails start console"))
+ "r c" '(rails-start-console :which-key "rails start console")
+ "r r" '(rails-run-command :which-key "rails run command")
+ "r t" '(rails-test-file :which-key "rails test file"))
 
 ;; ----- Smartparens
 ;; ()
