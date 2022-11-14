@@ -387,6 +387,7 @@
  '((clojure . t)
    (js . t)
    (julia . t)
+   (python . t)
    (rust . t)))
 
 ;; ---------------------
@@ -475,8 +476,7 @@
   "Start rails console using a new vterm buffer named accordingly."
   (interactive)
   (if (is-rails-project?)
-      (let ((arg "c")
-	    (rails-exe
+      (let ((rails-exe
 	     (format "%sbin/rails c" (projectile-project-root)))
 	    (term-buf
 	     (vterm (concat "*" "rails console" "*"))))
@@ -600,6 +600,12 @@
  "r i" '(org-roam-node-insert :which-key "org roam node insert")
  "r b" '(org-roam-buffer-toggle :which-key "org roam buffer toggle")
  "l p" '(org-latex-preview :which-key "org latex preview"))
+;; ----- Python
+(general-define-key
+ :keymaps 'inferior-python-mode-map
+ :prefix "C-c"
+ "C-z" '(previous-multiframe-window :which-key "other window"))
+(require 'ob-python)
 
 ;; ----- Ruby
 (general-define-key
