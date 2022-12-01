@@ -248,6 +248,17 @@
   :ensure t
   :commands lsp-ui-mode)
 (setq lsp-ui-sideline-show-diagnostics t)
+
+;; Dap Mode
+(use-package dap-mode
+   :ensure t
+   :config
+   (dap-mode 1)
+   (dap-ui-mode 1)
+   (dap-tooltip-mode 1)
+   (tooltip-mode 1))
+;; dap languages
+(require 'dap-dlv-go)
 ;; ---------------
 
 ;; Yas Snippet
@@ -421,7 +432,7 @@
       (vterm-send-string (format " irb -r %s" file))
       (vterm-send-return))))
 
-;; ---- Rails Functions
+;; ---- Rails Functions ----
 (defun is-rails-project? ()
   "Using projectile determine if file is in a rails project."
   (if (eq nil (projectile-project-root))
@@ -432,7 +443,7 @@
       t)))
 
 (defun rails-command-send (args)
-  "Send given [ARGS] to \='compilation-start\=' so project rails can run it."
+  "Send given [ARGS] to `compilation-start' so project rails can run it."
   (let ((rails-exe
 	 (format "%sbin/rails %s" (projectile-project-root) args)))
     (async-shell-command
@@ -440,10 +451,10 @@
      "*Rails Command*")
     (pop-to-buffer "*Rails Command*")
     (evil-normal-state)))
-    
+
 
 (defun rails-run-server ()
-  "Start rails server with \='rails-command-send\=' function."
+  "Start rails server with `rails-command-send' function."
   (interactive)
   (if (is-rails-project?)
       (progn 
@@ -488,6 +499,28 @@
 	  (vterm-send-string rails-exe)
 	  (vterm-send-return)))
     nil))
+;; -------------------------
+
+;; ----- Golang Funcs ----
+(defun go--run-cmd (cmd &optional source &rest args)
+  "Use compile command to execute a go CMD with ARGS if given.
+If given a SOURCE, execute the CMD on it."
+  (let ((cmd-args
+         (if source
+             (mapconcat 'shell-quote-argument (cons source args) " ")
+           args)))
+    (compilation-start (concat "go " cmd " " cmd-args))))
+
+(defun go-run-file ()
+  "Run current file"
+  (interactive)
+  (go--run-cmd "run" (buffer-file-name)))
+
+(defun go-build ()
+  "Build go project"
+  (interactive)
+  (go--run-cmd "build"))
+;; -----------------------
 #+end_src
 * Keybindings
 #+begin_src elisp
@@ -505,6 +538,8 @@
  "b t" '(tear-off-window :which-key "tear off window")
  ;; compiling
  "c c" '(compile :which-key "compile")
+ ;; dap
+ "d h" '(dap-hydra :which-key "dap hydra")
  ;; Projectile
  "p f ." '(projectile-find-file :which-key "projectile find file")
  "p f w" '(projectile-find-file-other-window :which-key "projectile find file other window")
@@ -705,7 +740,7 @@
 (setq org-latex-pdf-process
       '("latexmk -pdflatex='%latex -shell-escape -interaction nonstopmode' -pdf -output-directory=%o -f %f"))
 #+end_src
-** custom funcs 
+** custom funcs
 #+begin_src elisp
 ;; fix exported names 
 (defun rename-exported-notes ()
