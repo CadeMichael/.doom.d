@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: keymap
+# key: kmap
+# --
+(general-define-key
+ :states '${1:states}
+ :keymaps '${2:maps}-mode-map
+ :prefix \"${3:prefix}\"
+ \"${4:key}\" '(${5:command} :which-key \"$0\"))
+

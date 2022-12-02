@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: dracExp
+# key: <de
+# --
+
+* export
+- dracula color Theme
+  #+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
+  #+HTML_HEAD: <style>pre.src{background:#282a36;color:white;} </style>
+  #+LaTeX_CLASS: note
