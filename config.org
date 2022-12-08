@@ -138,11 +138,11 @@
 ;; startup
 (setq inhibit-startup-screen t)
 
-;; Dracula
+;; Gruv
 (use-package gruvbox-theme
-  :ensure t
-  :config
-  (load-theme 'gruvbox t))
+ :ensure t
+ :config
+ (load-theme 'gruvbox t))
 
 ;; hiding toolbar
 (tool-bar-mode -1)
@@ -405,6 +405,18 @@
 ;; ---------------------
 ;; ----- Functions -----
 ;; ---------------------
+(defun python-black-format-buffer ()
+  "Formats a js buffer using the deno formatter."
+  (interactive)
+  (let ((xfpath (buffer-file-name)))
+    (if xfpath
+        (progn
+          (save-buffer)
+          (shell-command
+           (format "black %s"
+                   (shell-quote-argument xfpath)))
+          (revert-buffer t t t))
+      (user-error "Current buffer must be a file"))))
 
 (defun custom-js-format-buffer ()
   "Formats a js buffer using the deno formatter."
@@ -584,11 +596,11 @@ If given a SOURCE, execute the CMD on it."
 (general-define-key
  :states 'normal
  :keymaps 'lsp-ui-mode-map
+ ;; peaks
+ "g d" '(lsp-ui-peek-find-definitions :which-key "peek definitions")
+ "g r" '(lsp-ui-peek-find-references :which-key "peek references")
  ;; hover
- "K" '(lsp-ui-doc-show :which-key "lsp ui doc show")
- ;; finding def / references
- "gd" '(lsp-ui-peek-find-definitions :which-key "lsp ui peak find definitions")
- "gr" '(lsp-ui-peek-find-references :which-key "lsp ui peak find references"))
+ "K" '(lsp-ui-doc-show :which-key "lsp ui doc show"))
 ;; formatting 
 (general-define-key
  :states '(normal visual)
@@ -618,8 +630,14 @@ If given a SOURCE, execute the CMD on it."
  "c j" '(cider-jack-in-clj :which-key "cider jack in clj")
  "c r" '(cider-eval-region :which-key "cider eval region")
  "c b" '(cider-eval-buffer :which-key "cider eval buffer")
- "c f" '(cider-eval-file :which-key "cider eval file")
- )
+ "c f" '(cider-eval-file :which-key "cider eval file"))
+
+;; ----- Go
+(general-define-key
+ :states 'normal
+ :keymaps 'go-mode-map
+ :prefix "SPC"
+ "g r" '(go-run-file :which-key "go run file"))
 
 ;; ----- JS  
 (general-define-key
@@ -636,7 +654,13 @@ If given a SOURCE, execute the CMD on it."
  "r i" '(org-roam-node-insert :which-key "org roam node insert")
  "r b" '(org-roam-buffer-toggle :which-key "org roam buffer toggle")
  "l p" '(org-latex-preview :which-key "org latex preview"))
+
 ;; ----- Python
+(general-define-key
+ :keymaps 'python-mode-map
+ :prefix "C-c"
+ "C-b" '(python-black-format-buffer :which-key "python black format buffer"))
+
 (general-define-key
  :keymaps 'inferior-python-mode-map
  :prefix "C-c"
