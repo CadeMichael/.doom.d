@@ -20,7 +20,7 @@
   (run-with-timer 0.1 nil #'invert-face 'mode-line))
 
 ;; ----- Fonts
-(add-to-list 'default-frame-alist '(font . "Hack Nerd Font 22"))
+(add-to-list 'default-frame-alist '(font . "Hack Nerd Font 16"))
 
 ;; ----- Use Package 
 (require 'package)
@@ -239,6 +239,7 @@
   ((lsp-completion-mode . my/lsp-mode-setup-completion)
    (clojure-mode . lsp)
    (js-mode . lsp)
+   (python-mode .lsp)
    (rust-mode . lsp)
    (lsp-mode . lsp-enable-which-key-integration))
   :commands lsp)
@@ -405,8 +406,22 @@
 ;; ---------------------
 ;; ----- Functions -----
 ;; ---------------------
+;; very slow just use once in a while
+(defun julia-format-buffer ()
+  "Formats a julia buffer using the JuliaFormatter."
+  (interactive)
+  (let ((xfpath (buffer-file-name)))
+    (if xfpath
+        (progn
+          (save-buffer)
+          (shell-command
+           (format "julia -e \'using JuliaFormatter; format_file(\"%s\");\'"
+                   (shell-quote-argument xfpath)))
+          (revert-buffer t t t))
+      (user-error "Current buffer must be a file"))))
+
 (defun python-black-format-buffer ()
-  "Formats a js buffer using the deno formatter."
+  "Formats a py buffer using the black formatter."
   (interactive)
   (let ((xfpath (buffer-file-name)))
     (if xfpath
@@ -645,6 +660,14 @@ If given a SOURCE, execute the CMD on it."
  :keymaps 'js-mode-map
  :prefix "TAB"
  "f" '(custom-js-format-buffer :which-key "custom-js-format-buffer"))
+;; ----- Julia
+(general-define-key
+ :states 'normal
+ :keymaps 'julia-mode-map
+ :prefix "SPC"
+ "f b" '(julia-format-buffer :which-key "julia format buffer"))
+
+
 
 ;; ----- Org Roam
 (general-define-key
