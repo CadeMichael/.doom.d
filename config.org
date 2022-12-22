@@ -146,6 +146,8 @@
 
 ;; hiding toolbar
 (tool-bar-mode -1)
+;; hiding menubar
+(menu-bar-mode -1)
 
 ;; modeline
 (use-package doom-modeline
@@ -315,11 +317,15 @@
   :hook
   (typescript-mode . smartparens-mode)
   (typescript-mode . tree-sitter-hl-mode))
+;; repl integration
+(use-package js-comint
+  :ensure t)
 
 ;; ----- Julia
 (use-package julia-mode
   :ensure t
   :hook
+  (julia-mode . julia-vterm-mode)
   (julia-mode . tree-sitter-hl-mode)
   (julia-mode . smartparens-mode))
 ;; repl support
