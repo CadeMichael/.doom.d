@@ -439,19 +439,6 @@
           (revert-buffer t t t))
       (user-error "Current buffer must be a file"))))
 
-(defun custom-js-format-buffer ()
-  "Formats a js buffer using the deno formatter."
-  (interactive)
-  (let ((xfpath (buffer-file-name)))
-    (if xfpath
-        (progn
-          (save-buffer)
-          (shell-command
-           (format "deno fmt %s"
-                   (shell-quote-argument xfpath)))
-          (revert-buffer t t t))
-      (user-error "Current buffer must be a file"))))
-
 ;; Load ruby file into repl
 (defun ruby-load-file ()
   "open eshell with ruby loaded in"
@@ -661,11 +648,13 @@ If given a SOURCE, execute the CMD on it."
  "g r" '(go-run-file :which-key "go run file"))
 
 ;; ----- JS  
-(general-define-key
- :states 'normal
- :keymaps 'js-mode-map
- :prefix "TAB"
- "f" '(custom-js-format-buffer :which-key "custom-js-format-buffer"))
+;; js
+(define-key js-mode-map (kbd "C-c C-z") 'js-repl-toggle)
+(define-key js-mode-map (kbd "C-c C-b") 'js-send-buffer)
+;; js repl
+(define-key js-comint-mode-map (kbd "C-c C-z") 'js-repl-toggle)
+(define-key js-comint-mode-map (kbd "C-c C-c") 'js-comint-reset-repl)
+
 ;; ----- Julia
 (general-define-key
  :states 'normal
@@ -750,6 +739,15 @@ If given a SOURCE, execute the CMD on it."
 	(previous-multiframe-window)
       ;; false
       (find-vterm bufs))))
+
+;; JS Repl
+(defun js-repl-toggle ()
+  "Toggle repl or js file."
+  (interactive)
+  (if
+      (eq major-mode 'js-comint-mode)
+      (previous-multiframe-window)
+    (run-js "")))
 #+end_src
 * Notes
 ** Setting up note class
