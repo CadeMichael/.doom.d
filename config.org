@@ -412,6 +412,19 @@
 ;; ---------------------
 ;; ----- Functions -----
 ;; ---------------------
+(defun custom-js-format-buffer ()
+  "Formats a js buffer using the deno formatter."
+  (interactive)
+  (let ((xfpath (buffer-file-name)))
+    (if xfpath
+        (progn
+          (save-buffer)
+          (shell-command
+           (format "deno fmt %s"
+                   (shell-quote-argument xfpath)))
+          (revert-buffer t t t))
+      (user-error "Current buffer must be a file"))))
+
 ;; very slow just use once in a while
 (defun julia-format-buffer ()
   "Formats a julia buffer using the JuliaFormatter."
@@ -648,6 +661,11 @@ If given a SOURCE, execute the CMD on it."
  "g r" '(go-run-file :which-key "go run file"))
 
 ;; ----- JS  
+(general-define-key
+ :states 'normal
+ :keymaps 'js-mode-map
+ :prefix "TAB"
+ "f" '(custom-js-format-buffer :which-key "custom-js-format-buffer"))
 ;; js
 (define-key js-mode-map (kbd "C-c C-z") 'js-repl-toggle)
 (define-key js-mode-map (kbd "C-c C-b") 'js-send-buffer)
