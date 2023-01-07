@@ -22,13 +22,30 @@
 ;; ----- Fonts
 (add-to-list 'default-frame-alist '(font . "Hack Nerd Font 16"))
 
-;; ----- Use Package 
+;; ----------------------------
+;; ----- Package Managers -----
+;; ----------------------------
+;; ----- Setting Package Repo's
 (require 'package)
 (add-to-list 'package-archives
              '("melpa" . "https://melpa.org/packages/") t)
 (add-to-list 'package-archives
              '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (package-initialize)
+;; ----- Straight.el
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 6))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+;; ----------------------------
 
 ;; ----- Exec Path From Shell 
 (use-package exec-path-from-shell 
@@ -61,10 +78,8 @@
      xref
      ediff)))
 
-;; ----- Smart Parens
-(use-package smartparens
-  :ensure t)
-(require 'smartparens-config)
+;; ----- Auto Pairing
+(add-hook 'prog-mode-hook (lambda () (electric-pair-local-mode)))
 
 ;; ----- General
 (use-package general 
@@ -86,12 +101,13 @@
 (use-package neotree
   :ensure t
   :init
-  (setq neo-theme 'arrow)
-  :hook
-  (neotree-mode .
-		(lambda ()
-		  (display-line-numbers-mode -1))))
+  (setq neo-theme 'arrow))
 
+;; ----- Org Modern
+(use-package org-modern
+  :ensure t
+  :hook
+  (org-mode . org-modern-mode))
 ;; ----- Org Roam
 (use-package org-roam
   :ensure t
@@ -148,6 +164,8 @@
 (tool-bar-mode -1)
 ;; hiding menubar
 (menu-bar-mode -1)
+;; hiding scrollbar
+(scroll-bar-mode -1)
 
 ;; modeline
 (use-package doom-modeline
@@ -159,8 +177,10 @@
 (use-package htmlize
   :ensure t)
 
-;; line numbers
-(global-display-line-numbers-mode)
+;; line numbers (programming modes only)
+(add-hook 'prog-mode-hook #'display-line-numbers-mode)
+;; line highlighting
+(add-hook 'prog-mode-hook #'hl-line-mode)
 
 ;; ----- TreeSitter
 (use-package tree-sitter
@@ -193,16 +213,10 @@
 (use-package vterm 
   :ensure t)
 (setq vterm-kill-buffer-on-exit t)
-(add-hook 'vterm-mode-hook
-          (lambda ()
-            (display-line-numbers-mode -1)))
 #+end_src
 * Languages
+** Completion & Specific Language Setups
 #+begin_src elisp
-;; ---------------
-;; ----- LSP -----
-;; ---------------
-
 ;; ---- Corfu
 (use-package corfu
   :ensure t
@@ -211,6 +225,13 @@
   (corfu-auto t)
   :init
   (global-corfu-mode))
+;; Terminal Support
+(straight-use-package
+ '(corfu-terminal
+   :type git
+   :repo "https://codeberg.org/akib/emacs-corfu-terminal.git"))
+(unless (display-graphic-p)
+  (corfu-terminal-mode +1))
 
 ;; Flycheck
 (use-package flycheck
@@ -220,48 +241,8 @@
 ;; use flycheck by default
 (setq flycheck-standard-error-navigation t)
 
-;; Helm Lsp
-(use-package helm-lsp
-  :ensure t
-  :commands helm-lsp-workspace-symbol)
-
-;; ----- Lsp-Mode
-(use-package lsp-mode
-  :ensure t
-  :custom
-  (lsp-completion-provider :none) ;; corfu used
-  :init
-  (setq lsp-keymap-prefix "C-c l")
-  (defun my/lsp-mode-setup-completion ()
-    (setf
-     (alist-get 'styles
-                (alist-get 'lsp-capf completion-category-defaults))
-     '(flex))) ;; Configure flex
-  :hook
-  ((lsp-completion-mode . my/lsp-mode-setup-completion)
-   (clojure-mode . lsp)
-   (js-mode . lsp)
-   (python-mode .lsp)
-   (rust-mode . lsp)
-   (lsp-mode . lsp-enable-which-key-integration))
-  :commands lsp)
-
-;; Lsp UI
-(use-package lsp-ui
-  :ensure t
-  :commands lsp-ui-mode)
-(setq lsp-ui-sideline-show-diagnostics t)
-
-;; Dap Mode
-(use-package dap-mode
-   :ensure t
-   :config
-   (dap-mode 1)
-   (dap-ui-mode 1)
-   (dap-tooltip-mode 1)
-   (tooltip-mode 1))
-;; dap languages
-(require 'dap-dlv-go)
+;; Default Lsp
+(require 'eglot)
 ;; ---------------
 
 ;; Yas Snippet
@@ -274,9 +255,7 @@
 
 ;; ----- Clojure
 (use-package clojure-mode
-  :ensure t
-  :hook
-  (clojure-mode . smartparens-mode))
+  :ensure t)
 ;; REPL managment
 (use-package cider
   :ensure t)
@@ -288,8 +267,7 @@
 (use-package go-mode
   :ensure t
   :hook
-  (go-mode . tree-sitter-hl-mode)
-  (go-mode . smartparens-mode))
+  (go-mode . tree-sitter-hl-mode))
 
 ;; ----- HTML / Vue
 ;; use C-j to expand
@@ -308,14 +286,12 @@
 ;; ----- JS /TS
 ;; lang specific hooks
 (add-hook 'js-mode-hook #'tree-sitter-hl-mode)
-(add-hook 'js-mode-hook #'smartparens-mode)
 ;; run org blocks
 (require 'ob-js)
 ;; TS setup 
 (use-package typescript-mode
   :ensure t
   :hook
-  (typescript-mode . smartparens-mode)
   (typescript-mode . tree-sitter-hl-mode))
 ;; repl integration
 (use-package js-comint
@@ -326,25 +302,12 @@
   :ensure t
   :hook
   (julia-mode . julia-vterm-mode)
-  (julia-mode . tree-sitter-hl-mode)
-  (julia-mode . smartparens-mode))
+  (julia-mode . tree-sitter-hl-mode))
 ;; repl support
 (use-package julia-vterm
   :ensure t)
 ;; babel support
 (use-package ob-julia-vterm
-  :ensure t)
-
-;; ----- Lua
-(use-package lua-mode
-  :ensure t
-  :hook
-  (lua-mode . smartparens-mode))
-;; org integration
-(require 'ob-lua)
-
-;; ----- PHP
-(use-package php-mode
   :ensure t)
 
 ;; ----- Python
@@ -356,8 +319,7 @@
 (use-package rust-mode
   :ensure t
   :hook
-  (rust-mode . tree-sitter-hl-mode)
-  (rust-mode . smartparens-mode))
+  (rust-mode . tree-sitter-hl-mode))
 ;; org src support
 (use-package ob-rust
   :ensure t)
@@ -365,9 +327,7 @@
 ;; ruby
 (require 'ob-ruby)
 (use-package enh-ruby-mode
-  :ensure t
-  :hook
-  (enh-ruby-mode . smartparens-mode))
+  :ensure t)
 (add-to-list 'auto-mode-alist '("\\.rb\\'" . enh-ruby-mode))
 
 ;; ----- Svelte
@@ -378,24 +338,11 @@
 (use-package zig-mode
   :ensure t
   :hook
-  (zig-mode . tree-sitter-hl-mode)
-  (zig-mode . smartparens-mode))
+  (zig-mode . tree-sitter-hl-mode))
 
 ;; ----- Org Config
-;; no line numbers
-(add-hook 'org-mode-hook
-          (lambda ()
-            (display-line-numbers-mode -1)))
-
 ;; src blocks
 (require 'color)
-;; (with-eval-after-load 'org-faces
-;;   (set-face-attribute
-;;    'org-block nil
-;;    :foreground nil
-;;    :background
-;;    (color-darken-name
-;;     (face-attribute 'default :background) 10)))
 
 ;; better indentation
 (add-hook 'org-mode-hook
@@ -408,10 +355,15 @@
    (julia . t)
    (python . t)
    (rust . t)))
+#+end_src
+** Custom Funcs
+*** Formatting
+#+begin_src elisp
+;; ----------------------
+;; ----- Formatting -----
+;; ----------------------
 
-;; ---------------------
-;; ----- Functions -----
-;; ---------------------
+;; JS formatter (better than lsp)
 (defun custom-js-format-buffer ()
   "Formats a js buffer using the deno formatter."
   (interactive)
@@ -439,6 +391,7 @@
           (revert-buffer t t t))
       (user-error "Current buffer must be a file"))))
 
+;; Python formatter (better than LSP)
 (defun python-black-format-buffer ()
   "Formats a py buffer using the black formatter."
   (interactive)
@@ -451,6 +404,13 @@
                    (shell-quote-argument xfpath)))
           (revert-buffer t t t))
       (user-error "Current buffer must be a file"))))
+;; ------------------------
+#+end_src
+*** Ruby & Rails
+#+begin_src elisp
+;; ------------------------
+;; ----- Ruby & Rails -----
+;; ------------------------
 
 ;; Load ruby file into repl
 (defun ruby-load-file ()
@@ -464,6 +424,20 @@
     (with-current-buffer term-buf
       (vterm--goto-line -1)
       (vterm-send-string (format " irb -r %s" file))
+      (vterm-send-return))))
+
+(defun send-region-to-irb ()
+  (interactive)
+  (let (
+        (str 
+         (buffer-substring-no-properties
+          (region-beginning)
+          (region-end)))
+        (term-buf (vterm-other-window)))
+    (with-current-buffer term-buf
+      (vterm--goto-line -1)
+      (vterm-send-return)
+      (vterm-send-string  str)
       (vterm-send-return))))
 
 ;; ---- Rails Functions ----
@@ -534,16 +508,16 @@
 	  (vterm-send-return)))
     nil))
 ;; -------------------------
+#+end_src
+*** Go
+#+begin_src elisp
+;; ------------------
+;; ----- Golang -----
+;; ------------------
 
-;; ----- Golang Funcs ----
-(defun go--run-cmd (cmd &optional source &rest args)
-  "Use compile command to execute a go CMD with ARGS if given.
-If given a SOURCE, execute the CMD on it."
-  (let ((cmd-args
-         (if source
-             (mapconcat 'shell-quote-argument (cons source args) " ")
-           args)))
-    (compilation-start (concat "go " cmd " " cmd-args))))
+(defun go--run-cmd (cmd &optional args)
+  "Use compile command to execute a go CMD with ARGS if given."
+    (shell-command (concat "go" " " cmd " " args)))
 
 (defun go-run-file ()
   "Run current file"
@@ -556,6 +530,7 @@ If given a SOURCE, execute the CMD on it."
   (go--run-cmd "build"))
 ;; -----------------------
 #+end_src
+*** salesforce
 * Keybindings
 #+begin_src elisp
 ;; ----- All Modes 
@@ -572,8 +547,13 @@ If given a SOURCE, execute the CMD on it."
  "b t" '(tear-off-window :which-key "tear off window")
  ;; compiling
  "c c" '(compile :which-key "compile")
- ;; dap
- "d h" '(dap-hydra :which-key "dap hydra")
+ ;; eglot
+ "e" '(eglot :which-key "eglot")
+ ;; load conf
+ "l c" '((lambda ()
+	   (interactive)
+           (find-file "~/.emacs.d/config.org"))
+	 :which-key "load conf")
  ;; Projectile
  "p f ." '(projectile-find-file :which-key "projectile find file")
  "p f w" '(projectile-find-file-other-window :which-key "projectile find file other window")
@@ -612,23 +592,12 @@ If given a SOURCE, execute the CMD on it."
  "N" 'search-prev-center-evil)
 ;; ---------------------- 
 
-;; ----- LSP
-;; nvim like bindings
+;; ----- refs / defs (eglot)
 (general-define-key
  :states 'normal
- :keymaps 'lsp-ui-mode-map
- ;; peaks
- "g d" '(lsp-ui-peek-find-definitions :which-key "peek definitions")
- "g r" '(lsp-ui-peek-find-references :which-key "peek references")
- ;; hover
- "K" '(lsp-ui-doc-show :which-key "lsp ui doc show"))
-;; formatting 
-(general-define-key
- :states '(normal visual)
- :keymaps 'lsp-mode-map
- :prefix "SPC"
- "f b" '(lsp-format-buffer :which-key "lsp format buffer")
- "f r" '(lsp-format-region :which-key "lsp format region"))
+ :prefix "g"
+ "d" '(xref-find-definitions :which-key "find definitions")
+ "r" '(xref-find-references :which-key "find refereces"))
 
 ;; ----- Neotree
 ;; evil bindings
@@ -660,7 +629,7 @@ If given a SOURCE, execute the CMD on it."
  :prefix "SPC"
  "g r" '(go-run-file :which-key "go run file"))
 
-;; ----- JS  
+;; ----- JS
 (general-define-key
  :states 'normal
  :keymaps 'js-mode-map
@@ -669,6 +638,7 @@ If given a SOURCE, execute the CMD on it."
 ;; js
 (define-key js-mode-map (kbd "C-c C-z") 'js-repl-toggle)
 (define-key js-mode-map (kbd "C-c C-b") 'js-send-buffer)
+(define-key js-mode-map (kbd "C-c C-r") 'js-send-region)
 ;; js repl
 (define-key js-comint-mode-map (kbd "C-c C-z") 'js-repl-toggle)
 (define-key js-comint-mode-map (kbd "C-c C-c") 'js-comint-reset-repl)
@@ -679,8 +649,6 @@ If given a SOURCE, execute the CMD on it."
  :keymaps 'julia-mode-map
  :prefix "SPC"
  "f b" '(julia-format-buffer :which-key "julia format buffer"))
-
-
 
 ;; ----- Org Roam
 (general-define-key
@@ -713,14 +681,6 @@ If given a SOURCE, execute the CMD on it."
  "r c" '(rails-start-console :which-key "rails start console")
  "r r" '(rails-run-command :which-key "rails run command")
  "r t" '(rails-test-file :which-key "rails test file"))
-
-;; ----- Smartparens
-;; ()
-(sp-pair "(" ")" :wrap "C-(")
-;; {}
-(sp-pair "{" "}" :wrap "C-{")
-;; []
-(sp-pair "[" "]" :wrap "M-]")
 
 ;; ----- V Term
 (general-define-key
@@ -765,7 +725,7 @@ If given a SOURCE, execute the CMD on it."
   (if
       (eq major-mode 'js-comint-mode)
       (previous-multiframe-window)
-    (run-js "")))
+    (js-comint-start-or-switch-to-repl)))
 #+end_src
 * Notes
 ** Setting up note class
@@ -810,7 +770,7 @@ If given a SOURCE, execute the CMD on it."
 (setq org-latex-pdf-process
       '("latexmk -pdflatex='%latex -shell-escape -interaction nonstopmode' -pdf -output-directory=%o -f %f"))
 #+end_src
-** custom funcs
+** Custom Funcs
 #+begin_src elisp
 ;; fix exported names 
 (defun rename-exported-notes ()
