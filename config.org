@@ -19,9 +19,6 @@
   (invert-face 'mode-line)
   (run-with-timer 0.1 nil #'invert-face 'mode-line))
 
-;; ----- Fonts
-(add-to-list 'default-frame-alist '(font . "Hack Nerd Font 16"))
-
 ;; ----------------------------
 ;; ----- Package Managers -----
 ;; ----------------------------
@@ -46,6 +43,15 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 ;; ----------------------------
+
+;; ----- Fonts
+(add-to-list 'default-frame-alist '(font . "Hack Nerd Font 18"))
+(use-package all-the-icons
+  :if (display-graphic-p)
+  :ensure t)
+
+;; ----- Tabs
+(setq-default tab-width 4)
 
 ;; ----- Exec Path From Shell 
 (use-package exec-path-from-shell 
@@ -75,11 +81,20 @@
      magit
      dired
      corfu
+     cider
+     racket
      xref
      ediff)))
+;; (setq evil-insert-state-cursor '(box "#A89984")
+;;       evil-normal-state-cursor '(box "#98971A"))
+(blink-cursor-mode 0)
 
 ;; ----- Auto Pairing
 (add-hook 'prog-mode-hook (lambda () (electric-pair-local-mode)))
+
+;; ----- Line highlighting
+(add-hook 'prog-mode-hook #'hl-line-mode)
+
 
 ;; ----- General
 (use-package general 
@@ -103,43 +118,6 @@
   :init
   (setq neo-theme 'arrow))
 
-;; ----- Org Modern
-(use-package org-modern
-  :ensure t
-  :hook
-  (org-mode . org-modern-mode))
-;; ----- Org Roam
-(use-package org-roam
-  :ensure t
-  :config
-  (require 'org-roam-utils)
-  ;; for exporting
-  (require 'org-roam-export)
-  :bind (:map org-mode-map
-              ("C-M-i" . completion-at-point)))
-;; directory where notes are stored
-(setq org-roam-directory (file-truename "~/org"))
-(org-roam-db-autosync-mode)
-;; line wrapping
-(add-hook 'org-mode-hook #'visual-line-mode)
-;; org shortcuts
-(require 'org-tempo)
-
-;; setting up org src blocks
-(setq
- org-confirm-babel-evaluate nil
- org-edit-src-content-indentation 0)
-
-;; custom function for resetting org links for export
-(defun reset-roam-links ()
-  "Reset links in org when it can't export."
-  (interactive)
-  (progn
-    (org-roam-db-clear-all)
-    (org-roam-db-sync)
-    (org-id-update-id-locations)
-    (org-roam-update-org-id-locations)))
-
 ;; ----- Rainbow-delimiters
 (use-package rainbow-delimiters
   :ensure t)
@@ -156,9 +134,9 @@
 
 ;; Gruv
 (use-package gruvbox-theme
- :ensure t
- :config
- (load-theme 'gruvbox t))
+  :ensure t
+  :config
+  (load-theme 'gruvbox t))
 
 ;; hiding toolbar
 (tool-bar-mode -1)
@@ -297,23 +275,32 @@
 (use-package js-comint
   :ensure t)
 
-;; ----- Julia
-(use-package julia-mode
-  :ensure t
-  :hook
-  (julia-mode . julia-vterm-mode)
-  (julia-mode . tree-sitter-hl-mode))
-;; repl support
-(use-package julia-vterm
-  :ensure t)
-;; babel support
-(use-package ob-julia-vterm
-  :ensure t)
+;; ;; ----- Julia
+;; (use-package julia-mode
+;;   :ensure t
+;;   :hook
+;;   (julia-mode . julia-vterm-mode)
+;;   (julia-mode . tree-sitter-hl-mode))
+;; ;; repl support
+;; (use-package julia-vterm
+;;   :ensure t)
+;; ;; babel support
+;; (use-package ob-julia-vterm
+;;   :ensure t)
 
 ;; ----- Python
 (require 'python)
 (use-package pyvenv
   :ensure t)
+
+(use-package racket-mode
+  :ensure t)
+
+;; ruby
+(require 'ob-ruby)
+(use-package enh-ruby-mode
+  :ensure t)
+(add-to-list 'auto-mode-alist '("\\.rb\\'" . enh-ruby-mode))
 
 ;; ----- Rust
 (use-package rust-mode
@@ -324,12 +311,6 @@
 (use-package ob-rust
   :ensure t)
 
-;; ruby
-(require 'ob-ruby)
-(use-package enh-ruby-mode
-  :ensure t)
-(add-to-list 'auto-mode-alist '("\\.rb\\'" . enh-ruby-mode))
-
 ;; ----- Svelte
 (use-package svelte-mode
   :ensure t)
@@ -339,22 +320,6 @@
   :ensure t
   :hook
   (zig-mode . tree-sitter-hl-mode))
-
-;; ----- Org Config
-;; src blocks
-(require 'color)
-
-;; better indentation
-(add-hook 'org-mode-hook
-          'org-indent-mode)
-;; load babel languages
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((clojure . t)
-   (js . t)
-   (julia . t)
-   (python . t)
-   (rust . t)))
 #+end_src
 ** Custom Funcs
 *** Formatting
@@ -569,7 +534,17 @@
 (general-define-key
  :states 'normal
  "Y" (kbd "y$"))
-
+;; inserting ; at the end of the line
+(general-define-key
+ :states 'normal
+ "C-;" (kbd "A;"))
+(general-define-key
+ :states 'insert
+ "C-;" #'(lambda ()
+	   (interactive)
+	   (progn
+	     (end-of-line)
+	     (insert ";"))))
 ;; ----- Center Searching 
 ;; search next
 (defun search-next-center-evil ()
@@ -599,6 +574,12 @@
  "d" '(xref-find-definitions :which-key "find definitions")
  "r" '(xref-find-references :which-key "find refereces"))
 
+(general-define-key
+ :states 'normal
+ :keymaps 'eglot-mode-map
+ :prefix "SPC"
+ "f" '(eglot-format-buffer :which-key "format buffer"))
+
 ;; ----- Neotree
 ;; evil bindings
 (evil-define-key 'normal neotree-mode-map (kbd "TAB") 'neotree-enter)
@@ -614,7 +595,7 @@
 ;; ----- Clojure 
 ;; "g z" switches btwn buffer and repl
 (general-define-key
- :states 'normal
+ :states '(normal visual)
  :keymaps 'clojure-mode-map
  :prefix "SPC"
  "c j" '(cider-jack-in-clj :which-key "cider jack in clj")
@@ -650,11 +631,19 @@
  :prefix "SPC"
  "f b" '(julia-format-buffer :which-key "julia format buffer"))
 
+;; ----- Ocaml
+(use-package tuareg
+  :ensure t)
+
 ;; ----- Org Roam
 (general-define-key
  :states 'normal
  :keymaps 'org-mode-map
  :prefix "SPC"
+ "p s" '(org-present :which-key "org present")
+ "p q" '(org-present-quit :which-key "org present quit")
+ "p n" '(org-present-next :which-key "org present next")
+ "p p" '(org-present-prev :which-key "org present prev")
  "r i" '(org-roam-node-insert :which-key "org roam node insert")
  "r b" '(org-roam-buffer-toggle :which-key "org roam buffer toggle")
  "l p" '(org-latex-preview :which-key "org latex preview"))
@@ -670,6 +659,18 @@
  :prefix "C-c"
  "C-z" '(previous-multiframe-window :which-key "other window"))
 (require 'ob-python)
+
+;; ----- Racket
+(general-define-key
+ :states 'normal
+ :keymaps 'racket-mode-map
+ "C-x C-e" '((lambda ()
+			   (interactive)
+			   (progn
+				 (evil-append 1) 
+				 (racket-eval-last-sexp)
+				 (evil-normal-state)))
+			 :which-key "rkt eval last sexp"))
 
 ;; ----- Ruby
 (general-define-key
@@ -728,6 +729,61 @@
     (js-comint-start-or-switch-to-repl)))
 #+end_src
 * Notes
+** Org
+#+begin_src elisp
+;; -----------------------
+;; ----- Org Config ----- 
+;; -----------------------
+
+;; ---- Presenting
+(use-package org-present
+  :ensure t)
+;; ----- Org Roam
+(use-package org-roam
+  :ensure t
+  :config
+  (require 'org-roam-utils)
+  ;; for exporting
+  (require 'org-roam-export)
+  :bind (:map org-mode-map
+              ("C-M-i" . completion-at-point)))
+;; src blocks
+(require 'color)
+(add-hook 'org-mode-hook 'org-indent-mode)
+;; load babel languages
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((clojure . t)
+   (js . t)
+   (julia . t)
+   (python . t)
+   (shell . t)
+   (rust . t)))
+
+;; directory where notes are stored
+(setq org-roam-directory (file-truename "~/org"))
+(org-roam-db-autosync-mode)
+;; line wrapping
+(add-hook 'org-mode-hook #'visual-line-mode)
+;; org shortcuts
+(require 'org-tempo)
+
+;; setting up org src blocks
+(setq
+  org-confirm-babel-evaluate nil
+  org-src-preserve-indentation nil
+  org-edit-src-content-indentation 0)
+
+;; custom function for resetting org links for export
+(defun reset-roam-links ()
+  "Reset links in org when it can't export."
+  (interactive)
+  (progn
+    (org-roam-db-clear-all)
+    (org-roam-db-sync)
+    (org-id-update-id-locations)
+    (org-roam-update-org-id-locations)))
+#+end_src
 ** Setting up note class
 #+begin_src elisp
 ;; ----- Latex Export
@@ -759,14 +815,15 @@
 #+begin_src elisp
 ;; set minted as default
 (setq org-latex-listings 'minted)
-;; style settings
+;;style settings
 (setq org-latex-minted-options
-      '(("fontsize" "\\small")("frame" "lines")
-	("breaklines" "true")
-	("linenos" "true")
-	("breakanywhere" "true")
-	("bgcolor" "yellow!5")))
-;; need -shell-escape for minted
+      '(("fontsize" "\\small")
+        ("frame" "lines")
+        ("breaklines" "true")
+        ("linenos" "true")
+        ("breakanywhere" "true")
+        ("bgcolor" "yellow!5")))
+;;need -shell-escape for minted
 (setq org-latex-pdf-process
       '("latexmk -pdflatex='%latex -shell-escape -interaction nonstopmode' -pdf -output-directory=%o -f %f"))
 #+end_src
