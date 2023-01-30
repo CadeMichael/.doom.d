@@ -537,6 +537,20 @@
 (general-define-key
  :states 'normal
  "Y" (kbd "y$"))
+
+;; ----- Scrolling
+(general-define-key
+ :states '(normal insert)
+ "C-d" #'(lambda ()
+		   (interactive)
+		   (evil-scroll-page-down 1)
+		   (evil-window-middle)))
+(general-define-key
+ :states '(normal insert)
+ "C-u" #'(lambda ()
+		   (interactive)
+		   (evil-scroll-page-up 1)
+		   (evil-window-middle)))
 ;; inserting ; at the end of the line
 (general-define-key
  :states 'normal
