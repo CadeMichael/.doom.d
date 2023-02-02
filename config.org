@@ -428,7 +428,6 @@
     (pop-to-buffer "*Rails Command*")
     (evil-normal-state)))
 
-
 (defun rails-run-server ()
   "Start rails server with `rails-command-send' function."
   (interactive)
@@ -498,7 +497,6 @@
   (go--run-cmd "build"))
 ;; -----------------------
 #+end_src
-*** salesforce
 * Keybindings
 #+begin_src elisp
 ;; ----- All Modes 
@@ -522,6 +520,9 @@
 	   (interactive)
            (find-file "~/.emacs.d/config.org"))
 	 :which-key "load conf")
+ ;; project 
+ "p a" '(project-remember-projects-under :which-key "forget project")
+ "p F" '(project-forget-project :which-key "forget project")
  ;; Projectile
  "p f ." '(projectile-find-file :which-key "projectile find file")
  "p f w" '(projectile-find-file-other-window :which-key "projectile find file other window")
