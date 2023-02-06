@@ -29,25 +29,11 @@
 (add-to-list 'package-archives
              '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (package-initialize)
-;; ----- Straight.el
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 6))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
-;; ----------------------------
 
 ;; ----- Fonts
 (if (string-equal system-type "darwin")
 	(add-to-list 'default-frame-alist '(font . "Hack Nerd Font 18"))
-	(add-to-list 'default-frame-alist '(font . "Hack Nerd Font 22")))
+	(add-to-list 'default-frame-alist '(font . "Hack Nerd Font 16")))
 
 (use-package all-the-icons
   :if (display-graphic-p)
@@ -206,13 +192,6 @@
   (corfu-auto t)
   :init
   (global-corfu-mode))
-;; Terminal Support
-(straight-use-package
- '(corfu-terminal
-   :type git
-   :repo "https://codeberg.org/akib/emacs-corfu-terminal.git"))
-(unless (display-graphic-p)
-  (corfu-terminal-mode +1))
 
 ;; Flycheck
 (use-package flycheck
@@ -243,6 +222,15 @@
 ;; org
 (require 'ob-clojure)
 (setq org-babel-clojure-backend 'cider)
+
+;; ----- Elixir
+(use-package elixir-mode
+  :ensure t
+  :hook
+  (elixir-mode . inf-elixir-minor-mode))
+;; inferior repl mode
+(use-package inf-elixir
+  :ensure t)
 
 ;; ----- Go
 (use-package go-mode
@@ -278,24 +266,16 @@
 (use-package js-comint
   :ensure t)
 
-;; ;; ----- Julia
-;; (use-package julia-mode
-;;   :ensure t
-;;   :hook
-;;   (julia-mode . julia-vterm-mode)
-;;   (julia-mode . tree-sitter-hl-mode))
-;; ;; repl support
-;; (use-package julia-vterm
-;;   :ensure t)
-;; ;; babel support
-;; (use-package ob-julia-vterm
-;;   :ensure t)
+;; ----- Ocaml
+(use-package tuareg
+  :ensure t)
 
 ;; ----- Python
 (require 'python)
 (use-package pyvenv
   :ensure t)
 
+;; ----- Racket
 (use-package racket-mode
   :ensure t)
 
@@ -373,6 +353,57 @@
           (revert-buffer t t t))
       (user-error "Current buffer must be a file"))))
 ;; ------------------------
+#+end_src
+*** Elixir
+#+begin_src elisp
+;; ----- REPL management
+(defun elixir-inf-switch ()
+  "switch to inf elixir window"
+  (interactive)
+  (let ((bufs (mapcar #'buffer-name (buffer-list))))
+	  (elixir-inf-helper bufs)))
+
+(defun elixir-inf-helper (lis)
+  "find terminal and switch to term buffer"
+  (cond
+   ((eq '() lis)
+    (inf-elixir-set-repl))
+   ((string= (car lis) "*Inf-Elixir*")
+    (switch-to-buffer-other-window (car lis)))
+   (t
+    (elixir-inf-helper (cdr lis)))))
+#+end_src
+*** Go
+#+begin_src elisp
+;; ------------------
+;; ----- Golang -----
+;; ------------------
+
+(defun go--run-cmd (cmd &optional args)
+  "Use compile command to execute a go CMD with ARGS if given."
+    (shell-command (concat "go" " " cmd " " args)))
+
+(defun go-run-file ()
+  "Run current file"
+  (interactive)
+  (go--run-cmd "run" (buffer-file-name)))
+
+(defun go-build ()
+  "Build go project"
+  (interactive)
+  (go--run-cmd "build"))
+;; -----------------------
+#+end_src
+*** JS
+#+begin_src elisp
+;; ----- JS Repl
+(defun js-repl-toggle ()
+  "Toggle repl or js file."
+  (interactive)
+  (if
+      (eq major-mode 'js-comint-mode)
+      (previous-multiframe-window)
+    (js-comint-start-or-switch-to-repl)))
 #+end_src
 *** Ruby & Rails
 #+begin_src elisp
@@ -476,26 +507,28 @@
     nil))
 ;; -------------------------
 #+end_src
-*** Go
+*** Non language funcs
 #+begin_src elisp
-;; ------------------
-;; ----- Golang -----
-;; ------------------
+;; ----- Vterm
+(defun find-vterm (lis)
+  "find terminal and switch to term buffer"
+  (cond
+   ((eq '() lis)
+    (vterm-other-window))
+   ((string= (car lis) "*vterm*")
+    (switch-to-buffer-other-window (car lis)))
+   (t
+    (find-vterm (cdr lis)))))
 
-(defun go--run-cmd (cmd &optional args)
-  "Use compile command to execute a go CMD with ARGS if given."
-    (shell-command (concat "go" " " cmd " " args)))
-
-(defun go-run-file ()
-  "Run current file"
+(defun switch-to-vterm ()
+  "switch to or from vterm window"
   (interactive)
-  (go--run-cmd "run" (buffer-file-name)))
-
-(defun go-build ()
-  "Build go project"
-  (interactive)
-  (go--run-cmd "build"))
-;; -----------------------
+  (let
+      ((bufs (mapcar #'buffer-name (buffer-list))))
+    (if
+	(string= "*vterm*" (buffer-name))
+	(previous-multiframe-window)
+      (find-vterm bufs))))
 #+end_src
 * Keybindings
 #+begin_src elisp
@@ -621,6 +654,22 @@
  "c b" '(cider-eval-buffer :which-key "cider eval buffer")
  "c f" '(cider-eval-file :which-key "cider eval file"))
 
+;; ----- Elixir
+;; inf 
+(general-define-key
+ :keymaps 'inf-elixir-mode-map
+ :prefix "C-c"
+ "C-z" '(previous-multiframe-window :which-key "other window"))
+;; elixir
+(general-define-key
+ :keymaps 'elixir-mode-map
+ "C-<return>" '(inf-elixir-send-line :which-key "send line"))
+(general-define-key
+ :keymaps 'elixir-mode-map
+ :prefix "C-c"
+ "C-c" '(inf-elixir-send-buffer :which-key "elixir inf send buffer")
+ "C-z" '(elixir-inf-switch :which-key "elixir inf switch"))
+
 ;; ----- Go
 (general-define-key
  :states 'normal
@@ -643,15 +692,11 @@
 (define-key js-comint-mode-map (kbd "C-c C-c") 'js-comint-reset-repl)
 
 ;; ----- Julia
-(general-define-key
- :states 'normal
- :keymaps 'julia-mode-map
- :prefix "SPC"
- "f b" '(julia-format-buffer :which-key "julia format buffer"))
-
-;; ----- Ocaml
-(use-package tuareg
-  :ensure t)
+;; (general-define-key
+;;  :states 'normal
+;;  :keymaps 'julia-mode-map
+;;  :prefix "SPC"
+;;  "f b" '(julia-format-buffer :which-key "julia format buffer"))
 
 ;; ----- Org Roam
 (general-define-key
@@ -706,45 +751,6 @@
  :states 'normal
  :prefix "SPC"
  "v" '(switch-to-vterm :which-key "switch-to-vterm"))
-
-;; ---------------------
-;; ----- Functions -----
-;; ---------------------
-(defun find-vterm (lis)
-  "find terminal and switch to term buffer"
-  (cond
-   ;; if 
-   ((eq '() lis)
-    ;; then
-    (vterm-other-window))
-   ;; if 
-   ((string= (car lis) "*vterm*")
-    ;; then
-    (switch-to-buffer-other-window (car lis)))
-   ;; else
-   (t
-    (find-vterm (cdr lis)))))
-
-(defun switch-to-vterm ()
-  "switch to or from vterm window"
-  (interactive)
-  (let
-      ((bufs (mapcar #'buffer-name (buffer-list))))
-    (if
-	(string= "*vterm*" (buffer-name))
-	;; true
-	(previous-multiframe-window)
-      ;; false
-      (find-vterm bufs))))
-
-;; JS Repl
-(defun js-repl-toggle ()
-  "Toggle repl or js file."
-  (interactive)
-  (if
-      (eq major-mode 'js-comint-mode)
-      (previous-multiframe-window)
-    (js-comint-start-or-switch-to-repl)))
 #+end_src
 * Notes
 ** Org
