@@ -31,9 +31,7 @@
 (package-initialize)
 
 ;; ----- Fonts
-(if (string-equal system-type "darwin")
-	(add-to-list 'default-frame-alist '(font . "Hack Nerd Font 18"))
-	(add-to-list 'default-frame-alist '(font . "Hack Nerd Font 16")))
+(add-to-list 'default-frame-alist '(font . "Hack 14"))
 
 (use-package all-the-icons
   :if (display-graphic-p)
@@ -733,7 +731,7 @@
 				 (evil-append 1) 
 				 (racket-eval-last-sexp)
 				 (evil-normal-state)))
-			 :which-key "rkt eval last sexp"))
+			 :which-key "racket eval last sexp"))
 
 ;; ----- Ruby
 (general-define-key
