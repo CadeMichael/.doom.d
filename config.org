@@ -31,7 +31,7 @@
 (package-initialize)
 
 ;; ----- Fonts
-(add-to-list 'default-frame-alist '(font . "Hack 14"))
+(add-to-list 'default-frame-alist '(font . "Fira Code 14"))
 
 (use-package all-the-icons
   :if (display-graphic-p)
@@ -72,8 +72,12 @@
      racket
      xref
      ediff)))
-;; (setq evil-insert-state-cursor '(box "#A89984")
-;;       evil-normal-state-cursor '(box "#98971A"))
+
+;; vterm block
+(add-hook 'vterm-mode-hook
+		  (lambda ()
+			(setq-local evil-insert-state-cursor 'box)))
+
 (blink-cursor-mode 0)
 
 ;; ----- Auto Pairing
@@ -267,6 +271,7 @@
 ;; ----- Ocaml
 (use-package tuareg
   :ensure t)
+(require 'ob-ocaml)
 
 ;; ----- Python
 (require 'python)
@@ -402,6 +407,16 @@
       (eq major-mode 'js-comint-mode)
       (previous-multiframe-window)
     (js-comint-start-or-switch-to-repl)))
+#+end_src
+*** python
+#+begin_src elisp
+(defun python-unittest-file ()
+  (interactive)
+  (let ((default-directory (project-root (project-current)))
+        (fname (buffer-file-name)))
+    (shell-command
+     (format "python -m unittest %s"
+             (shell-quote-argument fname)))))
 #+end_src
 *** Ruby & Rails
 #+begin_src elisp
@@ -711,9 +726,11 @@
 
 ;; ----- Python
 (general-define-key
+ :states 'normal
  :keymaps 'python-mode-map
- :prefix "C-c"
- "C-b" '(python-black-format-buffer :which-key "python black format buffer"))
+ :prefix "SPC"
+ "b f" '(python-black-format-buffer :which-key "python black format buffer")
+ "t f" '(python-unittest-file :which-key "unittest current file from project root"))
 
 (general-define-key
  :keymaps 'inferior-python-mode-map
