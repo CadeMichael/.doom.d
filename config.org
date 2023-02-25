@@ -31,7 +31,7 @@
 (package-initialize)
 
 ;; ----- Fonts
-(add-to-list 'default-frame-alist '(font . "Fira Code 16"))
+(add-to-list 'default-frame-alist '(font . "Fira Code 14"))
 
 (use-package all-the-icons
   :if (display-graphic-p)
@@ -83,6 +83,9 @@
 ;; ----- Auto Pairing
 (add-hook 'prog-mode-hook (lambda () (electric-pair-local-mode)))
 
+;; ----- Folding
+(add-hook 'prog-mode-hook (lambda () (outline-minor-mode)))
+
 ;; ----- Line highlighting
 (add-hook 'prog-mode-hook #'hl-line-mode)
 
@@ -123,11 +126,10 @@
 ;; startup
 (setq inhibit-startup-screen t)
 
-;; Gruv
-(use-package gruvbox-theme
+(use-package modus-themes
   :ensure t
   :config
-  (load-theme 'gruvbox t))
+  (load-theme 'modus-vivendi t))
 
 ;; hiding toolbar
 (tool-bar-mode -1)
@@ -152,10 +154,7 @@
 (add-hook 'prog-mode-hook #'hl-line-mode)
 
 ;; ----- TreeSitter
-(use-package tree-sitter
-  :ensure t)
-(use-package tree-sitter-langs
-  :ensure t)
+(require 'treesit)
 
 ;; ----- Projectile
 ;; uses helm by default 
@@ -277,6 +276,7 @@
 (require 'python)
 (use-package pyvenv
   :ensure t)
+(add-hook 'python-mode-hook 'tree-sitter-hl-mode)
 
 ;; ----- Racket
 (use-package racket-mode
@@ -308,55 +308,6 @@
   (zig-mode . tree-sitter-hl-mode))
 #+end_src
 ** Custom Funcs
-*** Formatting
-#+begin_src elisp
-;; ----------------------
-;; ----- Formatting -----
-;; ----------------------
-
-;; JS formatter (better than lsp)
-(defun custom-js-format-buffer ()
-  "Formats a js buffer using the deno formatter."
-  (interactive)
-  (let ((xfpath (buffer-file-name)))
-    (if xfpath
-        (progn
-          (save-buffer)
-          (shell-command
-           (format "deno fmt %s"
-                   (shell-quote-argument xfpath)))
-          (revert-buffer t t t))
-      (user-error "Current buffer must be a file"))))
-
-;; very slow just use once in a while
-(defun julia-format-buffer ()
-  "Formats a julia buffer using the JuliaFormatter."
-  (interactive)
-  (let ((xfpath (buffer-file-name)))
-    (if xfpath
-        (progn
-          (save-buffer)
-          (shell-command
-           (format "julia -e \'using JuliaFormatter; format_file(\"%s\");\'"
-                   (shell-quote-argument xfpath)))
-          (revert-buffer t t t))
-      (user-error "Current buffer must be a file"))))
-
-;; Python formatter (better than LSP)
-(defun python-black-format-buffer ()
-  "Formats a py buffer using the black formatter."
-  (interactive)
-  (let ((xfpath (buffer-file-name)))
-    (if xfpath
-        (progn
-          (save-buffer)
-          (shell-command
-           (format "black %s"
-                   (shell-quote-argument xfpath)))
-          (revert-buffer t t t))
-      (user-error "Current buffer must be a file"))))
-;; ------------------------
-#+end_src
 *** Elixir
 #+begin_src elisp
 ;; ----- REPL management
@@ -395,6 +346,7 @@
   "Build go project"
   (interactive)
   (go--run-cmd "build"))
+
 ;; -----------------------
 #+end_src
 *** JS
@@ -414,7 +366,7 @@
   (interactive)
   (let ((default-directory (project-root (project-current)))
         (fname (buffer-file-name)))
-    (shell-command
+    (compilation-start
      (format "python -m unittest %s"
              (shell-quote-argument fname)))))
 #+end_src
@@ -520,6 +472,77 @@
     nil))
 ;; -------------------------
 #+end_src
+*** Formatting
+#+begin_src elisp
+;; ----------------------
+;; ----- Formatting -----
+;; ----------------------
+
+;; JS formatter (better than lsp)
+(defun custom-js-format-buffer ()
+  "Formats a js buffer using the deno formatter."
+  (interactive)
+  (let ((xfpath (buffer-file-name)))
+    (if xfpath
+        (progn
+          (save-buffer)
+          (shell-command
+           (format "deno fmt %s"
+                   (shell-quote-argument xfpath)))
+          (revert-buffer t t t))
+      (user-error "Current buffer must be a file"))))
+
+;; very slow just use once in a while
+(defun julia-format-buffer ()
+  "Formats a julia buffer using the JuliaFormatter."
+  (interactive)
+  (let ((xfpath (buffer-file-name)))
+    (if xfpath
+        (progn
+          (save-buffer)
+          (shell-command
+           (format "julia -e \'using JuliaFormatter; format_file(\"%s\");\'"
+                   (shell-quote-argument xfpath)))
+          (revert-buffer t t t))
+      (user-error "Current buffer must be a file"))))
+
+;; Python formatter (better than LSP)
+(defun python-black-format-buffer ()
+  "Formats a py buffer using the black formatter."
+  (interactive)
+  (let ((xfpath (buffer-file-name)))
+    (if xfpath
+        (progn
+          (save-buffer)
+          (shell-command
+           (format "black %s"
+                   (shell-quote-argument xfpath)))
+          (revert-buffer t t t))
+      (user-error "Current buffer must be a file"))))
+;; ------------------------
+#+end_src
+*** Project
+#+begin_src elisp
+;; finding go.mod
+(defun project-find-go-module (dir)
+  (when-let ((root (locate-dominating-file dir "go.mod")))
+    (cons 'go-module root)))
+
+(cl-defmethod project-root ((project (head go-module)))
+  (cdr project))
+
+(add-hook 'project-find-functions #'project-find-go-module)
+
+;; finding bb.edn
+(defun project-find-bb-edn (dir)
+  (when-let ((root (locate-dominating-file dir "bb.edn")))
+    (cons 'bb-edn root)))
+
+(cl-defmethod project-root ((project (head bb-edn)))
+  (cdr project))
+
+(add-hook 'project-find-functions #'project-find-bb-edn)
+#+end_src
 *** Non language funcs
 #+begin_src elisp
 ;; ----- Vterm
@@ -561,17 +584,24 @@
  "c c" '(compile :which-key "compile")
  ;; eglot
  "e" '(eglot :which-key "eglot")
+ ;; git
+ "g p" '(git-gutter:popup-hunk :which-key "git gutter popup hunk")
+ "g r" '(git-gutter:revert-hunk :which-key "git gutter revert hunk")
+ "g n" '(git-gutter:next-hunk :which-key "git gutter next hunk")
  ;; load conf
  "l c" '((lambda ()
-	   (interactive)
+           (interactive)
            (find-file "~/.emacs.d/config.org"))
-	 :which-key "load conf")
+         :which-key "load conf")
  ;; project 
- "p a" '(project-remember-projects-under :which-key "forget project")
- "p F" '(project-forget-project :which-key "forget project")
- ;; Projectile
- "p f ." '(projectile-find-file :which-key "projectile find file")
- "p f w" '(projectile-find-file-other-window :which-key "projectile find file other window")
+ "p R" '(project-remember-projects-under
+         :which-key "project remember project")
+ "p F" '(project-forget-project :which-key "project forget project")
+ "p f" '(project-find-file :which-key "project find file")
+ "p p" '(project-switch-project :which-key "project find file")
+ "p a" '(project-async-shell-command
+         :which-key "project async shell command")
+ "p s" '(project-shell-command :which-key "project shell command")
  ;; Neotree
  "n" '(neotree-toggle :which-key "neotree toggle")
  ;; Org Roam
@@ -605,10 +635,10 @@
 (general-define-key
  :states 'insert
  "C-;" #'(lambda ()
-	   (interactive)
-	   (progn
-	     (end-of-line)
-	     (insert ";"))))
+		   (interactive)
+		   (progn
+			 (end-of-line)
+			 (insert ";"))))
 ;; ----- Center Searching 
 ;; search next
 (defun search-next-center-evil ()
@@ -828,14 +858,7 @@
 ;; ----- Latex Export
 (require 'ox-latex)
 (setq org-latex-classes nil)
-;; custom function to export to pdf without TOC
-(defun no-toc-org-export-to-latex ()
-  (interactive)
-  (progn
-    (setq org-export-with-toc nil)
-    (org-latex-export-to-pdf)
-    (setq org-export-with-toc t)
-    (rename-exported-notes)))
+
 ;; increase size of latex preview
 (setq org-format-latex-options
       (plist-put org-format-latex-options :scale 2.5))
@@ -872,6 +895,16 @@
 (defun rename-exported-notes ()
   "Renames exported pdf's to something a bit more readable."
   (interactive)
+  (let ((default-directory "~/org"))
   (shell-command
-   "cd ~/org && clj -M rename.clj"))
+   "./rename.clj")))
+
+;; custom function to export to pdf without TOC
+(defun no-toc-org-export-to-latex ()
+  (interactive)
+  (progn
+    (setq org-export-with-toc nil)
+    (org-latex-export-to-pdf)
+    (setq org-export-with-toc t)
+    (rename-exported-notes)))
 #+end_src
