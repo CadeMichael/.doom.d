@@ -126,10 +126,10 @@
 ;; startup
 (setq inhibit-startup-screen t)
 
-(use-package modus-themes
+(use-package gruvbox-theme
   :ensure t
   :config
-  (load-theme 'modus-vivendi t))
+  (load-theme 'gruvbox t))
 
 ;; hiding toolbar
 (tool-bar-mode -1)
