@@ -527,21 +527,25 @@
 (defun project-find-go-module (dir)
   (when-let ((root (locate-dominating-file dir "go.mod")))
     (cons 'go-module root)))
-
 (cl-defmethod project-root ((project (head go-module)))
   (cdr project))
-
 (add-hook 'project-find-functions #'project-find-go-module)
 
 ;; finding bb.edn
 (defun project-find-bb-edn (dir)
   (when-let ((root (locate-dominating-file dir "bb.edn")))
     (cons 'bb-edn root)))
-
 (cl-defmethod project-root ((project (head bb-edn)))
   (cdr project))
-
 (add-hook 'project-find-functions #'project-find-bb-edn)
+
+;; finding Cargo.toml
+(defun project-find-cargo-toml (dir)
+  (when-let ((root (locate-dominating-file dir "Cargo.toml")))
+    (cons 'cargo-toml root)))
+(cl-defmethod project-root ((project (head cargo-toml)))
+  (cdr project))
+(add-hook 'project-find-functions #'project-find-cargo-toml)
 #+end_src
 *** Non language funcs
 #+begin_src elisp
