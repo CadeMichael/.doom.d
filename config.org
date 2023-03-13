@@ -13,7 +13,7 @@
 ;; ----- Error & Warnings
 ;; disable bell
 (setq visible-bell nil
-      ring-bell-function 'flash-mode-line)
+	  ring-bell-function 'flash-mode-line)
 ;; define warning function
 (defun flash-mode-line ()
   (invert-face 'mode-line)
@@ -31,7 +31,7 @@
 (package-initialize)
 
 ;; ----- Fonts
-(add-to-list 'default-frame-alist '(font . "Fira Code 14"))
+(add-to-list 'default-frame-alist '(font . "Fira Code Nerd Font 14"))
 
 (use-package all-the-icons
   :if (display-graphic-p)
@@ -71,6 +71,7 @@
      cider
      racket
      xref
+     org
      ediff)))
 
 ;; vterm block
@@ -84,7 +85,7 @@
 (add-hook 'prog-mode-hook (lambda () (electric-pair-local-mode)))
 
 ;; ----- Folding
-(add-hook 'prog-mode-hook (lambda () (outline-minor-mode)))
+(add-hook 'prog-mode-hook (lambda () (hs-minor-mode)))
 
 ;; ----- Line highlighting
 (add-hook 'prog-mode-hook #'hl-line-mode)
@@ -126,10 +127,11 @@
 ;; startup
 (setq inhibit-startup-screen t)
 
-(use-package gruvbox-theme
+(use-package doom-themes
   :ensure t
   :config
-  (load-theme 'gruvbox t))
+  (load-theme 'doom-moonlight t)
+  (doom-themes-org-config))
 
 ;; hiding toolbar
 (tool-bar-mode -1)
@@ -154,7 +156,11 @@
 (add-hook 'prog-mode-hook #'hl-line-mode)
 
 ;; ----- TreeSitter
-(require 'treesit)
+(if (version< (format "%s" emacs-major-version) "29")
+	(progn
+	  (use-package tree-sitter :ensure t)
+	  (use-package tree-sitter-langs :ensure t))
+  (require 'treesit))
 
 ;; ----- Projectile
 ;; uses helm by default 
@@ -162,8 +168,8 @@
   :ensure t
   :config
   (define-key projectile-mode-map
-              (kbd "C-c p")
-              'projectile-command-map)
+	(kbd "C-c p")
+	'projectile-command-map)
   (projectile-mode +1))
 
 ;; ----- Git Gutter
@@ -203,7 +209,9 @@
 (setq flycheck-standard-error-navigation t)
 
 ;; Default Lsp
-(require 'eglot)
+(if (version< (format "%s" emacs-major-version) "29")
+  (use-package eglot :ensure t)
+  (require 'eglot))
 ;; ---------------
 
 ;; Yas Snippet
@@ -820,6 +828,10 @@
   (require 'org-roam-export)
   :bind (:map org-mode-map
               ("C-M-i" . completion-at-point)))
+
+(use-package org-bullets :ensure t)
+(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+
 ;; src blocks
 (require 'color)
 (add-hook 'org-mode-hook 'org-indent-mode)
