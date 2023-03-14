@@ -208,10 +208,35 @@
 ;; use flycheck by default
 (setq flycheck-standard-error-navigation t)
 
-;; Default Lsp
-(if (version< (format "%s" emacs-major-version) "29")
-  (use-package eglot :ensure t)
-  (require 'eglot))
+;; ---- Lsp
+(use-package lsp-mode
+  :ensure t
+  :init
+  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+  (setq lsp-keymap-prefix "C-c l")
+  :hook ((lsp-mode . lsp-enable-which-key-integration))
+  :commands lsp)
+
+;; UI
+(use-package lsp-ui
+  :ensure t
+  :init
+  (setq lsp-ui-doc-enable t)
+  :commands (lsp-ui-mode lsp-ui-doc-hide)
+  :config
+  (advice-add #'keyboard-quit :before #'lsp-ui-doc-hide)
+  (general-nmap
+    :keymap 'lsp-ui-mode-map
+    "gd" '(lsp-ui-peek-find-definitions :which-key "peek definitions")
+    "gr" '(lsp-ui-peek-find-references :which-key "peek references")
+    "gc" '(helm-lsp-code-actions :which-key "code actions")
+    "TAB" '(lsp-ui-doc-focus-frame :which-key "lsp ui doc focus")
+    "K" '(lsp-ui-doc-show :which-key "lsp ui doc show")))
+
+;; Helm interop
+(use-package helm-lsp
+  :ensure t
+  :commands helm-lsp-workspace-symbol)
 ;; ---------------
 
 ;; Yas Snippet
