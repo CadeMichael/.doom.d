@@ -31,7 +31,7 @@
 (package-initialize)
 
 ;; ----- Fonts
-(add-to-list 'default-frame-alist '(font . "Fira Code Nerd Font 14"))
+(add-to-list 'default-frame-alist '(font . "FiraCode Nerd Font 14"))
 
 (use-package all-the-icons
   :if (display-graphic-p)
@@ -68,8 +68,6 @@
      magit
      dired
      corfu
-     cider
-     racket
      xref
      org
      ediff)))
@@ -247,25 +245,6 @@
   (setq yas-indent-line 'fixed)
   (yas-global-mode 1))
 
-;; ----- Clojure
-(use-package clojure-mode
-  :ensure t)
-;; REPL managment
-(use-package cider
-  :ensure t)
-;; org
-(require 'ob-clojure)
-(setq org-babel-clojure-backend 'cider)
-
-;; ----- Elixir
-(use-package elixir-mode
-  :ensure t
-  :hook
-  (elixir-mode . inf-elixir-minor-mode))
-;; inferior repl mode
-(use-package inf-elixir
-  :ensure t)
-
 ;; ----- Go
 (use-package go-mode
   :ensure t
@@ -300,20 +279,11 @@
 (use-package js-comint
   :ensure t)
 
-;; ----- Ocaml
-(use-package tuareg
-  :ensure t)
-(require 'ob-ocaml)
-
 ;; ----- Python
 (require 'python)
 (use-package pyvenv
   :ensure t)
 (add-hook 'python-mode-hook 'tree-sitter-hl-mode)
-
-;; ----- Racket
-(use-package racket-mode
-  :ensure t)
 
 ;; ruby
 (require 'ob-ruby)
@@ -330,36 +300,8 @@
 (use-package ob-rust
   :ensure t)
 
-;; ----- Svelte
-(use-package svelte-mode
-  :ensure t)
-
-;; ----- Zig
-(use-package zig-mode
-  :ensure t
-  :hook
-  (zig-mode . tree-sitter-hl-mode))
 #+end_src
 ** Custom Funcs
-*** Elixir
-#+begin_src elisp
-;; ----- REPL management
-(defun elixir-inf-switch ()
-  "switch to inf elixir window"
-  (interactive)
-  (let ((bufs (mapcar #'buffer-name (buffer-list))))
-	  (elixir-inf-helper bufs)))
-
-(defun elixir-inf-helper (lis)
-  "find terminal and switch to term buffer"
-  (cond
-   ((eq '() lis)
-    (inf-elixir-set-repl))
-   ((string= (car lis) "*Inf-Elixir*")
-    (switch-to-buffer-other-window (car lis)))
-   (t
-    (elixir-inf-helper (cdr lis)))))
-#+end_src
 *** Go
 #+begin_src elisp
 ;; ------------------
@@ -537,20 +479,6 @@
           (save-buffer)
           (shell-command
            (format "deno fmt %s"
-                   (shell-quote-argument xfpath)))
-          (revert-buffer t t t))
-      (user-error "Current buffer must be a file"))))
-
-;; very slow just use once in a while
-(defun julia-format-buffer ()
-  "Formats a julia buffer using the JuliaFormatter."
-  (interactive)
-  (let ((xfpath (buffer-file-name)))
-    (if xfpath
-        (progn
-          (save-buffer)
-          (shell-command
-           (format "julia -e \'using JuliaFormatter; format_file(\"%s\");\'"
                    (shell-quote-argument xfpath)))
           (revert-buffer t t t))
       (user-error "Current buffer must be a file"))))
@@ -750,22 +678,6 @@
  "c b" '(cider-eval-buffer :which-key "cider eval buffer")
  "c f" '(cider-eval-file :which-key "cider eval file"))
 
-;; ----- Elixir
-;; inf 
-(general-define-key
- :keymaps 'inf-elixir-mode-map
- :prefix "C-c"
- "C-z" '(previous-multiframe-window :which-key "other window"))
-;; elixir
-(general-define-key
- :keymaps 'elixir-mode-map
- "C-<return>" '(inf-elixir-send-line :which-key "send line"))
-(general-define-key
- :keymaps 'elixir-mode-map
- :prefix "C-c"
- "C-c" '(inf-elixir-send-buffer :which-key "elixir inf send buffer")
- "C-z" '(elixir-inf-switch :which-key "elixir inf switch"))
-
 ;; ----- Go
 (general-define-key
  :states 'normal
@@ -820,18 +732,6 @@
  :prefix "C-c"
  "C-z" '(previous-multiframe-window :which-key "other window"))
 (require 'ob-python)
-
-;; ----- Racket
-(general-define-key
- :states 'normal
- :keymaps 'racket-mode-map
- "C-x C-e" '((lambda ()
-			   (interactive)
-			   (progn
-				 (evil-append 1) 
-				 (racket-eval-last-sexp)
-				 (evil-normal-state)))
-			 :which-key "racket eval last sexp"))
 
 ;; ----- Ruby
 (general-define-key
