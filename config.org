@@ -31,7 +31,7 @@
 (package-initialize)
 
 ;; ----- Fonts
-(add-to-list 'default-frame-alist '(font . "FiraCode Nerd Font 14"))
+(add-to-list 'default-frame-alist '(font . "FiraCode Nerd Font 16"))
 
 (use-package all-the-icons
   :if (display-graphic-p)
