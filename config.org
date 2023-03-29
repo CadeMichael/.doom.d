@@ -231,7 +231,7 @@
     "gr" '(lsp-ui-peek-find-references :which-key "peek references")
     "gc" '(helm-lsp-code-actions :which-key "code actions")
     "TAB" '(lsp-ui-doc-focus-frame :which-key "lsp ui doc focus")
-    "K" '(lsp-ui-doc-show :which-key "lsp ui doc show")))
+    "K" '(lsp-ui-doc-glance :which-key "lsp ui doc show")))
 
 ;; Helm interop
 (use-package helm-lsp
@@ -541,20 +541,6 @@
           (revert-buffer t t t))
       (user-error "Current buffer must be a file"))))
 
-;; very slow just use once in a while
-(defun julia-format-buffer ()
-  "Formats a julia buffer using the JuliaFormatter."
-  (interactive)
-  (let ((xfpath (buffer-file-name)))
-    (if xfpath
-        (progn
-          (save-buffer)
-          (shell-command
-           (format "julia -e \'using JuliaFormatter; format_file(\"%s\");\'"
-                   (shell-quote-argument xfpath)))
-          (revert-buffer t t t))
-      (user-error "Current buffer must be a file"))))
-
 ;; Python formatter (better than LSP)
 (defun python-black-format-buffer ()
   "Formats a py buffer using the black formatter."
@@ -639,7 +625,7 @@
  "e" '(eglot :which-key "eglot")
  ;; git
  "g p" '(git-gutter:popup-hunk :which-key "git gutter popup hunk")
- "g r" '(git-gutter:revert-hunk :which-key "git gutter revert hunk")
+ "g R" '(git-gutter:revert-hunk :which-key "git gutter revert hunk")
  "g n" '(git-gutter:next-hunk :which-key "git gutter next hunk")
  ;; load conf
  "l c" '((lambda ()
@@ -651,10 +637,10 @@
          :which-key "project remember project")
  "p F" '(project-forget-project :which-key "project forget project")
  "p f" '(project-find-file :which-key "project find file")
- "p p" '(project-switch-project :which-key "project find file")
+ "p ." '(project-switch-project :which-key "project find file")
  "p a" '(project-async-shell-command
          :which-key "project async shell command")
- "p s" '(project-shell-command :which-key "project shell command")
+ "p c" '(project-shell-command :which-key "project shell command")
  ;; Neotree
  "n" '(neotree-toggle :which-key "neotree toggle")
  ;; Org Roam
@@ -787,13 +773,6 @@
 (define-key js-comint-mode-map (kbd "C-c C-z") 'js-repl-toggle)
 (define-key js-comint-mode-map (kbd "C-c C-c") 'js-comint-reset-repl)
 
-;; ----- Julia
-;; (general-define-key
-;;  :states 'normal
-;;  :keymaps 'julia-mode-map
-;;  :prefix "SPC"
-;;  "f b" '(julia-format-buffer :which-key "julia format buffer"))
-
 ;; ----- Org Roam
 (general-define-key
  :states 'normal
@@ -881,7 +860,6 @@
  'org-babel-load-languages
  '((clojure . t)
    (js . t)
-   (julia . t)
    (python . t)
    (shell . t)
    (rust . t)))
