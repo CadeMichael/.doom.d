@@ -130,7 +130,7 @@
 (use-package doom-themes
   :ensure t
   :config
-  (load-theme 'doom-dracula t)
+  (load-theme 'doom-gruvbox t)
   (doom-themes-org-config))
 
 ;; hiding toolbar
