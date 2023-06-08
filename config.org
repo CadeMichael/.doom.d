@@ -31,7 +31,7 @@
 (package-initialize)
 
 ;; ----- Fonts
-(add-to-list 'default-frame-alist '(font . "Fira Code Nerd Font 14"))
+(add-to-list 'default-frame-alist '(font . "Fira Code Nerd Font 22"))
 
 (use-package all-the-icons
   :if (display-graphic-p)
@@ -247,6 +247,9 @@
   (setq yas-indent-line 'fixed)
   (yas-global-mode 1))
 
+;; ----- C
+(add-hook 'c-mode-hook #'tree-sitter-hl-mode)
+
 ;; ----- Clojure
 (use-package clojure-mode
   :ensure t)
@@ -363,6 +366,34 @@
     (switch-to-buffer-other-window (car lis)))
    (t
     (elixir-inf-helper (cdr lis)))))
+#+end_src
+*** C++
+#+begin_src elisp
+;; ---------------
+;; ----- C++ -----
+;; ---------------
+
+(defun cpp--run-cmd (cmd &optional args)
+  "Use compile command to execute a go CMD with ARGS if given."
+    (shell-command (concat "go" " " cmd " " args)))
+
+(defun cpp-run-file ()
+  "Run current file"
+  (interactive)
+  (let* ((fname (buffer-file-name))
+		 (len (length fname))
+		 (name (substring fname 0 (- len 4))))
+  (async-shell-command name)))
+
+(defun custcpp-build-file ()
+  "Build go project"
+  (interactive)
+  (let* ((fname (buffer-file-name))
+		 (len (length fname))
+		 (name (substring fname 0 (- len 4))))
+	(shell-command (concat "g++ -Wall " fname " -o " name))))
+
+;; -----------------------
 #+end_src
 *** Go
 #+begin_src elisp
