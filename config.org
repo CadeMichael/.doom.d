@@ -300,6 +300,10 @@
 (use-package js-comint
   :ensure t)
 
+;; ----- Nim
+(use-package nim-mode
+  :ensure t)
+
 ;; ----- Ocaml
 (use-package tuareg
   :ensure t)
