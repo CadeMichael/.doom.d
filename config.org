@@ -31,7 +31,7 @@
 (package-initialize)
 
 ;; ----- Fonts
-(add-to-list 'default-frame-alist '(font . "Fira Code Nerd Font 22"))
+(add-to-list 'default-frame-alist '(font . "Fira Code Nerd Font 14"))
 
 (use-package all-the-icons
   :if (display-graphic-p)
@@ -249,6 +249,7 @@
 
 ;; ----- C
 (add-hook 'c-mode-hook #'tree-sitter-hl-mode)
+(add-hook 'c++-mode-hook #'tree-sitter-hl-mode)
 
 ;; ----- Clojure
 (use-package clojure-mode
@@ -372,27 +373,28 @@
 ;; ---------------
 ;; ----- C++ -----
 ;; ---------------
-
-(defun cpp--run-cmd (cmd &optional args)
-  "Use compile command to execute a go CMD with ARGS if given."
-    (shell-command (concat "go" " " cmd " " args)))
-
 (defun cpp-run-file ()
   "Run current file"
   (interactive)
   (let* ((fname (buffer-file-name))
-		 (len (length fname))
-		 (name (substring fname 0 (- len 4))))
-  (async-shell-command name)))
+         (len (length fname))
+         (name (substring fname 0 (- len 4))))
+    (async-shell-command name)
+    (switch-to-buffer-other-window
+     "*Async Shell Command*")
+    (evil-normal-state)))
 
 (defun custcpp-build-file ()
   "Build go project"
   (interactive)
   (let* ((fname (buffer-file-name))
-		 (len (length fname))
-		 (name (substring fname 0 (- len 4))))
-	(shell-command (concat "g++ -Wall " fname " -o " name))))
-
+         (len (length fname))
+         (name (substring fname 0 (- len 4))))
+    (shell-command (concat
+                    "g++ -Wall "
+                    fname
+                    " -o "
+                    name))))
 ;; -----------------------
 #+end_src
 *** Go
@@ -657,7 +659,7 @@
  ;; compiling
  "c c" '(compile :which-key "compile")
  ;; eglot
- "e" '(eglot :which-key "eglot")
+ ;; "e" '(eglot :which-key "eglot")
  ;; git
  "g p" '(git-gutter:popup-hunk :which-key "git gutter popup hunk")
  "g R" '(git-gutter:revert-hunk :which-key "git gutter revert hunk")
@@ -735,18 +737,18 @@
  "N" 'search-prev-center-evil)
 ;; ---------------------- 
 
-;; ----- refs / defs (eglot)
-(general-define-key
- :states 'normal
- :prefix "g"
- "d" '(xref-find-definitions :which-key "find definitions")
- "r" '(xref-find-references :which-key "find refereces"))
+;; ;; ----- refs / defs (eglot)
+;; (general-define-key
+;;  :states 'normal
+;;  :prefix "g"
+;;  "d" '(xref-find-definitions :which-key "find definitions")
+;;  "r" '(xref-find-references :which-key "find refereces"))
 
-(general-define-key
- :states 'normal
- :keymaps 'eglot-mode-map
- :prefix "SPC"
- "f" '(eglot-format-buffer :which-key "format buffer"))
+;; (general-define-key
+;;  :states 'normal
+;;  :keymaps 'eglot-mode-map
+;;  :prefix "SPC"
+;;  "f" '(eglot-format-buffer :which-key "format buffer"))
 
 ;; ----- Neotree
 ;; evil bindings
@@ -759,6 +761,15 @@
 (evil-define-key 'normal neotree-mode-map (kbd "p") 'neotree-previous-line)
 (evil-define-key 'normal neotree-mode-map (kbd "A") 'neotree-stretch-toggle)
 (evil-define-key 'normal neotree-mode-map (kbd "H") 'neotree-hidden-file-toggle)
+
+;; ----- C++
+(general-define-key
+ :states '(normal visual)
+ :keymaps 'c++-mode-map
+ :prefix "SPC"
+ ;; comp programming commands
+ "c b" '(custcpp-build-file :which-key "cpp build file")
+ "c r" '(cpp-run-file :which-key "cpp run file"))
 
 ;; ----- Clojure 
 ;; "g z" switches btwn buffer and repl

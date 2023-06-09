@@ -1,0 +1,19 @@
+# -*- mode: snippet -*-
+# name: tcases
+# key: <tc
+# --
+
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int main() {
+    int tCases;
+    cin >> tCases;
+
+    while (tCases--) {
+        $0
+    }
+
+    return 0;
+}
