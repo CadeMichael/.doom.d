@@ -128,10 +128,8 @@
 (setq inhibit-startup-screen t)
 
 (use-package doom-themes
-  :ensure t
-  :config
-  (load-theme 'doom-tokyo-night t)
-  (doom-themes-org-config))
+  :ensure t)
+(load-theme 'doom-one t)
 
 ;; hiding toolbar
 (tool-bar-mode -1)
@@ -183,13 +181,13 @@
   :ensure t)
 
 ;; ----- V Term
-(setq shell-file-name "/bin/zsh")
+(setq shell-file-name "/run/current-system/sw/bin/zsh")
 (use-package vterm 
   :ensure t)
 (setq vterm-kill-buffer-on-exit t)
 #+end_src
 * Languages
-** Completion & Specific Language Setups
+** Completion / lsp
 #+begin_src elisp
 ;; ---- Corfu
 (use-package corfu
@@ -246,11 +244,24 @@
   ;; preventing weird indenting 
   (setq yas-indent-line 'fixed)
   (yas-global-mode 1))
-
+#+end_src
+** C
+#+begin_src elisp
 ;; ----- C
 (add-hook 'c-mode-hook #'tree-sitter-hl-mode)
 (add-hook 'c++-mode-hook #'tree-sitter-hl-mode)
 
+;; ----- Bindings
+(general-define-key
+ :states '(normal visual)
+ :keymaps 'c++-mode-map
+ :prefix "SPC"
+ ;; comp programming commands
+ "c b" '(custcpp-build-file :which-key "cpp build file")
+ "c r" '(cpp-run-file :which-key "cpp run file"))
+#+end_src
+** Clojure
+#+begin_src elisp
 ;; ----- Clojure
 (use-package clojure-mode
   :ensure t)
@@ -261,26 +272,90 @@
 (require 'ob-clojure)
 (setq org-babel-clojure-backend 'cider)
 
+;; ----- Bindings
+;; "g z" switches btwn buffer and repl
+(general-define-key
+ :states '(normal visual)
+ :keymaps 'clojure-mode-map
+ :prefix "SPC"
+ "c j" '(cider-jack-in-clj :which-key "cider jack in clj")
+ "c r" '(cider-eval-region :which-key "cider eval region")
+ "c b" '(cider-eval-buffer :which-key "cider eval buffer")
+ "c f" '(cider-eval-file :which-key "cider eval file"))
+#+end_src
+** JS/TS
+- jsx is treated as js-mode
+#+begin_src elisp
+;; HTML / JSX
+;; use C-j to expand
+(use-package emmet-mode
+  :ensure t
+  :hook
+  (js-mode . emmet-mode)
+  (html-mode . emmet-mode))
 
+;; hooks
+(add-hook 'js-mode-hook #'tree-sitter-hl-mode)
+;; run org blocks
+(require 'ob-js)
+#+end_src
+** Nim
+#+begin_src elisp
 ;; ----- Nim
 (use-package nim-mode
   :ensure t)
-
+#+end_src
+** Ocaml
+#+begin_src elisp
 ;; ----- Ocaml
 (use-package tuareg
   :ensure t)
 (require 'ob-ocaml)
-
+#+end_src
+** Python
+#+begin_src elisp
 ;; ----- Python
 (require 'python)
 (use-package pyvenv
   :ensure t)
 (add-hook 'python-mode-hook 'tree-sitter-hl-mode)
 
+;; ----- Bindings
+(general-define-key
+ :states 'normal
+ :keymaps 'python-mode-map
+ :prefix "SPC"
+ "b f" '(python-black-format-buffer :which-key "python black format buffer")
+ "d a" '(django-async-command :which-key "run async django command")
+ "d c" '(django-command :which-key "run django command")
+ "t f" '(python-unittest-file :which-key "unittest current file from project root"))
+
+(general-define-key
+ :keymaps 'inferior-python-mode-map
+ :prefix "C-c"
+ "C-z" '(previous-multiframe-window :which-key "other window"))
+(require 'ob-python)
+#+end_src
+** Scheme
+#+begin_src elisp
 ;; ----- Racket
 (use-package racket-mode
   :ensure t)
 
+;; ----- Bindings
+(general-define-key
+ :states 'normal
+ :keymaps 'racket-mode-map
+ "C-x C-e" '((lambda ()
+			   (interactive)
+			   (progn
+				 (evil-append 1) 
+				 (racket-eval-last-sexp)
+				 (evil-normal-state)))
+			 :which-key "racket eval last sexp"))
+#+end_src
+** Rust
+#+begin_src elisp
 ;; ----- Rust
 (use-package rust-mode
   :ensure t
@@ -289,6 +364,11 @@
 ;; org src support
 (use-package ob-rust
   :ensure t)
+
+;; ----- Bindings
+(add-hook 'rust-mode-hook
+		  (lambda ()
+			(local-set-key (kbd "C-c m") #'toggle-mut)))
 #+end_src
 ** Custom Funcs
 *** C++
@@ -296,7 +376,7 @@
 ;; ---------------
 ;; ----- C++ -----
 ;; ---------------
-(defun cpp-run-file ()
+(defun cc-run-file ()
   "Run current file"
   (interactive)
   (let* ((fname (buffer-file-name))
@@ -307,7 +387,7 @@
      "*Async Shell Command*")
     (evil-normal-state)))
 
-(defun custcpp-build-file ()
+(defun cc-build-file ()
   "Build go project"
   (interactive)
   (let* ((fname (buffer-file-name))
@@ -319,22 +399,6 @@
                     " -o "
                     name))))
 ;; -----------------------
-#+end_src
-*** Rust
-#+begin_src elisp
-(defun toggle-mut ()
-  "Toggles the mutability of the variable defined on the current line"
-  (interactive)
-  (save-excursion
-    (back-to-indentation)
-    (forward-word)
-    (if (string= " mut" (buffer-substring (point) (+ (point) 4)))
-        (delete-region (point) (+ (point) 4))
-      (insert " mut"))))
-
-(add-hook 'rust-mode-hook
-		  (lambda ()
-			(local-set-key (kbd "C-c m") #'toggle-mut)))
 #+end_src
 *** Formatting
 #+begin_src elisp
@@ -366,6 +430,39 @@
 (cl-defmethod project-root ((project (head cargo-toml)))
   (cdr project))
 (add-hook 'project-find-functions #'project-find-cargo-toml)
+#+end_src
+*** Python
+#+begin_src elisp
+;; ---- Django Commands 
+;; sync
+(defun django-command ()
+  "run a manage.py command"
+  (interactive)
+  (let ((default-directory (project-root (project-current))))
+    (shell-command
+     (format "%s %s" "./manage.py"
+             (read-string "DJ=> ")))))
+;; async
+(defun django-async-command ()
+  "run a manage.py async command"
+  (interactive)
+  (let ((default-directory (project-root (project-current))))
+    (async-shell-command
+     (format "%s %s" "./manage.py"
+             (read-string "DJ[async]=> ")))))
+;; ---------------------
+#+end_src
+*** Rust
+#+begin_src elisp
+(defun toggle-mut ()
+  "Toggles the mutability of the variable defined on the current line"
+  (interactive)
+  (save-excursion
+    (back-to-indentation)
+    (forward-word)
+    (if (string= " mut" (buffer-substring (point) (+ (point) 4)))
+        (delete-region (point) (+ (point) 4))
+      (insert " mut"))))
 #+end_src
 *** Non language funcs
 #+begin_src elisp
@@ -415,17 +512,17 @@
            (interactive)
            (find-file "~/.emacs.d/config.org"))
          :which-key "load conf")
+ ;; Neotree
+ "n" '(neotree-toggle :which-key "neotree toggle")
  ;; project 
  "p R" '(project-remember-projects-under
          :which-key "project remember project")
  "p F" '(project-forget-project :which-key "project forget project")
- "p f" '(project-find-file :which-key "project find file")
- "p ." '(project-switch-project :which-key "project find file")
+ "p ." '(project-find-file :which-key "project find file")
+ "p f" '(project-switch-project :which-key "project switch project")
  "p a" '(project-async-shell-command
          :which-key "project async shell command")
  "p c" '(project-shell-command :which-key "project shell command")
- ;; Neotree
- "n" '(neotree-toggle :which-key "neotree toggle")
  ;; Org Roam
  "r f" '(org-roam-node-find :which-key "org roam node find")
  ;; whitespace
@@ -495,26 +592,6 @@
 (evil-define-key 'normal neotree-mode-map (kbd "A") 'neotree-stretch-toggle)
 (evil-define-key 'normal neotree-mode-map (kbd "H") 'neotree-hidden-file-toggle)
 
-;; ----- C++
-(general-define-key
- :states '(normal visual)
- :keymaps 'c++-mode-map
- :prefix "SPC"
- ;; comp programming commands
- "c b" '(custcpp-build-file :which-key "cpp build file")
- "c r" '(cpp-run-file :which-key "cpp run file"))
-
-;; ----- Clojure 
-;; "g z" switches btwn buffer and repl
-(general-define-key
- :states '(normal visual)
- :keymaps 'clojure-mode-map
- :prefix "SPC"
- "c j" '(cider-jack-in-clj :which-key "cider jack in clj")
- "c r" '(cider-eval-region :which-key "cider eval region")
- "c b" '(cider-eval-buffer :which-key "cider eval buffer")
- "c f" '(cider-eval-file :which-key "cider eval file"))
-
 ;; ----- Org Roam
 (general-define-key
  :states 'normal
@@ -527,32 +604,6 @@
  "r i" '(org-roam-node-insert :which-key "org roam node insert")
  "r b" '(org-roam-buffer-toggle :which-key "org roam buffer toggle")
  "l p" '(org-latex-preview :which-key "org latex preview"))
-
-;; ----- Python
-(general-define-key
- :states 'normal
- :keymaps 'python-mode-map
- :prefix "SPC"
- "b f" '(python-black-format-buffer :which-key "python black format buffer")
- "t f" '(python-unittest-file :which-key "unittest current file from project root"))
-
-(general-define-key
- :keymaps 'inferior-python-mode-map
- :prefix "C-c"
- "C-z" '(previous-multiframe-window :which-key "other window"))
-(require 'ob-python)
-
-;; ----- Racket
-(general-define-key
- :states 'normal
- :keymaps 'racket-mode-map
- "C-x C-e" '((lambda ()
-			   (interactive)
-			   (progn
-				 (evil-append 1) 
-				 (racket-eval-last-sexp)
-				 (evil-normal-state)))
-			 :which-key "racket eval last sexp"))
 
 ;; ----- V Term
 (general-define-key
@@ -582,6 +633,12 @@
 
 (use-package org-bullets :ensure t)
 (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+
+;; Title
+(use-package org-sticky-header
+  :ensure t
+  :hook
+  ((org-mode . org-sticky-header-mode)))
 
 ;; src blocks
 (require 'color)
