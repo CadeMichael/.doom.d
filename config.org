@@ -283,6 +283,16 @@
  "c b" '(cider-eval-buffer :which-key "cider eval buffer")
  "c f" '(cider-eval-file :which-key "cider eval file"))
 #+end_src
+** Dart
+#+begin_src elisp
+(use-package dart-mode
+  :ensure t)
+#+end_src
+** Go
+#+begin_src elisp
+(use-package go-mode
+  :ensure t)
+#+end_src
 ** JS/TS
 - jsx is treated as js-mode
 #+begin_src elisp
@@ -315,7 +325,8 @@
 ** Python
 #+begin_src elisp
 ;; ----- Python
-(require 'python)
+(use-package python-mode
+  :ensure t)
 (use-package pyvenv
   :ensure t)
 (add-hook 'python-mode-hook 'tree-sitter-hl-mode)
@@ -330,10 +341,10 @@
  "d c" '(django-command :which-key "run django command")
  "t f" '(python-unittest-file :which-key "unittest current file from project root"))
 
-(general-define-key
- :keymaps 'inferior-python-mode-map
- :prefix "C-c"
- "C-z" '(previous-multiframe-window :which-key "other window"))
+;; (general-define-key
+;;  :keymaps 'inferior-python-mode-map
+;;  :prefix "C-c"
+;;  "C-z" '(previous-multiframe-window :which-key "other window"))
 (require 'ob-python)
 #+end_src
 ** Scheme
@@ -633,12 +644,6 @@
 
 (use-package org-bullets :ensure t)
 (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
-
-;; Title
-(use-package org-sticky-header
-  :ensure t
-  :hook
-  ((org-mode . org-sticky-header-mode)))
 
 ;; src blocks
 (require 'color)
