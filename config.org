@@ -326,10 +326,17 @@
 #+begin_src elisp
 ;; ----- Python
 (use-package python-mode
-  :ensure t)
+  :ensure t
+  :init
+  (setq py-split-window-on-execute nil))
 (use-package pyvenv
   :ensure t)
 (add-hook 'python-mode-hook 'tree-sitter-hl-mode)
+
+;; toggle inferior shell process
+(defun toggle-py-shell ()
+  (interactive)
+  (switch-to-buffer-other-window "*Python*"))
 
 ;; ----- Bindings
 (general-define-key
@@ -340,12 +347,41 @@
  "d a" '(django-async-command :which-key "run async django command")
  "d c" '(django-command :which-key "run django command")
  "t f" '(python-unittest-file :which-key "unittest current file from project root"))
+(general-define-key
+ :keymaps 'python-mode-map
+ :prefix "C-c"
+ "C-z" '(toggle-py-shell :which-key "switch to shell"))
+;; toggle previous window, ideally python buffer
+(general-define-key
+ :keymaps 'py-shell-mode-map
+ :prefix "C-c"
+ "C-z" '((lambda ()
+		   (interactive)
+		   (previous-multiframe-window))
+		 :which-key "other window"))
 
-;; (general-define-key
-;;  :keymaps 'inferior-python-mode-map
-;;  :prefix "C-c"
-;;  "C-z" '(previous-multiframe-window :which-key "other window"))
 (require 'ob-python)
+#+end_src
+** Rust
+#+begin_src elisp
+;; ----- Rust
+(use-package rust-mode
+  :ensure t
+  :hook
+  (rust-mode . tree-sitter-hl-mode))
+;; org src support
+(use-package ob-rust
+  :ensure t)
+
+;; ----- Bindings
+(add-hook 'rust-mode-hook
+		  (lambda ()
+			(local-set-key (kbd "C-c m") #'toggle-mut)))
+#+end_src
+** Scala
+#+begin_src elisp
+(use-package scala-mode
+  :ensure t)
 #+end_src
 ** Scheme
 #+begin_src elisp
@@ -364,22 +400,6 @@
 				 (racket-eval-last-sexp)
 				 (evil-normal-state)))
 			 :which-key "racket eval last sexp"))
-#+end_src
-** Rust
-#+begin_src elisp
-;; ----- Rust
-(use-package rust-mode
-  :ensure t
-  :hook
-  (rust-mode . tree-sitter-hl-mode))
-;; org src support
-(use-package ob-rust
-  :ensure t)
-
-;; ----- Bindings
-(add-hook 'rust-mode-hook
-		  (lambda ()
-			(local-set-key (kbd "C-c m") #'toggle-mut)))
 #+end_src
 ** Custom Funcs
 *** C++
