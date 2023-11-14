@@ -68,8 +68,8 @@
      magit
      dired
      corfu
-     cider
-     racket
+     ;; cider
+     ;; racket
      xref
      org
      ediff)))
@@ -129,7 +129,7 @@
 
 (use-package doom-themes
   :ensure t)
-(load-theme 'doom-one t)
+(load-theme 'doom-dracula t)
 
 ;; hiding toolbar
 (tool-bar-mode -1)
@@ -181,7 +181,8 @@
   :ensure t)
 
 ;; ----- V Term
-(setq shell-file-name "/run/current-system/sw/bin/zsh")
+;; Nixos
+;; (setq shell-file-name "/run/current-system/sw/bin/zsh")
 (use-package vterm 
   :ensure t)
 (setq vterm-kill-buffer-on-exit t)
@@ -259,34 +260,6 @@
  ;; comp programming commands
  "c b" '(custcpp-build-file :which-key "cpp build file")
  "c r" '(cpp-run-file :which-key "cpp run file"))
-#+end_src
-** Clojure
-#+begin_src elisp
-;; ----- Clojure
-(use-package clojure-mode
-  :ensure t)
-;; REPL managment
-(use-package cider
-  :ensure t)
-;; org
-(require 'ob-clojure)
-(setq org-babel-clojure-backend 'cider)
-
-;; ----- Bindings
-;; "g z" switches btwn buffer and repl
-(general-define-key
- :states '(normal visual)
- :keymaps 'clojure-mode-map
- :prefix "SPC"
- "c j" '(cider-jack-in-clj :which-key "cider jack in clj")
- "c r" '(cider-eval-region :which-key "cider eval region")
- "c b" '(cider-eval-buffer :which-key "cider eval buffer")
- "c f" '(cider-eval-file :which-key "cider eval file"))
-#+end_src
-** Dart
-#+begin_src elisp
-(use-package dart-mode
-  :ensure t)
 #+end_src
 ** Go
 #+begin_src elisp
@@ -378,28 +351,10 @@
 		  (lambda ()
 			(local-set-key (kbd "C-c m") #'toggle-mut)))
 #+end_src
-** Scala
+** Zig
 #+begin_src elisp
-(use-package scala-mode
+(use-package zig-mode
   :ensure t)
-#+end_src
-** Scheme
-#+begin_src elisp
-;; ----- Racket
-(use-package racket-mode
-  :ensure t)
-
-;; ----- Bindings
-(general-define-key
- :states 'normal
- :keymaps 'racket-mode-map
- "C-x C-e" '((lambda ()
-			   (interactive)
-			   (progn
-				 (evil-append 1) 
-				 (racket-eval-last-sexp)
-				 (evil-normal-state)))
-			 :which-key "racket eval last sexp"))
 #+end_src
 ** Custom Funcs
 *** C++
