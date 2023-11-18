@@ -488,127 +488,129 @@
 #+end_src
 * Keybindings
 #+begin_src elisp
-;; ----- All Modes 
-(general-define-key
- :states '(normal motion)
- :keymaps 'override
- :prefix "SPC"
- ;; Helm 
- "." '(helm-find-files :which-key "helm-find-files")
- ;; buffer management
- "b s" '(switch-to-buffer :which-key "switch to buffer")
- "b k" '(kill-buffer-and-window :which-key "kill buffer and window")
- "b K" '(kill-some-buffers :which-key "kill some buffers")
- "b t" '(tear-off-window :which-key "tear off window")
- ;; compiling
- "c c" '(compile :which-key "compile")
- ;; git
- "g p" '(git-gutter:popup-hunk :which-key "git gutter popup hunk")
- "g R" '(git-gutter:revert-hunk :which-key "git gutter revert hunk")
- "g n" '(git-gutter:next-hunk :which-key "git gutter next hunk")
- ;; load conf
- "l c" '((lambda ()
-           (interactive)
-           (find-file "~/.emacs.d/config.org"))
-         :which-key "load conf")
- ;; Neotree
- "n" '(neotree-toggle :which-key "neotree toggle")
- ;; project 
- "p R" '(project-remember-projects-under
-         :which-key "project remember project")
- "p F" '(project-forget-project :which-key "project forget project")
- "p ." '(project-find-file :which-key "project find file")
- "p f" '(project-switch-project :which-key "project switch project")
- "p a" '(project-async-shell-command
-         :which-key "project async shell command")
- "p c" '(project-shell-command :which-key "project shell command")
- ;; Org Roam
- "r f" '(org-roam-node-find :which-key "org roam node find")
- ;; whitespace
- "w" '(whitespace-mode :which-key "whitespace mode"))
+  ;; ----- All Modes 
+  (general-define-key
+   :states '(normal motion)
+   :keymaps 'override
+   :prefix "SPC"
+   ;; Helm 
+   "." '(helm-find-files :which-key "helm-find-files")
+   ;; buffer management
+   "b s" '(switch-to-buffer :which-key "switch to buffer")
+   "b k" '(kill-buffer-and-window :which-key "kill buffer and window")
+   "b K" '(kill-some-buffers :which-key "kill some buffers")
+   "b t" '(tear-off-window :which-key "tear off window")
+   ;; compiling
+   "c c" '(compile :which-key "compile")
+   ;; git
+   "g p" '(git-gutter:popup-hunk :which-key "git gutter popup hunk")
+   "g R" '(git-gutter:revert-hunk :which-key "git gutter revert hunk")
+   "g n" '(git-gutter:next-hunk :which-key "git gutter next hunk")
+   ;; line wrapping
+   "l w" '(visual-line-mode :which-key "toggle line wrapping")
+   ;; load conf
+   "l c" '((lambda ()
+             (interactive)
+             (find-file "~/.emacs.d/config.org"))
+           :which-key "load conf")
+   ;; Neotree
+   "n" '(neotree-toggle :which-key "neotree toggle")
+   ;; project 
+   "p R" '(project-remember-projects-under
+           :which-key "project remember project")
+   "p F" '(project-forget-project :which-key "project forget project")
+   "p ." '(project-find-file :which-key "project find file")
+   "p f" '(project-switch-project :which-key "project switch project")
+   "p a" '(project-async-shell-command
+           :which-key "project async shell command")
+   "p c" '(project-shell-command :which-key "project shell command")
+   ;; Org Roam
+   "r f" '(org-roam-node-find :which-key "org roam node find")
+   ;; whitespace
+   "w" '(whitespace-mode :which-key "whitespace mode"))
 
-;; ----- Evil Bindings
-;; Yanking to end of line
-(general-define-key
- :states 'normal
- "Y" (kbd "y$"))
+  ;; ----- Evil Bindings
+  ;; Yanking to end of line
+  (general-define-key
+   :states 'normal
+   "Y" (kbd "y$"))
 
-;; ----- Scrolling
-(general-define-key
- :states '(normal insert)
- "C-d" #'(lambda ()
-		   (interactive)
-		   (evil-scroll-page-down 1)
-		   (evil-window-middle)))
-(general-define-key
- :states '(normal insert)
- "C-u" #'(lambda ()
-		   (interactive)
-		   (evil-scroll-page-up 1)
-		   (evil-window-middle)))
-;; inserting ; at the end of the line
-(general-define-key
- :states 'normal
- "C-;" (kbd "A;"))
-(general-define-key
- :states 'insert
- "C-;" #'(lambda ()
-		   (interactive)
-		   (progn
-			 (end-of-line)
-			 (insert ";"))))
-;; ----- Center Searching 
-;; search next
-(defun search-next-center-evil ()
-  (interactive)
-  (evil-search-next)
-  (evil-scroll-line-to-center
-   (line-number-at-pos (point))))
-;; search previous 
-(defun search-prev-center-evil () 
-  (interactive)
-  (evil-search-previous)
-  (evil-scroll-line-to-center
-   (line-number-at-pos (point))))
-;; remap
-(general-define-key
- :states 'normal
- "n" 'search-next-center-evil)
-(general-define-key
- :states 'normal
- "N" 'search-prev-center-evil)
-;; ---------------------- 
+  ;; ----- Scrolling
+  (general-define-key
+   :states '(normal insert)
+   "C-d" #'(lambda ()
+             (interactive)
+             (evil-scroll-page-down 1)
+             (evil-window-middle)))
+  (general-define-key
+   :states '(normal insert)
+   "C-u" #'(lambda ()
+             (interactive)
+             (evil-scroll-page-up 1)
+             (evil-window-middle)))
+  ;; inserting ; at the end of the line
+  (general-define-key
+   :states 'normal
+   "C-;" (kbd "A;"))
+  (general-define-key
+   :states 'insert
+   "C-;" #'(lambda ()
+             (interactive)
+             (progn
+               (end-of-line)
+               (insert ";"))))
+  ;; ----- Center Searching 
+  ;; search next
+  (defun search-next-center-evil ()
+    (interactive)
+    (evil-search-next)
+    (evil-scroll-line-to-center
+     (line-number-at-pos (point))))
+  ;; search previous 
+  (defun search-prev-center-evil () 
+    (interactive)
+    (evil-search-previous)
+    (evil-scroll-line-to-center
+     (line-number-at-pos (point))))
+  ;; remap
+  (general-define-key
+   :states 'normal
+   "n" 'search-next-center-evil)
+  (general-define-key
+   :states 'normal
+   "N" 'search-prev-center-evil)
+  ;; ---------------------- 
 
-;; ----- Neotree
-;; evil bindings
-(evil-define-key 'normal neotree-mode-map (kbd "TAB") 'neotree-enter)
-(evil-define-key 'normal neotree-mode-map (kbd "SPC") 'neotree-quick-look)
-(evil-define-key 'normal neotree-mode-map (kbd "q") 'neotree-hide)
-(evil-define-key 'normal neotree-mode-map (kbd "RET") 'neotree-enter)
-(evil-define-key 'normal neotree-mode-map (kbd "g") 'neotree-refresh)
-(evil-define-key 'normal neotree-mode-map (kbd "n") 'neotree-next-line)
-(evil-define-key 'normal neotree-mode-map (kbd "p") 'neotree-previous-line)
-(evil-define-key 'normal neotree-mode-map (kbd "A") 'neotree-stretch-toggle)
-(evil-define-key 'normal neotree-mode-map (kbd "H") 'neotree-hidden-file-toggle)
+  ;; ----- Neotree
+  ;; evil bindings
+  (evil-define-key 'normal neotree-mode-map (kbd "TAB") 'neotree-enter)
+  (evil-define-key 'normal neotree-mode-map (kbd "SPC") 'neotree-quick-look)
+  (evil-define-key 'normal neotree-mode-map (kbd "q") 'neotree-hide)
+  (evil-define-key 'normal neotree-mode-map (kbd "RET") 'neotree-enter)
+  (evil-define-key 'normal neotree-mode-map (kbd "g") 'neotree-refresh)
+  (evil-define-key 'normal neotree-mode-map (kbd "n") 'neotree-next-line)
+  (evil-define-key 'normal neotree-mode-map (kbd "p") 'neotree-previous-line)
+  (evil-define-key 'normal neotree-mode-map (kbd "A") 'neotree-stretch-toggle)
+  (evil-define-key 'normal neotree-mode-map (kbd "H") 'neotree-hidden-file-toggle)
 
-;; ----- Org Roam
-(general-define-key
- :states 'normal
- :keymaps 'org-mode-map
- :prefix "SPC"
- "p s" '(org-present :which-key "org present")
- "p q" '(org-present-quit :which-key "org present quit")
- "p n" '(org-present-next :which-key "org present next")
- "p p" '(org-present-prev :which-key "org present prev")
- "r i" '(org-roam-node-insert :which-key "org roam node insert")
- "r b" '(org-roam-buffer-toggle :which-key "org roam buffer toggle")
- "l p" '(org-latex-preview :which-key "org latex preview"))
+  ;; ----- Org Roam
+  (general-define-key
+   :states 'normal
+   :keymaps 'org-mode-map
+   :prefix "SPC"
+   "p s" '(org-present :which-key "org present")
+   "p q" '(org-present-quit :which-key "org present quit")
+   "p n" '(org-present-next :which-key "org present next")
+   "p p" '(org-present-prev :which-key "org present prev")
+   "r i" '(org-roam-node-insert :which-key "org roam node insert")
+   "r b" '(org-roam-buffer-toggle :which-key "org roam buffer toggle")
+   "l p" '(org-latex-preview :which-key "org latex preview"))
 
-;; ----- V Term
-(general-define-key
- :states 'normal
- :prefix "SPC"
- "v" '(switch-to-vterm :which-key "switch-to-vterm"))
+  ;; ----- V Term
+  (general-define-key
+   :states 'normal
+   :prefix "SPC"
+   "v" '(switch-to-vterm :which-key "switch-to-vterm"))
 #+end_src
 * Notes
 ** Org
