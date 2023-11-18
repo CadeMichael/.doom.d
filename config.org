@@ -258,8 +258,8 @@
  :keymaps 'c++-mode-map
  :prefix "SPC"
  ;; comp programming commands
- "c b" '(custcpp-build-file :which-key "cpp build file")
- "c r" '(cpp-run-file :which-key "cpp run file"))
+ "c b" '(cc-build-file :which-key "cpp build file")
+ "c r" '(cc-run-file :which-key "cpp run file"))
 #+end_src
 ** Go
 #+begin_src elisp
